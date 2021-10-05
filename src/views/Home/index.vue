@@ -18,5 +18,10 @@ export default Vue.extend({
     VueTree,
     NavSidebar: () => import("../../components/NavSidebar/NavSidebar.vue"),
   },
+  created() {
+    if (this.$route.path === "/home") {
+      this.$router.push({ name: "home.constructor" });
+    }
+  },
 });
 </script>

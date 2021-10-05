@@ -16,5 +16,10 @@ export default Vue.extend({
   components: {
     Header: () => import("../src/components/Header/Header.vue"),
   },
+  created() {
+    if (this.$route.path === "/") {
+      this.$router.push({ name: "home.constructor" });
+    }
+  },
 });
 </script>
