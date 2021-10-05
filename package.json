@@ -10,6 +10,7 @@
   "dependencies": {
     "@ssthouse/vue-tree-chart": "^0.5.4",
     "core-js": "^3.6.5",
+    "express": "^4.17.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-fragment": "^1.5.2",
