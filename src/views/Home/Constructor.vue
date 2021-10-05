@@ -1,5 +1,5 @@
 <template>
-  <div style="nav-constructor">
+  <div class="nav-constructor">
     <v-navigation-drawer
       width="353"
       permanent
@@ -52,11 +52,17 @@
         label="Prepend inner"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
+
       <v-list dense>
-        <v-list-item v-for="item in list" :key="item.value">
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+        <v-list-item
+          v-for="item in list"
+          :key="item.value"
+          class="justify-space-between"
+        >
+          {{ item.title }}
+          <v-btn icon style="flex: none" v-on="on" v-bind="attrs">
+            <v-icon> mdi-dots-horizontal </v-icon>
+          </v-btn>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -140,7 +146,7 @@ export default {
 .nav-constructor {
   height: 100%;
   .nav-constructor_item {
-    height: 50%;
+    height: 50% !important;
   }
 }
 </style>

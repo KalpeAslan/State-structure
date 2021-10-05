@@ -75,7 +75,7 @@ export default Vue.extend({
   background: #ffffff;
   box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.04);
   padding: 16px 8px;
-  z-index: 999;
+  z-index: 7;
   .sidebar-item {
     @include flex-column-center;
     padding: 12px;

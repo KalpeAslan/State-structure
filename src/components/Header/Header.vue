@@ -3,7 +3,13 @@
     <div class="header-content_left">
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="white" elevation="0" v-bind="attrs" v-on="on">
+          <v-btn
+            @click="$router.push('/home/select-goverment')"
+            color="white"
+            elevation="0"
+            v-bind="attrs"
+            v-on="on"
+          >
             <div
               style="
                 display: flex;

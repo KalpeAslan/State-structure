@@ -5,11 +5,6 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/logs',
-    name: 'Logs',
-    component: () => import(/* webpackChunkName: "Logs" */ '../views/Logs/Logs.vue')
-  },
-  {
     path: "/home",
     name: "Home",
     component: () => import(/* webpackChunkName: "Home" */ '../views/Home/index.vue'),
@@ -31,6 +26,26 @@ const routes: Array<RouteConfig> = [
       }
     ]
   },
+  {
+    path: '/logs',
+    name: 'Logs',
+    component: () => import(/* webpackChunkName: "Logs" */ '../views/Logs/Logs.vue')
+  },
+  {
+    path: '/versions-history',
+    name: 'versions-history',
+    component: () => import(/* webpackChunkName: "Versions-History" */ '../views/History-Versions/index.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import(/* webpackChunkName: "Versions-History" */ '../views/History-Versions/Empty.vue'),
+      },
+      {
+        path: ':id',
+        component: () => import(/* webpackChunkName: "Versions-History" */ '../views/History-Versions/Empty.vue'),
+      }
+    ]
+  }
 ];
 
 const router = new VueRouter({
