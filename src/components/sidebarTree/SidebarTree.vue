@@ -18,7 +18,6 @@
       </v-btn>
       <span
         :style="{
-          color: node.children ? 'green' : 'red',
           marginLeft: node.children && 36,
         }"
         >{{ node.name }}</span
