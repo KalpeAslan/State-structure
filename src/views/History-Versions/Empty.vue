@@ -1,8 +1,27 @@
 <template>
-  <div class="empty">
-    <p class="text-subtitle1">Выберите версию из списка, чтобы просмотреть</p>
+  <div style="height: 100%">
+    <div class="empty" v-if="!isShowTree">
+      <p class="text-subtitle1">Выберите версию из списка, чтобы просмотреть</p>
+    </div>
+    <VueTree v-else />
   </div>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
+
+export default Vue.extend({
+  components: {
+    VueTree,
+  },
+  computed: {
+    isShowTree() {
+      return this.$store.state.treeStore.tree != null;
+    },
+  },
+});
+</script>
 
 <style lang="scss" scoped>
 .empty {

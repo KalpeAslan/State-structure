@@ -8,6 +8,7 @@
       <div class="header d-flex justify-space-between">
         <div class="text-h6 d-inline-block">Штатная структура</div>
         <v-btn
+          @click="addChild(1)"
           color="primary"
           class="mb-2 d-inline-block"
           outlined
@@ -21,10 +22,10 @@
       </div>
       <v-text-field
         outlined
-        label="Prepend inner"
+        label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <v-treeview :items="items"></v-treeview>
+      <SidebarTree :nodes="items"></SidebarTree>
     </v-navigation-drawer>
     <v-divider></v-divider>
 
@@ -49,7 +50,7 @@
       </div>
       <v-text-field
         outlined
-        label="Prepend inner"
+        label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
 
@@ -59,8 +60,8 @@
           :key="item.value"
           class="justify-space-between"
         >
-          {{ item.title }}
-          <v-btn icon style="flex: none" v-on="on" v-bind="attrs">
+          <span>{{ item.title }}</span>
+          <v-btn icon style="flex: none">
             <v-icon> mdi-dots-horizontal </v-icon>
           </v-btn>
         </v-list-item>
@@ -70,51 +71,53 @@
 </template>
 
 <script>
+import sidebarTree from "../../components/sidebarTree/SidebarTree";
+
 export default {
   data() {
     return {
-      items: [
-        {
-          id: 5,
-          name: "Название ГО :",
-          children: [
-            {
-              id: 6,
-              name: "Департамент 1 :",
-              children: [
-                {
-                  id: 7,
-                  name: "Отдел 1 :",
-                  children: [
-                    {
-                      id: 9,
-                      name: "Должность 1",
-                    },
-                    {
-                      id: 10,
-                      name: "Должность 2",
-                    },
-                  ],
-                },
-                {
-                  id: 11,
-                  name: "Отдел 2 :",
-                  children: [
-                    {
-                      id: 12,
-                      name: "Должность 1",
-                    },
-                    {
-                      id: 13,
-                      name: "Должность 2",
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      // items: [
+      //   {
+      //     id: 5,
+      //     name: "Название ГО :",
+      //     children: [
+      //       {
+      //         id: 6,
+      //         name: "Департамент 1 :",
+      //         children: [
+      //           {
+      //             id: 7,
+      //             name: "Отдел 1 :",
+      //             children: [
+      //               {
+      //                 id: 9,
+      //                 name: "Должность 1",
+      //               },
+      //               {
+      //                 id: 10,
+      //                 name: "Должность 2",
+      //               },
+      //             ],
+      //           },
+      //           {
+      //             id: 11,
+      //             name: "Отдел 2 :",
+      //             children: [
+      //               {
+      //                 id: 12,
+      //                 name: "Должность 1",
+      //               },
+      //               {
+      //                 id: 13,
+      //                 name: "Должность 2",
+      //               },
+      //             ],
+      //           },
+      //         ],
+      //       },
+      //     ],
+      //   },
+      // ],
       list: [
         {
           title: "Должность 0",
@@ -138,6 +141,21 @@ export default {
         },
       ],
     };
+  },
+  components: {
+    SidebarTree: sidebarTree,
+  },
+  computed: {
+    items() {
+      return this.$store.state.treeStore.tree
+        ? [this.$store.state.treeStore.tree]
+        : [];
+    },
+  },
+  methods: {
+    addChild() {
+      this.$store.dispatch;
+    },
   },
 };
 </script>

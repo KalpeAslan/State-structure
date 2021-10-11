@@ -1,3 +1,5 @@
+import { treeStore } from './treeStore';
+import {systemStore} from './systemStore'
 import Vue from "vue";
 import Vuex from "vuex";
 
@@ -7,5 +9,8 @@ export default new Vuex.Store({
   state: {},
   mutations: {},
   actions: {},
-  modules: {},
+  modules: {
+    treeStore,
+    systemStore
+  },
 });

@@ -4,7 +4,11 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            @click="$router.push('/home/select-goverment')"
+            @click="
+              $router.push({
+                name: 'home.select-goverment',
+              })
+            "
             color="white"
             elevation="0"
             v-bind="attrs"
@@ -48,9 +52,17 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item v-for="(item, index) in historyItems" :key="index">
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
+          <router-link
+            v-for="(item, index) in historyItems"
+            :key="index"
+            :to="{
+              name: item.routeName,
+            }"
+          >
+            <v-list-item>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </router-link>
         </v-list>
       </v-menu>
       <v-btn
@@ -66,6 +78,41 @@
         {{ button.title }}
       </v-btn>
     </div>
+    <template>
+      <v-row v-if="false" justify="center">
+        <v-dialog v-model="editDialog" max-width="400px">
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Редактировать ГО</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <template>
+                  <v-form ref="form" lazy-validation>
+                    <div v-for="input in editForm" :key="input.title">
+                      <div class="text-subtitle1">{{ input.title }}</div>
+                      <v-text-field
+                        :placeholder="selectedToEditGovOrg[input.name]"
+                        outlined
+                        class="mb-3"
+                        hide-details
+                        v-model="selectedToEditGovOrg[input.name]"
+                      >
+                      </v-text-field>
+                    </div>
+                  </v-form>
+                </template>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="editDialog = false">
+                Сохранить
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+    </template>
   </v-app-bar>
 </template>
 
@@ -75,6 +122,7 @@ import Vue from "vue";
 export default Vue.extend({
   data() {
     return {
+      editDialog: false,
       headerButtons: [
         {
           title: "Экспорт в PDF",
@@ -92,17 +140,63 @@ export default Vue.extend({
       historyItems: [
         {
           title: "История действий",
-          value: "history-actions",
+          routeName: "Logs",
         },
         {
           title: "История версий",
-          value: "history-versions",
+          routeName: "versions-history",
+        },
+      ],
+      items: [],
+      editForm: [
+        {
+          title: "БИН",
+          name: "bin",
+        },
+        {
+          title: "Наименование на русском",
+          name: "name",
+        },
+        {
+          title: "Наименование на казахском",
+          name: "nameKz",
+        },
+        {
+          title: "Наименование на английском",
+          name: "nameEn",
         },
       ],
     };
   },
   components: {
     Badge: () => import("../Badge/Badge.vue"),
+  },
+  computed: {
+    showEditDeleteButton(): boolean {
+      return this.$route.name === "home.constructor";
+    },
+    selectedToEditGovOrg() {
+      return {
+        name: "Наименование ГО",
+        bin: "010908550522",
+        state: "created",
+      };
+    },
+  },
+  methods: {
+    editGovOrg() {
+      // this.selectedToEditGovOrg = this.$store.homeStore.selectedGovOrg;
+      this.editDialogvalid = true;
+    },
+    validate() {
+      this.form.reset();
+    },
+    reset() {
+      this.form.reset();
+    },
+    resetValidation() {
+      this.form.resetValidation();
+    },
   },
 });
 </script>

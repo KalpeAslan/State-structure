@@ -2,11 +2,14 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "strict": true,
+    // "strict": true,
     "jsx": "preserve",
     "importHelpers": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "moduleResolution": "node",
     "experimentalDecorators": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -15,7 +18,6 @@
     "types": [
       "webpack-env"
     ],
-    "noImplicitAny": false,
     "paths": {
       "@/*": [
         "src/*"
@@ -33,8 +35,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx",
-    "src/**/*.svg"
+    "tests/**/*.tsx"
   ],
   "exclude": [
     "node_modules"

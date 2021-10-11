@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    <vue-tree
-      style="width: 800px; height: 600px; border: 1px solid gray"
+    <Tree
+      v-if="!loading"
+      style="border: 1px solid gray"
       :dataset="vehicules"
       :config="treeConfig"
       linkStyle="straight"
@@ -14,58 +15,48 @@
           <span style="padding: 4px 0; font-weight: bold">{{ node.name }}</span>
         </div>
       </template>
-    </vue-tree>
+    </Tree>
   </div>
 </template>
 <script>
+import { SET_TREE } from "../../store/mutation-types";
+
 export default {
   name: "treemap",
   data() {
     return {
-      vehicules: {
-        name: "Название ГО",
-        children: [
-          {
-            name: "Департамент 1",
-            children: [
-              {
-                name: "Отдел 1",
-              },
-              {
-                name: "Отдел 2",
-              },
-            ],
-          },
-          {
-            name: "Департамент 2",
-            children: [
-              {
-                name: "Отдел 1",
-              },
-              {
-                name: "Отдел 2",
-              },
-            ],
-          },
-        ],
-      },
       treeConfig: { nodeWidth: 140, nodeHeight: 80, levelHeight: 200 },
+      loading: true,
     };
+  },
+  computed: {
+    vehicules() {
+      return this.$store.state.treeStore.tree;
+    },
+  },
+  async beforeCreate() {
+    this.loading = true;
+    await this.$store.dispatch(SET_TREE, 0);
+    this.loading = false;
   },
   mounted() {
     const treeContainer = document.querySelector(
       ".container > .tree-container"
     );
     let scale = 1;
-    treeContainer.addEventListener("wheel", (e) => {
-      if (e.deltaY < 0 && scale < 1.1) scale += 0.03;
-      else if (scale > 0.5) scale -= 0.03;
-      treeContainer.style.transform =
-        treeContainer.style.WebkitTransform =
-        treeContainer.style.MsTransform =
-          "scale(" + scale + ")";
-      e.preventDefault();
-    });
+    treeContainer &&
+      treeContainer.addEventListener("wheel", (e) => {
+        if (e.deltaY < 0 && scale < 1.1) scale += 0.03;
+        else if (scale > 0.5) scale -= 0.03;
+        treeContainer.style.transform =
+          treeContainer.style.WebkitTransform =
+          treeContainer.style.MsTransform =
+            "scale(" + scale + ")";
+        e.preventDefault();
+      });
+  },
+  components: {
+    Tree: () => import("../tree/Tree.vue"),
   },
 };
 </script>
@@ -78,6 +69,8 @@ export default {
   background: rgb(218, 218, 218) !important;
   width: 100%;
   .tree-container {
+    width: 100% !important;
+    height: 100% !important;
     border: none !important;
   }
   height: 100%;

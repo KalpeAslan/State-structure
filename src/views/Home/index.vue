@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <NavSidebar />
     <VueTree />
     <ContentSidebar> <router-view /> </ContentSidebar>

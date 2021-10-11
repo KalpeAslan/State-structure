@@ -18,7 +18,7 @@ export default Vue.extend({
   },
   created() {
     if (this.$route.path === "/") {
-      this.$router.push({ name: "home.constructor" });
+      // this.$router.push({ name: "home.constructor" });
     }
   },
 });

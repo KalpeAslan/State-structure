@@ -1,16 +1,18 @@
-const path = require('path');
+const path = require("path");
 
 module.exports = {
   transpileDependencies: ["vuetify"],
-  configureWebpack:{
+  configureWebpack: {
     resolve: {
-      extensions: ['.ts', '.js', '.vue', '.json'],
+      extensions: [".ts", ".js", ".vue", ".json"],
       alias: {
-        '@': path.join(__dirname, '/src/'),
-        '@assets': path.join(__dirname, '/src/assets/'),
-        '@services': path.join(__dirname, '/src/services/'),
-        'vue$': 'vue/dist/vue.esm.js'
+        "@": path.join(__dirname, "/src/"),
+        "@assets": path.join(__dirname, "/src/assets/"),
+        "@services": path.join(__dirname, "/src/services/"),
+        vue$: "vue/dist/vue.esm.js",
       },
     },
   },
+    lintOnSave: false
+
 };
