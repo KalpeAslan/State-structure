@@ -143,7 +143,7 @@ export default Vue.extend({
   },
   computed: {
     selectedGovOrg() {
-      return this.$store.homeStore.selectedGovOrg;
+      return this.$store.state.homeStore.selectedGovOrg;
     },
   },
   methods: {
