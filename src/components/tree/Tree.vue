@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="tree-container"
-    ref="container"
-    :style="{
-      height: `calc(100% + ${treeContainerHeight}px) !important`,
-    }"
-  >
+  <div class="tree-container" ref="container" :style="{}">
     <svg class="svg vue-tree" ref="svg" :style="initialTransformStyle"></svg>
 
     <div

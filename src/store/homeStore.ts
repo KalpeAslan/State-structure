@@ -1,4 +1,4 @@
-import { SET_USER_TYPE, SET_POSITIONS, ADD_POSITION, DELETE_POSITION, SET_TEMP_POSITION, SET_MODE, SELECT_GOVERMENT, ADD_GOVERMENT, DELETE_GOVERMENT, SET_ROLES, SET_EMPLOYIES } from './mutation-types';
+import { SET_USER_TYPE, SET_POSITIONS, ADD_POSITION, DELETE_POSITION, SET_TEMP_POSITION, SET_MODE, SELECT_GOVERMENT, ADD_GOVERMENT, DELETE_GOVERMENT, SET_ROLES, SET_EMPLOYIES, DELETE_EMPLOYEE, DELETE_ROLE } from './mutation-types';
 import {homeService} from '../services/homeService'
 import { Module } from "vuex";
 import { IEmployee, IGoverment, IPosition, IRole, IStateHomeStore } from './interfaces';
@@ -38,8 +38,8 @@ export const homeStore: Module<IStateHomeStore, any> =  {
         [ADD_GOVERMENT](ctx, goverment){
             ctx.goverments.push(goverment)
         },
-        [DELETE_GOVERMENT](ctx, govermentBin: number){
-            ctx.goverments = ctx.goverments.filter(goverment => goverment.bin !== govermentBin)
+        [DELETE_GOVERMENT](ctx, goverments: IGoverment[]){
+            ctx.goverments = goverments
         },
         [SET_ROLES](context, roles: IRole[]){
             context.roles = roles
@@ -58,7 +58,7 @@ export const homeStore: Module<IStateHomeStore, any> =  {
         [ADD_POSITION](context, postition: IPosition){
             context.commit(ADD_POSITION, postition)
         },
-        [DELETE_POSITION](context,position){
+        [DELETE_POSITION](context,position: IPosition){
             context.commit(DELETE_POSITION, position)
         },
         [SET_TEMP_POSITION](context, position: IPosition){
@@ -74,13 +74,20 @@ export const homeStore: Module<IStateHomeStore, any> =  {
             context.commit(ADD_GOVERMENT, goverment)
         },
         [DELETE_GOVERMENT](context, govermentBin: number){
-            context.commit(DELETE_GOVERMENT, govermentBin)
+            context.commit(DELETE_GOVERMENT, context.state.goverments.filter(goverment => goverment.bin !== govermentBin))
         },
         [SET_ROLES](context, roles: IRole[]){
             context.commit(SET_ROLES, roles)
         },
         [SET_EMPLOYIES](ctx, employies: IEmployee[]){
             ctx.commit(SET_EMPLOYIES, employies)
+        },
+        [DELETE_EMPLOYEE](ctx, employee: IEmployee){
+            ctx.commit(SET_EMPLOYIES, ctx.state.employies
+                .filter(employeeChild => employeeChild.id !== employee.id))
+        },
+        [DELETE_ROLE](ctx, role: IRole){
+            ctx.commit(SET_ROLES, ctx.state.roles.filter(roleChild => roleChild.id !== role.id))
         }
     },
     getters: {
@@ -90,10 +97,13 @@ export const homeStore: Module<IStateHomeStore, any> =  {
         GET_ATTACH_ITEMS: (state) => (input: string, type: string) =>{
             const items: any[] = type === 'roles' ? state.roles : state.employies
             if(!input) return items
-            return items.filter(role => role.title.toLowerCase().includes(input.toLowerCase()))
+            return items.filter(role => role.name.toLowerCase().includes(input.toLowerCase()))
         },
         GET_EMPLOYEE_BY_ID: (state) => (id: number): IEmployee => {
             return state.employies.filter(employee => employee.id === id)[0]
-        }
+        },
+        GET_ROLE_BY_ID: (state) => (id: number): IRole => {
+            return state.roles.filter(role => role.id === id)[0]
+        },
     }
 }

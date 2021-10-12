@@ -11,7 +11,7 @@ export interface ITree {
     _key?: string,
     id: string | number,
     type?: string,
-    positionChildren?: IEmployee[] | IRole[],
+    positionChildren?: IEmployee[],
     positionRole?: IRole
 }
 
@@ -52,11 +52,12 @@ export interface IGoverment {
 }
 
 export interface IRole {
-    title: string,
+    name: string,
     id: string | number,
 }
 
 export interface IEmployee{
-    title: string,
-    id: number
+    name: string,
+    id: number,
+    type?: string
 }

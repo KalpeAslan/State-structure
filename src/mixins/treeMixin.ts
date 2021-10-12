@@ -32,7 +32,6 @@ export default Vue.extend({
             }
           },
           dragEnd($event, node) {
-            console.log($event.dataTransfer.getData('employeeId'))
             if (this.dragEnteredNode.id !== this.getDragTree) {
               this.$store.dispatch(UPDATE_TREE, {
                 dragEnteredNode: this.dragEnteredNode,
@@ -42,13 +41,10 @@ export default Vue.extend({
             }
           },
           dragStart($event: DragEvent, node){
-            // if(!this.getDragTree){
-            //   this.$store.dispatch(SET_DRAG_TREE, node)
-            // }
             $event.dataTransfer.setData('nodeId', node.id)
           },
           onDrop($event: DragEvent, node: ITree){
-
+            let type = ''
             if($event.dataTransfer.getData('employeeId')){
               this.$store.dispatch(INSERT_POSITION_TO_NODE, {
                 selectedNode: node,
@@ -58,6 +54,11 @@ export default Vue.extend({
               this.$store.dispatch(UPDATE_TREE, {
                 dragEnteredNode: node,
                 dragTargetNode: this.$store.getters.GET_NODE_BY_ID($event.dataTransfer.getData('nodeId'))
+              })
+            } else if($event.dataTransfer.getData('roleId')){
+              this.$store.dispatch(INSERT_POSITION_TO_NODE, {
+                selectedNode: node,
+                position: this.$store.getters.GET_ROLE_BY_ID(+$event.dataTransfer.getData('roleId'))
               })
             }
             

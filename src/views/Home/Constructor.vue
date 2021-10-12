@@ -30,7 +30,6 @@
     <v-divider></v-divider>
 
     <v-navigation-drawer
-      v-if="false"
       width="353"
       permanent
       class="pt-5 px-5 nav-constructor_item"
@@ -175,7 +174,7 @@ export default {
 .nav-constructor {
   height: 100%;
   .nav-constructor_item {
-    height: 100% !important;
+    height: 50% !important;
   }
 }
 </style>

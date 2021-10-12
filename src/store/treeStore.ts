@@ -1,6 +1,6 @@
 import { Module } from "vuex";
 import { IEmployee, IPosition, IRole, IStateTreeStore, ITree } from "./interfaces";
-import { SET_TREE, UPDATE_TREE, INSERT_NODE_TO_TREE, DELETE_NODE, SET_UNLOCK, DELETE_POSITION_FROM_NODE, SET_DRAG_TREE, INSERT_POSITION_TO_NODE } from './mutation-types';
+import { SET_TREE, UPDATE_TREE, INSERT_NODE_TO_TREE, DELETE_NODE, SET_UNLOCK, DELETE_POSITION_FROM_NODE, SET_DRAG_TREE, INSERT_POSITION_TO_NODE, DELETE_POSITION, DELETE_EMPLOYEE, DELETE_ROLE } from './mutation-types';
 
 
 const vehicules: ITree = 
@@ -31,18 +31,15 @@ const vehicules: ITree =
                     {
                       name: 'Сотрудник 1',
                       id: 44778487,
-                      title: ''
                     },
                     {
                       name: 'Сотрудник 2',
                       id: 1548487,
-                      title: ''
                     }
                   ],
                   positionRole: {
                     name: 'Role 1',
                     id: 877878,
-                    title:'3e'
                   }
                 },
                 {
@@ -154,22 +151,6 @@ function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
     }
 }
 
-function insertPositionItem(node: ITree, nodeId: string | number, positionItem){
-  console.log(node)
-  if (node.id == nodeId) {
-    console.log('WORK')
-    node.children.forEach(nodeChild => {
-      nodeChild.positionChildren.push(positionItem)
-    })
-  } else if (node.children != null) {
-      for (let i = 0; i < node.children.length; i++) {
-          insertNodeIntoTree(node.children[i], nodeId, positionItem);
-      }
-
-  }
-}
-
-
 function deleteNodeFromTree(node, nodeId) {
   if (node.children != null) {
       for (let i = 0; i < node.children.length; i++) {
@@ -225,6 +206,29 @@ function getNodeById(node: ITree, id){
   return runner(null, node);
 }
 
+
+
+function insertPositionItem(node: ITree, nodeId: string | number, positionItem) {
+  if (node.children != null) {
+      for (let i = 0; i < node.children.length; i++) {
+          if (node.children.length !== 0) {
+              node.children.map(f => {
+                if(f.id === nodeId){
+                  f.positionChildren = f.positionChildren ? f.positionChildren : []
+                  f.positionChildren.push(positionItem)
+                } else {
+                  insertPositionItem(f, nodeId, positionItem)
+                }
+                return f
+              });
+              return;
+          }
+          insertPositionItem(node.children[i], nodeId, positionItem);
+      }
+  }
+
+}
+
 export const treeStore: Module<IStateTreeStore, any> =  {
     state: {
         tree: null,
@@ -265,7 +269,6 @@ export const treeStore: Module<IStateTreeStore, any> =  {
         },
         [UPDATE_TREE](context, {dragEnteredNode, dragTargetNode}) {
           insertNodeIntoTree(context.state.tree, dragEnteredNode.id, dragTargetNode)
-          console.log(dragTargetNode.name)
           deleteNodeFromTree(context.state.tree, dragTargetNode.id)
         },
         [INSERT_NODE_TO_TREE](context, {selectedNode, newNode}){
@@ -282,9 +285,12 @@ export const treeStore: Module<IStateTreeStore, any> =  {
           context.commit(SET_DRAG_TREE, tree)
         },
         [INSERT_POSITION_TO_NODE](context, {selectedNode, position}){
-          console.log(selectedNode.name)
-          console.log(selectedNode.id)
           insertPositionItem(context.state.tree, selectedNode.id, position)
+          if(position.type === 'employee'){
+            context.dispatch(DELETE_EMPLOYEE, position)
+          } else {
+            context.dispatch(DELETE_ROLE, position)
+          }
         },
         [DELETE_POSITION_FROM_NODE](context, {selectedNode, positionChild}){
           deletePositionFromNode(context.state.tree, selectedNode.id, positionChild.id)
