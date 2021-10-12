@@ -1,27 +1,7 @@
 import { Module } from "vuex";
-import { IPosition } from "./homeStore";
-import { SET_TREE, UPDATE_TREE, INSERT_NODE_TO_TREE, DELETE_NODE, SET_UNLOCK, DELETE_POSITION_CHILD } from './mutation-types';
+import { IEmployee, IPosition, IRole, IStateTreeStore, ITree } from "./interfaces";
+import { SET_TREE, UPDATE_TREE, INSERT_NODE_TO_TREE, DELETE_NODE, SET_UNLOCK, DELETE_POSITION_FROM_NODE, SET_DRAG_TREE, INSERT_POSITION_TO_NODE } from './mutation-types';
 
-
-interface IState {
-    tree: null | ITree,
-    unlock: boolean
-}
-
-export interface ITree {
-    name: string | number,
-    children?: Array<ITree>,
-    _key?: string,
-    id: string | number,
-    type?: string,
-    positionChildren?: IPosition[],
-    positionRole?: IRole
-}
-
-interface IRole {
-  name: string,
-  id: number | string
-}
 
 const vehicules: ITree = 
     {
@@ -51,15 +31,18 @@ const vehicules: ITree =
                     {
                       name: 'Сотрудник 1',
                       id: 44778487,
+                      title: ''
                     },
                     {
                       name: 'Сотрудник 2',
                       id: 1548487,
+                      title: ''
                     }
                   ],
                   positionRole: {
                     name: 'Role 1',
-                    id: 877878
+                    id: 877878,
+                    title:'3e'
                   }
                 },
                 {
@@ -156,7 +139,7 @@ const vehicules2: ITree = {
   ]
 }
 
-  function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
+function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
     if (node.id == nodeId) {
       newNode._key = node.id
       if(!node.children){
@@ -171,6 +154,22 @@ const vehicules2: ITree = {
     }
 }
 
+function insertPositionItem(node: ITree, nodeId: string | number, positionItem){
+  console.log(node)
+  if (node.id == nodeId) {
+    console.log('WORK')
+    node.children.forEach(nodeChild => {
+      nodeChild.positionChildren.push(positionItem)
+    })
+  } else if (node.children != null) {
+      for (let i = 0; i < node.children.length; i++) {
+          insertNodeIntoTree(node.children[i], nodeId, positionItem);
+      }
+
+  }
+}
+
+
 function deleteNodeFromTree(node, nodeId) {
   if (node.children != null) {
       for (let i = 0; i < node.children.length; i++) {
@@ -178,7 +177,7 @@ function deleteNodeFromTree(node, nodeId) {
           if (filtered.length !== 0) {
               node.children = node.children.filter(f => {
                 if(f.id === nodeId){
-                  return !!f._key
+                  return false
                 }
                 return true
               });
@@ -195,14 +194,13 @@ function deletePositionFromNode(node, nodeId, positionId) {
       for (let i = 0; i < node.children.length; i++) {
           let filtered = node.children.filter(f => f.id == nodeId);
           if (filtered.length !== 0) {
-              node.children = node.children.filter(f => {
+              node.children = node.children.map(f => {
                 if(f.id === nodeId){
                   f.positionChildren = f.positionChildren.filter(positionChild => {
-                    console.log(positionChild.id !== positionId)
                     return positionChild.id !== positionId
                   })
                 }
-                return true
+                return f
               });
               return;
           }
@@ -212,12 +210,26 @@ function deletePositionFromNode(node, nodeId, positionId) {
 
 }
 
+function getTreeDetpth(node: ITree): number{
+  return 1 + (node.children ? Math.max(...node.children.map(getTreeDetpth)) : 0)
+}
 
-  
-export const treeStore: Module<IState, any> =  {
+function getNodeById(node: ITree, id){
+  const reduce = [].reduce;
+  function runner(result, node){
+      if(result || !node) return result;
+      return node.id == id && node ||
+          runner(null, node.children) ||
+          reduce.call(Object(node), runner, result); 
+  }
+  return runner(null, node);
+}
+
+export const treeStore: Module<IStateTreeStore, any> =  {
     state: {
         tree: null,
-        unlock: false
+        unlock: false,
+        dragTargetNode: null
     },
     mutations: {
         [SET_TREE](state, tree: ITree): void {
@@ -225,7 +237,10 @@ export const treeStore: Module<IState, any> =  {
         },
         [SET_UNLOCK](state, unlock: boolean){
           state.unlock = unlock
-        }
+        },
+        [SET_DRAG_TREE](state, tree){
+          state.dragTargetNode = tree
+        },
     },
     actions: {
         [SET_TREE](context, treeId): Promise<any> {
@@ -250,6 +265,7 @@ export const treeStore: Module<IState, any> =  {
         },
         [UPDATE_TREE](context, {dragEnteredNode, dragTargetNode}) {
           insertNodeIntoTree(context.state.tree, dragEnteredNode.id, dragTargetNode)
+          console.log(dragTargetNode.name)
           deleteNodeFromTree(context.state.tree, dragTargetNode.id)
         },
         [INSERT_NODE_TO_TREE](context, {selectedNode, newNode}){
@@ -261,15 +277,31 @@ export const treeStore: Module<IState, any> =  {
         [SET_UNLOCK](context, unlock: boolean){
           context.commit(SET_UNLOCK, unlock)
         },
-        [DELETE_POSITION_CHILD](context, {selectedNode, positionChild}){
-          console.log(positionChild)
-          console.log(selectedNode)
+        
+        [SET_DRAG_TREE](context, tree: ITree | null){
+          context.commit(SET_DRAG_TREE, tree)
+        },
+        [INSERT_POSITION_TO_NODE](context, {selectedNode, position}){
+          console.log(selectedNode.name)
+          console.log(selectedNode.id)
+          insertPositionItem(context.state.tree, selectedNode.id, position)
+        },
+        [DELETE_POSITION_FROM_NODE](context, {selectedNode, positionChild}){
           deletePositionFromNode(context.state.tree, selectedNode.id, positionChild.id)
-        }
+        },
     },
     getters: {
       GET_UNLOCK(state){
         return state.unlock
+      },
+      GET_DEPTH(state){
+        return state.tree ? getTreeDetpth(state.tree) : 0
+      },
+      GET_DRAG_TREE(state){
+        return state.dragTargetNode
+      },
+      GET_NODE_BY_ID: (state) => (id) => {
+        return getNodeById(state.tree, id)
       }
     }
 }

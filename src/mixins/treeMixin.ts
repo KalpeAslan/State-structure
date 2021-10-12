@@ -1,6 +1,7 @@
+import { ITree } from './../store/interfaces';
+import { SET_DRAG_TREE, INSERT_POSITION_TO_NODE } from './../store/mutation-types';
 import { DELETE_NODE, INSERT_NODE_TO_TREE, UPDATE_TREE } from '@/store/mutation-types';
 import Vue from 'vue'
-import {ITree} from '../store/treeStore'
 
 export default Vue.extend({
     data() {
@@ -10,11 +11,12 @@ export default Vue.extend({
     },
     methods: {
         insertToNode(selectedNode: ITree, newNode = {}) {
+          const randomId = Math.round(Math.random() * 45450)
             newNode = {
               children: [],
               name: "TestNode1",
-              id: this.getRandomId,
-              _key: this.getRandomId,
+              id: randomId,
+              _key: randomId,
             };
             this.$store.dispatch(INSERT_NODE_TO_TREE, {
               selectedNode,
@@ -29,13 +31,41 @@ export default Vue.extend({
               this.dragEnteredNode = node
             }
           },
-          dragEnd(node) {
-            if (this.dragEnteredNode.id !== node.id) {
+          dragEnd($event, node) {
+            console.log($event.dataTransfer.getData('employeeId'))
+            if (this.dragEnteredNode.id !== this.getDragTree) {
               this.$store.dispatch(UPDATE_TREE, {
                 dragEnteredNode: this.dragEnteredNode,
                 dragTargetNode: node,
               });
+              this.$store.dispatch(SET_DRAG_TREE, null)
             }
           },
+          dragStart($event: DragEvent, node){
+            // if(!this.getDragTree){
+            //   this.$store.dispatch(SET_DRAG_TREE, node)
+            // }
+            $event.dataTransfer.setData('nodeId', node.id)
+          },
+          onDrop($event: DragEvent, node: ITree){
+
+            if($event.dataTransfer.getData('employeeId')){
+              this.$store.dispatch(INSERT_POSITION_TO_NODE, {
+                selectedNode: node,
+                position: this.$store.getters.GET_EMPLOYEE_BY_ID(+$event.dataTransfer.getData('employeeId'))
+              })
+            } else if($event.dataTransfer.getData('nodeId')){
+              this.$store.dispatch(UPDATE_TREE, {
+                dragEnteredNode: node,
+                dragTargetNode: this.$store.getters.GET_NODE_BY_ID($event.dataTransfer.getData('nodeId'))
+              })
+            }
+            
+          }
+    },
+    computed:{
+      getDragTree(){
+        return this.$store.getters.GET_DRAG_TREE
+      }
     }
 })

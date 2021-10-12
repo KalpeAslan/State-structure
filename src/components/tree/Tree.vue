@@ -1,5 +1,11 @@
 <template>
-  <div class="tree-container" ref="container">
+  <div
+    class="tree-container"
+    ref="container"
+    :style="{
+      height: `calc(100% + ${treeContainerHeight}px) !important`,
+    }"
+  >
     <svg class="svg vue-tree" ref="svg" :style="initialTransformStyle"></svg>
 
     <div
@@ -10,13 +16,8 @@
       <div
         class="node-slot"
         v-for="(node, index) of nodeDataList"
+        :key="node.data.id"
         :index="index"
-        :draggable="unlock"
-        @dragend="dragEnd(node.data)"
-        :dragId="node.data.id"
-        :ref="`node-ref-${node.data.id}`"
-        @dragenter="dragEnter(node.data)"
-        :key="node.data._key"
         :style="{
           left: formatDimension(
             direction === DIRECTION.VERTICAL ? node.x : node.y
@@ -27,40 +28,50 @@
           width: formatDimension(config.nodeWidth),
           height: formatDimension(config.nodeHeight),
         }"
-        @click="selectPosition(node.data)"
+        dropzone
+        @dragover.prevent
+        @dragenter.prevent
+        @drop="onDrop($event, node.data)"
       >
-        <v-btn
-          v-if="node.data.type !== 'position'"
-          icon
-          absolute
-          @click="deleteNode(node.data)"
-          :style="{
-            right: buttonsClientXPositions[`node-ref-${node.data.id}`],
-            zIndex: 10,
-          }"
+        <div
+          :draggable="unlock"
+          @dragstart="dragStart($event, node.data)"
+          :ref="`node-ref-${node.data.id}`"
+          @click="selectPosition(node.data)"
         >
-          <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-        </v-btn>
+          <v-btn
+            v-if="node.data.type !== 'position'"
+            icon
+            absolute
+            @click="deleteNode(node.data)"
+            :style="{
+              right: buttonsClientXPositions[`node-ref-${node.data.id}`],
+              zIndex: 10,
+            }"
+          >
+            <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+          </v-btn>
 
-        <slot
-          name="node"
-          v-bind:node="node.data"
-          v-bind:collapsed="node.data._collapsed"
-        >
-          <span> {{ node.data.value }}</span>
-        </slot>
-        <v-btn
-          icon
-          v-if="node.data.type !== 'position'"
-          absolute
-          :style="{
-            left: buttonsClientXPositions[`node-ref-${node.data.id}`],
-            zIndex: 10,
-          }"
-          @click="insertToNode(node.data)"
-        >
-          <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
-        </v-btn>
+          <slot
+            name="node"
+            v-bind:node="node.data"
+            v-bind:collapsed="node.data._collapsed"
+          >
+            <span> {{ node.data.value }}</span>
+          </slot>
+          <v-btn
+            icon
+            v-if="node.data.type !== 'position'"
+            absolute
+            :style="{
+              left: buttonsClientXPositions[`node-ref-${node.data.id}`],
+              zIndex: 10,
+            }"
+            @click="insertToNode(node.data)"
+          >
+            <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+          </v-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -158,6 +169,9 @@ export default {
     },
     unlock() {
       return !this.$store.getters.GET_UNLOCK;
+    },
+    treeContainerHeight() {
+      return this.$store.getters.GET_DEPTH * 300;
     },
   },
   mounted() {
@@ -451,20 +465,6 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.tree-container {
-  .node {
-    fill: grey !important;
-  }
-
-  .link {
-    stroke-width: 2px !important;
-    fill: transparent !important;
-    stroke: #cecece !important;
-  }
-}
-</style>
-
 <style lang="scss" scoped>
 .tree-node-item-enter,
 .tree-node-item-leave-to {
@@ -477,6 +477,18 @@ export default {
 .tree-node-item-leave-active {
   transition-timing-function: ease-in-out;
   transition: all 0.8s;
+}
+
+.tree-container {
+  .node {
+    fill: grey !important;
+  }
+
+  .link {
+    stroke-width: 2px !important;
+    fill: transparent !important;
+    stroke: #cecece !important;
+  }
 }
 
 .tree-container {

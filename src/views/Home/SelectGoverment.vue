@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { IGoverment } from "@/store/homeStore";
+import { IGoverment } from "@/store/interfaces";
 import { SELECT_GOVERMENT } from "@/store/mutation-types";
 import Vue from "vue";
 

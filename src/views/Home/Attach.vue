@@ -14,7 +14,14 @@
         label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <v-list-item v-for="employe in employes" :key="employe.value">
+      <v-list-item
+        draggable
+        @dragstart="dragStart($event, employe)"
+        @dragend="dragEnd($event, employe)"
+        @dragenter="dragEnter($event)"
+        v-for="employe in employes"
+        :key="employe.value"
+      >
         <v-list-item-content>
           <v-list-item-title>{{ employe.title }}</v-list-item-title>
         </v-list-item-content>
@@ -45,9 +52,35 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { IEmployee } from "@/store/interfaces";
 import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
-export default {
+import Vue from "vue";
+
+const tempEmployee: IEmployee[] = [
+  {
+    title: "Сотрудник 0",
+    id: 0,
+  },
+  {
+    title: "Сотрудник 1",
+    id: 1,
+  },
+  {
+    title: "Сотрудник 2",
+    id: 3,
+  },
+  {
+    title: "Сотрудник 3",
+    id: 4,
+  },
+  {
+    title: "Сотрудник 4",
+    id: 5,
+  },
+];
+
+export default Vue.extend({
   data() {
     return {
       inputRoles: null,
@@ -55,28 +88,7 @@ export default {
     };
   },
   beforeCreate() {
-    this.$store.dispatch(SET_EMPLOYIES, [
-      {
-        title: "Сотрудник 0",
-        id: 0,
-      },
-      {
-        title: "Сотрудник 1",
-        id: 1,
-      },
-      {
-        title: "Сотрудник 2",
-        id: 3,
-      },
-      {
-        title: "Сотрудник 3",
-        id: 4,
-      },
-      {
-        title: "Сотрудник 4",
-        id: 5,
-      },
-    ]);
+    this.$store.dispatch(SET_EMPLOYIES, tempEmployee);
     this.$store.dispatch(SET_ROLES, [
       {
         title: "Роль 78",
@@ -107,7 +119,16 @@ export default {
       );
     },
   },
-};
+  methods: {
+    dragStart($event: DragEvent, item: IEmployee) {
+      $event.dataTransfer.setData("employeeId", item.id.toString());
+      $event.dataTransfer.dropEffect = "move";
+      $event.dataTransfer.effectAllowed = "move";
+    },
+    dragEnd($event: DragEvent, node) {},
+    dragEnter(event: DragEvent) {},
+  },
+});
 </script>
 
 <style lang="scss" scoped>

@@ -49,7 +49,10 @@
   </div>
 </template>
 <script>
-import { SET_TREE, DELETE_POSITION_CHILD } from "../../store/mutation-types";
+import {
+  DELETE_POSITION_FROM_NODE,
+  SET_TREE,
+} from "../../store/mutation-types";
 
 export default {
   name: "treemap",
@@ -69,7 +72,7 @@ export default {
       return this.$store.getters.GET_UNLOCK && node.type !== "position";
     },
     deletePositionChild(selectedNode, positionChild) {
-      this.$store.dispatch(DELETE_POSITION_CHILD, {
+      this.$store.dispatch(DELETE_POSITION_FROM_NODE, {
         selectedNode,
         positionChild,
       });
@@ -109,12 +112,18 @@ export default {
   align-items: center;
   background: #f7f7f8 !important;
   width: 100%;
+  height: 100%;
+
+  ::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+  }
   .tree-container {
     width: 100% !important;
     height: 100% !important;
     border: none !important;
+    overflow: scroll;
   }
-  height: 100%;
 }
 
 .rich-media-node {

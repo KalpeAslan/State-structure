@@ -9,6 +9,7 @@
       @mouseleave="addButtonHover = false"
       draggable
       :dragId="node.id"
+      @dragstart="dragStart(node)"
       @dragend="dragEnd(node)"
       @dragenter="dragEnter(node)"
     >
@@ -89,9 +90,6 @@ export default {
     getRandomId() {
       return Math.round(Math.round(505) * 123456789);
     },
-  },
-  created() {
-    console.log(this.nodes);
   },
 };
 </script>

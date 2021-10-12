@@ -1,47 +1,9 @@
 import { SET_USER_TYPE, SET_POSITIONS, ADD_POSITION, DELETE_POSITION, SET_TEMP_POSITION, SET_MODE, SELECT_GOVERMENT, ADD_GOVERMENT, DELETE_GOVERMENT, SET_ROLES, SET_EMPLOYIES } from './mutation-types';
 import {homeService} from '../services/homeService'
 import { Module } from "vuex";
-interface IState {
-    selectedGovOrg: Object,
-    positions: Array<IPosition>,
-    tempPosition: null | IPosition,
-    mode: string,
-    goverments: IGoverment[],
-    selectedGoverment: IGoverment | null,
-    roles: IRole[],
-    employies: IEmployee[]
-}
-export interface IPosition {
-    name: String,
-    id: number | string,
-    role?: string,
-    type?: string,
-    employeeDate?: string,
-    tempEmployee?: string,
-    endTempEmployeeDate?: string,
-    comment?: string,
-}
+import { IEmployee, IGoverment, IPosition, IRole, IStateHomeStore } from './interfaces';
 
-export interface IGoverment {
-    bin: string | number,
-    name: string,
-    nameKz?: string,
-    nameEn?: string,
-    state?: string
-}
-
-export interface IRole {
-    title: string,
-    id: number
-}
-
-export interface IEmployee{
-    title: string,
-    id: number
-}
-
-
-export const homeStore: Module<IState, any> =  {
+export const homeStore: Module<IStateHomeStore, any> =  {
     state: {
         selectedGovOrg: {},
         positions: [],
@@ -126,9 +88,12 @@ export const homeStore: Module<IState, any> =  {
             return state.positions.filter(position => position.name.toLowerCase().includes(input.toLowerCase()))
         },
         GET_ATTACH_ITEMS: (state) => (input: string, type: string) =>{
-            const items = type === 'roles' ? state.roles : state.employies
+            const items: any[] = type === 'roles' ? state.roles : state.employies
             if(!input) return items
             return items.filter(role => role.title.toLowerCase().includes(input.toLowerCase()))
         },
+        GET_EMPLOYEE_BY_ID: (state) => (id: number): IEmployee => {
+            return state.employies.filter(employee => employee.id === id)[0]
+        }
     }
 }
