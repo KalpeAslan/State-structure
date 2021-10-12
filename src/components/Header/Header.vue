@@ -65,54 +65,21 @@
           </router-link>
         </v-list>
       </v-menu>
-      <v-btn
-        v-for="button in headerButtons"
-        :key="button.title"
-        color="white"
-        class="ma-2 secondary--text button"
-        elevation="0"
-      >
-        <v-icon size="16" style="margin-right: 5px">{{
-          button.iconName
-        }}</v-icon>
-        {{ button.title }}
-      </v-btn>
+      <template v-for="button in headerButtons">
+        <v-btn
+          color="white"
+          :key="button.title"
+          v-if="showButton(button)"
+          class="ma-2 secondary--text button"
+          elevation="0"
+        >
+          <v-icon size="16" style="margin-right: 5px">{{
+            button.iconName
+          }}</v-icon>
+          {{ button.title }}
+        </v-btn>
+      </template>
     </div>
-    <template>
-      <v-row v-if="false" justify="center">
-        <v-dialog v-model="editDialog" max-width="400px">
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">Редактировать ГО</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <template>
-                  <v-form ref="form" lazy-validation>
-                    <div v-for="input in editForm" :key="input.title">
-                      <div class="text-subtitle1">{{ input.title }}</div>
-                      <v-text-field
-                        :placeholder="selectedToEditGovOrg[input.name]"
-                        outlined
-                        class="mb-3"
-                        hide-details
-                        v-model="selectedToEditGovOrg[input.name]"
-                      >
-                      </v-text-field>
-                    </div>
-                  </v-form>
-                </template>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="primary" @click="editDialog = false">
-                Сохранить
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-row>
-    </template>
   </v-app-bar>
 </template>
 
@@ -127,14 +94,17 @@ export default Vue.extend({
         {
           title: "Экспорт в PDF",
           iconName: "mdi-export-variant",
+          name: "exportPdf",
         },
         {
           title: "Редактировать",
           iconName: "mdi-pencil",
+          name: "edit",
         },
         {
           title: "Удалить ГО",
           iconName: "mdi-delete-outline",
+          name: "delete",
         },
       ],
       historyItems: [
@@ -172,15 +142,8 @@ export default Vue.extend({
     Badge: () => import("../Badge/Badge.vue"),
   },
   computed: {
-    showEditDeleteButton(): boolean {
-      return this.$route.name === "home.constructor";
-    },
-    selectedToEditGovOrg() {
-      return {
-        name: "Наименование ГО",
-        bin: "010908550522",
-        state: "created",
-      };
+    selectedGovOrg() {
+      return this.$store.homeStore.selectedGovOrg;
     },
   },
   methods: {
@@ -196,6 +159,10 @@ export default Vue.extend({
     },
     resetValidation() {
       this.form.resetValidation();
+    },
+    showButton(button): boolean {
+      if (!["edit", "delete"].includes(button.name)) return true;
+      return this.$route.name === "home.constructor" && this.selectedGovOrg;
     },
   },
 });

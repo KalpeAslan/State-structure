@@ -9,17 +9,47 @@
     >
       <template v-slot:node="{ node, collapsed }">
         <div
-          class="rich-media-node"
-          :style="{ border: collapsed ? '2px solid grey' : '' }"
+          :class="[
+            'd-flex',
+            'justify-space-between',
+            'align-items-center',
+            node.type === 'position' ? 'flex-column' : 'flex-row',
+            node.type === 'position' ? 'position-node' : 'rich-media-node',
+          ]"
+          :style="{
+            border: collapsed ? '2px solid grey' : '',
+            background: unlock(node) ? '#DADADA' : '#414649',
+            textAlign: 'center',
+          }"
         >
-          <span style="padding: 4px 0; font-weight: bold">{{ node.name }}</span>
+          <v-icon color="#828282" v-if="unlock(node)"> mdi-lock </v-icon>
+          <span
+            style="padding: 4px 0; font-weight: bold; white-space: nowrap"
+            :style="{ color: unlock(node) ? '#828282' : 'white' }"
+            >{{ node.name }}</span
+          >
+          <template v-if="node.type === 'position'">
+            <v-list-item
+              class="d-flex flex-column justify-center"
+              v-for="positionChild in node.positionChildren"
+              :key="positionChild.id"
+              style="min-height: 0px !important"
+            >
+              <span class="position-node_child" style="min-width: 120px">
+                {{ positionChild.name }}
+                <v-btn icon @click="deletePositionChild(node, positionChild)">
+                  <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+                </v-btn>
+              </span>
+            </v-list-item>
+          </template>
         </div>
       </template>
     </Tree>
   </div>
 </template>
 <script>
-import { SET_TREE } from "../../store/mutation-types";
+import { SET_TREE, DELETE_POSITION_CHILD } from "../../store/mutation-types";
 
 export default {
   name: "treemap",
@@ -32,6 +62,17 @@ export default {
   computed: {
     vehicules() {
       return this.$store.state.treeStore.tree;
+    },
+  },
+  methods: {
+    unlock(node) {
+      return this.$store.getters.GET_UNLOCK && node.type !== "position";
+    },
+    deletePositionChild(selectedNode, positionChild) {
+      this.$store.dispatch(DELETE_POSITION_CHILD, {
+        selectedNode,
+        positionChild,
+      });
     },
   },
   async beforeCreate() {
@@ -66,7 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgb(218, 218, 218) !important;
+  background: #f7f7f8 !important;
   width: 100%;
   .tree-container {
     width: 100% !important;
@@ -85,5 +126,19 @@ export default {
   color: white;
   background-color: #414649;
   border-radius: 4px;
+}
+.position-node {
+  background: transparent !important;
+  border: 1px solid #828282;
+  border-radius: 4px;
+  color: #414649 !important;
+  .position-node_child {
+    border: 1px solid #828282;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    margin: 8px 0;
+    padding: 8px 4px;
+  }
 }
 </style>

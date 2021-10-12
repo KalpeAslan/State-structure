@@ -26,8 +26,8 @@
       ></v-text-field>
       <v-list>
         <v-list-item
-          @click="editGovOrg(govOrg)"
           v-for="(govOrg, index) in govOrgs"
+          @click="selectGov(govOrg)"
           :key="index"
         >
           <v-list-item-content class="d-flex justify-space-between badge">
@@ -41,21 +41,9 @@
 </template>
 
 <script lang="ts">
+import { IGoverment } from "@/store/homeStore";
+import { SELECT_GOVERMENT } from "@/store/mutation-types";
 import Vue from "vue";
-
-interface IGovOrgItem {
-  name: string;
-  state: string;
-  bin: string;
-  nameKz?: string;
-  nameEn?: string;
-}
-interface ISelectedToEditGovOrg {
-  name: string;
-  bin: string;
-  nameKz?: string;
-  nameEn?: string;
-}
 
 export type VForm = Vue & {
   validate: () => boolean;
@@ -112,14 +100,8 @@ export default Vue.extend({
           state: "notClaimed",
           bin: "010908550522",
         },
-      ] as Array<IGovOrgItem>,
+      ] as Array<IGoverment>,
       dialog: false as boolean,
-      selectedToEditGovOrg: {
-        bin: "",
-        name: "",
-        nameKz: "",
-        nameEn: "",
-      } as ISelectedToEditGovOrg,
     };
   },
 
@@ -130,6 +112,11 @@ export default Vue.extend({
   },
   components: {
     Badge: () => import("../../components/Badge/Badge.vue"),
+  },
+  methods: {
+    selectGov(govOrg: IGoverment) {
+      this.$store.dispatch(SELECT_GOVERMENT, govOrg);
+    },
   },
 });
 </script>

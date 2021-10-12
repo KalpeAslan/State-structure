@@ -10,7 +10,8 @@
       </div>
       <v-text-field
         outlined
-        label="Prepend inner"
+        v-model="inputEmployies"
+        label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
       <v-list-item v-for="employe in employes" :key="employe.value">
@@ -30,7 +31,8 @@
       </div>
       <v-text-field
         outlined
-        label="Prepend inner"
+        label="Поиск"
+        v-model="inputRoles"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
       <v-list-item v-for="role in roles" :key="role.value">
@@ -44,50 +46,66 @@
 </template>
 
 <script>
+import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
 export default {
   data() {
     return {
-      employes: [
-        {
-          title: "Сотрудник 0",
-          value: 0,
-        },
-        {
-          title: "Сотрудник 1",
-          value: 1,
-        },
-        {
-          title: "Сотрудник 2",
-          value: 3,
-        },
-        {
-          title: "Сотрудник 3",
-          value: 4,
-        },
-        {
-          title: "Сотрудник 4",
-          value: 5,
-        },
-      ],
-      roles: [
-        {
-          title: "Роль 1",
-          value: 0,
-        },
-        {
-          title: "Роль 1",
-          value: 0,
-        },
-        {
-          title: "Роль 1",
-          value: 0,
-        },
-        {
-          title: "Роль 1",
-          value: 0,
-        },
-      ],
+      inputRoles: null,
+      inputEmployies: null,
     };
+  },
+  beforeCreate() {
+    this.$store.dispatch(SET_EMPLOYIES, [
+      {
+        title: "Сотрудник 0",
+        id: 0,
+      },
+      {
+        title: "Сотрудник 1",
+        id: 1,
+      },
+      {
+        title: "Сотрудник 2",
+        id: 3,
+      },
+      {
+        title: "Сотрудник 3",
+        id: 4,
+      },
+      {
+        title: "Сотрудник 4",
+        id: 5,
+      },
+    ]);
+    this.$store.dispatch(SET_ROLES, [
+      {
+        title: "Роль 78",
+        id: 0,
+      },
+      {
+        title: "Роль 1",
+        id: 0,
+      },
+      {
+        title: "Роль 1",
+        id: 0,
+      },
+      {
+        title: "Роль 1",
+        id: 0,
+      },
+    ]);
+  },
+  computed: {
+    roles() {
+      return this.$store.getters.GET_ATTACH_ITEMS(this.inputRoles, "roles");
+    },
+    employes() {
+      return this.$store.getters.GET_ATTACH_ITEMS(
+        this.inputEmployies,
+        "employes"
+      );
+    },
   },
 };
 </script>

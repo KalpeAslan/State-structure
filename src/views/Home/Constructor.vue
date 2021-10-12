@@ -8,7 +8,7 @@
       <div class="header d-flex justify-space-between">
         <div class="text-h6 d-inline-block">Штатная структура</div>
         <v-btn
-          @click="addChild(1)"
+          @click="addChild()"
           color="primary"
           class="mb-2 d-inline-block"
           outlined
@@ -25,7 +25,7 @@
         label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <SidebarTree :nodes="items"></SidebarTree>
+      <SidebarTree :nodes="[tree]"></SidebarTree>
     </v-navigation-drawer>
     <v-divider></v-divider>
 
@@ -41,6 +41,7 @@
           class="mb-2 d-inline-block"
           outlined
           width="97"
+          @click="addPosition()"
           max-width="97"
           variant="outlined"
         >
@@ -51,19 +52,46 @@
       <v-text-field
         outlined
         label="Поиск"
+        v-model="positionsInput"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
 
       <v-list dense>
         <v-list-item
-          v-for="item in list"
-          :key="item.value"
+          v-for="position in positions"
+          :key="position.id"
+          draggable
+          @dragend="dragEnd(position)"
+          @dragenter="dragEnter(position)"
           class="justify-space-between"
         >
-          <span>{{ item.title }}</span>
-          <v-btn icon style="flex: none">
-            <v-icon> mdi-dots-horizontal </v-icon>
-          </v-btn>
+          <span>{{ position.name }}</span>
+
+          <template>
+            <div class="text-center">
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn icon style="flex: none" v-bind="attrs" v-on="on">
+                    <v-icon> mdi-dots-horizontal </v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    selectable
+                    @click="deletePostition(position)"
+                    class="d-flex justify-space-between"
+                    v-for="(item, index) in dotButtonItems"
+                    :key="index"
+                  >
+                    {{ item.title }}
+                    <v-icon>
+                      {{ item.iconName }}
+                    </v-icon>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </template>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -71,91 +99,73 @@
 </template>
 
 <script>
+import treeMixin from "@/mixins/treeMixin";
 import sidebarTree from "../../components/sidebarTree/SidebarTree";
+import {
+  ADD_POSITION,
+  DELETE_POSITION,
+  INSERT_NODE_TO_TREE,
+  SET_POSITIONS,
+} from "../../store/mutation-types";
 
 export default {
   data() {
     return {
-      // items: [
-      //   {
-      //     id: 5,
-      //     name: "Название ГО :",
-      //     children: [
-      //       {
-      //         id: 6,
-      //         name: "Департамент 1 :",
-      //         children: [
-      //           {
-      //             id: 7,
-      //             name: "Отдел 1 :",
-      //             children: [
-      //               {
-      //                 id: 9,
-      //                 name: "Должность 1",
-      //               },
-      //               {
-      //                 id: 10,
-      //                 name: "Должность 2",
-      //               },
-      //             ],
-      //           },
-      //           {
-      //             id: 11,
-      //             name: "Отдел 2 :",
-      //             children: [
-      //               {
-      //                 id: 12,
-      //                 name: "Должность 1",
-      //               },
-      //               {
-      //                 id: 13,
-      //                 name: "Должность 2",
-      //               },
-      //             ],
-      //           },
-      //         ],
-      //       },
-      //     ],
-      //   },
-      // ],
-      list: [
+      dotButtonItems: [
         {
-          title: "Должность 0",
-          value: 0,
-        },
-        {
-          title: "Должность 1",
-          value: 1,
-        },
-        {
-          title: "Должность 2",
-          value: 3,
-        },
-        {
-          title: "Должность 3",
-          value: 4,
-        },
-        {
-          title: "Должность 4",
-          value: 5,
+          title: "Удалить",
+          iconName: "mdi-delete-outline",
         },
       ],
+      positionsInput: "",
     };
+  },
+  mixins: [treeMixin],
+  watch: {
+    positionsInput(val) {},
   },
   components: {
     SidebarTree: sidebarTree,
   },
   computed: {
-    items() {
-      return this.$store.state.treeStore.tree
-        ? [this.$store.state.treeStore.tree]
-        : [];
+    tree() {
+      return !this.$store.state.treeStore.tree
+        ? []
+        : this.$store.state.treeStore.tree;
+    },
+    positions() {
+      if (this.positionsInput !== "") {
+        return this.$store.getters.GET_FILTERED_POSITIONS(this.positionsInput);
+      }
+      return this.$store.state.homeStore.positions;
     },
   },
   methods: {
     addChild() {
-      this.$store.dispatch;
+      const newNode = {
+        children: [],
+        id: Math.round(Math.random(545545) * 1000),
+        name: "Департамент",
+      };
+      this.$store.dispatch(INSERT_NODE_TO_TREE, {
+        selectedNode: this.$store.state.treeStore.tree,
+        newNode,
+      });
     },
+    addPosition() {
+      const random = Math.round(Math.random(3435) * 11554);
+      const position = {
+        name: "TestPosition" + random,
+        id: random,
+      };
+      this.$store.dispatch(ADD_POSITION, position);
+    },
+    deletePostition(position) {
+      this.$store.dispatch(DELETE_POSITION, position);
+    },
+  },
+  async beforeCreate() {
+    await this.$store.dispatch(SET_POSITIONS);
   },
 };
 </script>

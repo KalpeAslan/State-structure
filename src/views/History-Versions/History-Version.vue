@@ -46,7 +46,6 @@ export default Vue.extend({
   },
   computed: {
     currentId(): string {
-      console.log(this.$route.params.id);
       return this.$route.params.id;
     },
   },
@@ -55,7 +54,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .history-versions {
-  background: #dadada;
+  background: #f7f7f8;
   width: 100%;
 }
 </style>

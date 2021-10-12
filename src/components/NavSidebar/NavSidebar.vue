@@ -5,32 +5,27 @@
       :key="item.title"
       style="margin-bottom: 12px"
     >
-      <router-link
-        style="text-decoration: none; color: inherit"
-        :to="{
-          name: item.routeName,
-        }"
+      <v-btn
+        width="96"
+        height="68"
+        class="px-1"
+        depressed
+        @click="navClick(item.routeName)"
+        :color="sidebarItemColor(item.routeName)"
       >
-        <v-btn
-          width="96"
-          height="68"
-          class="px-1"
-          depressed
-          :color="sidebarItemColor(item.routeName)"
-        >
-          <div class="text-caption sidebar-item">
-            <v-icon>
-              {{ item.iconName }}
-            </v-icon>
-            {{ item.title }}
-          </div>
-        </v-btn>
-      </router-link>
+        <div class="text-caption sidebar-item">
+          <v-icon>
+            {{ item.iconName }}
+          </v-icon>
+          {{ item.title }}
+        </div>
+      </v-btn>
     </div>
   </nav>
 </template>
 
 <script lang="ts">
+import { SET_MODE } from "@/store/mutation-types";
 import Vue from "vue";
 export default Vue.extend({
   data() {
@@ -53,15 +48,20 @@ export default Vue.extend({
           title: "Время",
           iconName: "mdi-clock-time-four-outline",
           value: "clock",
-          routeName: "Logs",
+          routeName: "home.time",
         },
       ],
     };
   },
   methods: {
     sidebarItemColor(routeName: string): string {
-      console.log(this.$route.name);
       return routeName === this.$route.name ? "primary" : "white";
+    },
+    navClick(routeName: string) {
+      if (routeName === "Logs") {
+        return this.$store.dispatch(SET_MODE);
+      }
+      return this.$router.push({ name: routeName });
     },
   },
 });

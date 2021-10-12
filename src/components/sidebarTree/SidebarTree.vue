@@ -8,10 +8,15 @@
       @mouseover="addButtonHover = true"
       @mouseleave="addButtonHover = false"
       draggable
+      :dragId="node.id"
       @dragend="dragEnd(node)"
-      @dragenter="dragEnter(node)"
+      @dragenter="dragEnter(node, $event)"
     >
-      <v-btn v-if="node.children.length" icon @click="nodeClicked(node)">
+      <v-btn
+        v-if="node.children && node.children.length"
+        icon
+        @click="nodeClicked(node)"
+      >
         <v-icon>
           {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
         </v-icon>
@@ -22,8 +27,16 @@
         }"
         >{{ node.name }}</span
       >
-      <v-btn v-if="showAddButton" icon @click="insertToNode(node)">
+      <v-btn v-if="showButtons" icon @click="insertToNode(node)">
         <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        v-if="showButtons"
+        class="remove-button"
+        @click="deleteNode(node)"
+      >
+        <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
       </v-btn>
       <SidebarTree
         v-if="isExpanded(node) && node.children"
@@ -36,10 +49,8 @@
 </template>
 
 <script>
-import {
-  UPDATE_TREE,
-  INSERT_NODE_TO_TREE,
-} from "../../store/mutation-types.ts";
+import treeMixin from "../../mixins/treeMixin";
+import { CircularJSON } from "circular-json";
 export default {
   name: "SidebarTree",
   props: {
@@ -49,6 +60,7 @@ export default {
       default: 0,
     },
   },
+  mixins: [treeMixin],
   data() {
     return {
       expanded: [],
@@ -66,32 +78,9 @@ export default {
         this.expanded.splice(this.expanded.indexOf(node));
       }
     },
-    dragEnd(node) {
-      if (this.dragEnteredNode.id !== node.id) {
-        this.$store.dispatch(UPDATE_TREE, {
-          dragEnteredNode: this.dragEnteredNode,
-          dragTargetNode: node,
-        });
-      }
-    },
-    dragEnter(node) {
-      this.dragEnteredNode = node;
-    },
-    insertToNode(selectedNode, newNode = {}) {
-      newNode = {
-        children: [],
-        name: "TestNode1",
-        id: this.getRandomId,
-        _key: this.getRandomId,
-      };
-      this.$store.dispatch(INSERT_NODE_TO_TREE, {
-        selectedNode,
-        newNode,
-      });
-    },
   },
   computed: {
-    showAddButton() {
+    showButtons() {
       return (
         this.$store.state.systemStore.userType === "dispatcher" &&
         this.addButtonHover
@@ -100,6 +89,9 @@ export default {
     getRandomId() {
       return Math.round(Math.round(505) * 123456789);
     },
+  },
+  created() {
+    console.log(this.nodes);
   },
 };
 </script>

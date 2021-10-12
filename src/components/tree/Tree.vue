@@ -11,9 +11,11 @@
         class="node-slot"
         v-for="(node, index) of nodeDataList"
         :index="index"
-        draggable
-        @dragend="dragEnd(node)"
-        @dragenter="dragEnter(node)"
+        :draggable="unlock"
+        @dragend="dragEnd(node.data)"
+        :dragId="node.data.id"
+        :ref="`node-ref-${node.data.id}`"
+        @dragenter="dragEnter($event)"
         :key="node.data._key"
         :style="{
           left: formatDimension(
@@ -25,14 +27,40 @@
           width: formatDimension(config.nodeWidth),
           height: formatDimension(config.nodeHeight),
         }"
+        @click="selectPosition(node.data)"
       >
+        <v-btn
+          v-if="node.data.type !== 'position'"
+          icon
+          absolute
+          @click="deleteNode(node.data)"
+          :style="{
+            right: buttonsClientXPositions[`node-ref-${node.data.id}`],
+            zIndex: 10,
+          }"
+        >
+          <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+        </v-btn>
+
         <slot
           name="node"
           v-bind:node="node.data"
           v-bind:collapsed="node.data._collapsed"
         >
-          <span>{{ node.data.value }}</span>
+          <span> {{ node.data.value }}</span>
         </slot>
+        <v-btn
+          icon
+          v-if="node.data.type !== 'position'"
+          absolute
+          :style="{
+            left: buttonsClientXPositions[`node-ref-${node.data.id}`],
+            zIndex: 10,
+          }"
+          @click="insertToNode(node.data)"
+        >
+          <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+        </v-btn>
       </div>
     </div>
   </div>
@@ -42,7 +70,8 @@
 import * as d3 from "d3";
 import { uuid } from "./base/utils";
 import draggable from "vuedraggable";
-import { UPDATE_TREE } from "../../store/mutation-types";
+import treeMixin from "../../mixins/treeMixin";
+import { SET_TEMP_POSITION } from "@/store/mutation-types";
 
 const MATCH_TRANSLATE_REGEX = /translate\((-?\d+)px, ?(-?\d+)px\)/i;
 
@@ -59,11 +88,7 @@ const DIRECTION = {
 const DEFAULT_NODE_WIDTH = 100;
 const DEFAULT_NODE_HEIGHT = 100;
 const DEFAULT_LEVEL_HEIGHT = 200;
-/**
- * Used to decrement the height of the 'initTransformY' to center diagrams.
- * This is only a hotfix caused by the addition of '__invisible_root' node
- * for multi root purposes.
- */
+
 const DEFAULT_HEIGHT_DECREMENT = 200;
 
 function rotatePoint({ x, y }) {
@@ -75,6 +100,7 @@ function rotatePoint({ x, y }) {
 
 export default {
   name: "Tree",
+  mixins: [treeMixin],
   props: {
     config: {
       type: Object,
@@ -106,14 +132,15 @@ export default {
   data() {
     return {
       d3,
-      colors: "568FE1",
       nodeDataList: [],
       linkDataList: [],
       initTransformX: 0,
       initTransformY: 0,
       DIRECTION,
       currentScale: 1,
-      dragEnteredNode: null,
+      hoverNode: false,
+      isVertical: true,
+      buttonsClientXPositions: {},
     };
   },
   computed: {
@@ -126,6 +153,12 @@ export default {
     _dataset() {
       return this.updatedInternalData(this.dataset);
     },
+    showNodeButton() {
+      return this.hoverNode;
+    },
+    unlock() {
+      return !this.$store.getters.GET_UNLOCK;
+    },
   },
   mounted() {
     this.init();
@@ -136,19 +169,14 @@ export default {
       this.enableDrag();
       this.initTransform();
     },
-    dragEnd(node) {
-      if (this.dragEnteredNode.data.id !== node.data.id) {
-        this.$store.dispatch(UPDATE_TREE, {
-          dragEnteredNode: this.dragEnteredNode.data,
-          dragTargetNode: node.data,
-        });
+    // isVertical() {
+    //   return this.direction === DIRECTION.VERTICAL;
+    // },
+    computeDirection(node) {
+      if (node.type === "division") {
+        return DIRECTION.HORIZONTAL;
       }
-    },
-    dragEnter(node) {
-      this.dragEnteredNode = node;
-    },
-    isVertical() {
-      return this.direction === DIRECTION.VERTICAL;
+      return this.direction;
     },
     /**
      * Returns updated dataset by deep copying every nodes from the externalData and adding unique '_key' attributes.
@@ -173,7 +201,6 @@ export default {
       let obj = { _key: uuid() };
       for (var key in node) {
         if (!node) {
-          console.log(node);
         }
         if (node[key] === null) {
           obj[key] = null;
@@ -190,7 +217,7 @@ export default {
     initTransform() {
       const containerWidth = this.$refs.container.offsetWidth;
       const containerHeight = this.$refs.container.offsetHeight;
-      if (this.isVertical()) {
+      if (this.isVertical) {
         this.initTransformX = Math.floor(containerWidth / 2);
         this.initTransformY = Math.floor(
           this.config.nodeHeight - DEFAULT_HEIGHT_DECREMENT
@@ -205,7 +232,7 @@ export default {
     generateLinkPath(d) {
       const self = this;
       if (this.linkStyle === LinkStyle.CURVE) {
-        const linkPath = this.isVertical()
+        const linkPath = this.isVertical
           ? d3.linkVertical()
           : d3.linkHorizontal();
         linkPath
@@ -239,16 +266,16 @@ export default {
         const linkPath = d3.path();
         let sourcePoint = { x: d.source.x, y: d.source.y };
         let targetPoint = { x: d.target.x, y: d.target.y };
-        if (!this.isVertical()) {
+        if (!this.isVertical) {
           sourcePoint = rotatePoint(sourcePoint);
           targetPoint = rotatePoint(targetPoint);
         }
         const xOffset = targetPoint.x - sourcePoint.x;
         const yOffset = targetPoint.y - sourcePoint.y;
-        const secondPoint = this.isVertical()
+        const secondPoint = this.isVertical
           ? { x: sourcePoint.x, y: sourcePoint.y + yOffset / 2 }
           : { x: sourcePoint.x + xOffset / 2, y: sourcePoint.y };
-        const thirdPoint = this.isVertical()
+        const thirdPoint = this.isVertical
           ? { x: targetPoint.x, y: sourcePoint.y + yOffset / 2 }
           : { x: sourcePoint.x + xOffset / 2, y: targetPoint.y };
         linkPath.moveTo(sourcePoint.x, sourcePoint.y);
@@ -369,26 +396,10 @@ export default {
       };
 
       path.onmouseup = (event) => {
-        console.log("MouseUp");
         startX = 0;
         startY = 0;
         isDrag = false;
       };
-    },
-    onClickNode(index) {
-      if (this.collapseEnabled) {
-        const curNode = this.nodeDataList[index];
-        if (curNode.data.children) {
-          curNode.data._children = curNode.data.children;
-          curNode.data.children = null;
-          curNode.data._collapsed = true;
-        } else {
-          curNode.data.children = curNode.data._children;
-          curNode.data._children = null;
-          curNode.data._collapsed = false;
-        }
-        this.draw();
-      }
     },
     formatDimension(dimension) {
       if (typeof dimension === "number") return `${dimension}px`;
@@ -398,11 +409,16 @@ export default {
         return `${dimension}px`;
       }
     },
-    parseDimensionNumber(dimension) {
-      if (typeof dimension === "number") {
-        return dimension;
+    selectPosition(node) {
+      if (node.type === "position") {
+        this.$store.dispatch(SET_TEMP_POSITION, node);
       }
-      return parseInt(dimension.replace("px", ""));
+    },
+    computePositionX(refName) {
+      setTimeout(() => {
+        this.buttonsClientX =
+          this.$refs[refName][0].children[1].clientWidth + "px";
+      }, 0);
     },
   },
   watch: {
@@ -411,6 +427,21 @@ export default {
       handler: function () {
         this.draw();
         this.initTransform();
+      },
+    },
+    nodeDataList: {
+      deep: true,
+      handler(val) {
+        setTimeout(() => {
+          const buttonsClientXPositions = {};
+          val.forEach((node) => {
+            if (node.data.type === "position") return;
+            buttonsClientXPositions[`node-ref-${node.data.id}`] =
+              this.$refs[`node-ref-${node.data.id}`][0].children[1]
+                .clientWidth + "px";
+          });
+          this.buttonsClientXPositions = buttonsClientXPositions;
+        }, 1000);
       },
     },
   },

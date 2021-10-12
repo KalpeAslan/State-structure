@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ssthouse/vue-tree-chart": "^0.5.4",
+    "circular-json": "^0.5.9",
     "core-js": "^3.6.5",
     "d3": "^7.1.1",
     "express": "^4.17.1",

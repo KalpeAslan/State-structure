@@ -32,6 +32,13 @@ const routes: Array<RouteConfig> = [
             /* webpackChunkName: "selectGoverment" */ "../views/Home/SelectGoverment.vue"
           ),
       },
+      {
+        path: 'time',
+        name: 'home.time',
+        component: () => import(
+          /* webpackChunkName: "HomeTime" */ "../views/Home/Time.vue"
+        ),
+      }
     ],
   },
   {
