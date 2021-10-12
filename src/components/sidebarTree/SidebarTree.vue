@@ -10,7 +10,7 @@
       draggable
       :dragId="node.id"
       @dragend="dragEnd(node)"
-      @dragenter="dragEnter(node, $event)"
+      @dragenter="dragEnter(node)"
     >
       <v-btn
         v-if="node.children && node.children.length"

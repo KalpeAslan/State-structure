@@ -24,11 +24,9 @@ export default Vue.extend({
           deleteNode(selectedNode: ITree){
               this.$store.dispatch(DELETE_NODE, selectedNode)
           },
-          dragEnter(e) {
-            if(e.target.getAttribute('dragId')){
-              this.dragEnteredNode = {
-                id:e.target.getAttribute('dragId')
-              };
+          dragEnter(node) {
+            if(node){
+              this.dragEnteredNode = node
             }
           },
           dragEnd(node) {

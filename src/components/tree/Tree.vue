@@ -15,7 +15,7 @@
         @dragend="dragEnd(node.data)"
         :dragId="node.data.id"
         :ref="`node-ref-${node.data.id}`"
-        @dragenter="dragEnter($event)"
+        @dragenter="dragEnter(node.data)"
         :key="node.data._key"
         :style="{
           left: formatDimension(
