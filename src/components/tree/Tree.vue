@@ -30,7 +30,7 @@
         <div
           :draggable="unlock"
           @dragstart="dragStart($event, node.data)"
-          :ref="`node-ref-${node.data.id}`"
+          class="node-container"
           @click="selectPosition(node.data)"
         >
           <v-btn
@@ -38,10 +38,7 @@
             icon
             absolute
             @click="deleteNode(node.data)"
-            :style="{
-              right: buttonsClientXPositions[`node-ref-${node.data.id}`],
-              zIndex: 10,
-            }"
+            class="node-button minus"
           >
             <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
           </v-btn>
@@ -57,10 +54,7 @@
             icon
             v-if="node.data.type !== 'position'"
             absolute
-            :style="{
-              left: buttonsClientXPositions[`node-ref-${node.data.id}`],
-              zIndex: 10,
-            }"
+            class="node-button plus"
             @click="insertToNode(node.data)"
           >
             <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
@@ -145,7 +139,6 @@ export default {
       currentScale: 1,
       hoverNode: false,
       isVertical: true,
-      buttonsClientXPositions: {},
     };
   },
   computed: {
@@ -437,21 +430,6 @@ export default {
         this.initTransform();
       },
     },
-    nodeDataList: {
-      deep: true,
-      handler(val) {
-        setTimeout(() => {
-          const buttonsClientXPositions = {};
-          val.forEach((node) => {
-            if (node.data.type === "position") return;
-            buttonsClientXPositions[`node-ref-${node.data.id}`] =
-              this.$refs[`node-ref-${node.data.id}`][0].children[1]
-                .clientWidth + "px";
-          });
-          this.buttonsClientXPositions = buttonsClientXPositions;
-        }, 1000);
-      },
-    },
   },
   components: {
     draggable,
@@ -524,5 +502,24 @@ export default {
   box-sizing: content-box;
   transition: all 0.8s;
   transition-timing-function: ease-in-out;
+}
+.node-container {
+  position: relative;
+  &:hover {
+    .node-button {
+      display: inline-block;
+    }
+  }
+  .node-button {
+    display: none;
+    top: 50%;
+    transform: translateY(-50%);
+    &.plus {
+      right: -30px;
+    }
+    &.minus {
+      left: -30px;
+    }
+  }
 }
 </style>
