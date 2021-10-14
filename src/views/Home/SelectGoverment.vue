@@ -1,13 +1,10 @@
 <template>
   <div style="height: 100%">
-    <v-navigation-drawer
-      width="353"
-      permanent
-      class="pt-5 px-5 nav-constructor_item"
-    >
+    <CreateGoverment :visible="createDialog" @close="createDialog = false" />
+    <v-navigation-drawer width="353" permanent class="pt-5 px-5 nav-constructor_item">
       <div class="d-flex align-items-center">
         <v-icon size="20"> mdi-close </v-icon>
-        <div class="text-h6 d-inline-block ml-4">Штатная структура</div>
+        <div class="text-h6 d-inline-block ml-4">Выберите ГО</div>
       </div>
       <v-btn
         color="primary"
@@ -15,21 +12,14 @@
         outlined
         style="width: 100%"
         variant="outlined"
+        @click.stop="createDialog = true"
       >
         <v-icon size="14"> mdi-plus-thick </v-icon>
         <div class="text-caption">Добавить</div>
       </v-btn>
-      <v-text-field
-        outlined
-        label="Поиск"
-        prepend-inner-icon="mdi-magnify"
-      ></v-text-field>
+      <v-text-field outlined label="Поиск" prepend-inner-icon="mdi-magnify"></v-text-field>
       <v-list>
-        <v-list-item
-          v-for="(govOrg, index) in govOrgs"
-          @click="selectGov(govOrg)"
-          :key="index"
-        >
+        <v-list-item v-for="(govOrg, index) in govOrgs" @click="selectGov(govOrg)" :key="index">
           <v-list-item-content class="d-flex justify-space-between badge">
             {{ govOrg.name }}
             <Badge :state="govOrg.state" />
@@ -54,6 +44,7 @@ export type VForm = Vue & {
 export default Vue.extend({
   data() {
     return {
+      createDialog: false,
       govOrgs: [
         {
           name: "Наименование ГО",
@@ -112,6 +103,7 @@ export default Vue.extend({
   },
   components: {
     Badge: () => import("../../components/Badge/Badge.vue"),
+    CreateGoverment: () => import("../../components/HeaderModals/CreateGoverment.vue"),
   },
   methods: {
     selectGov(govOrg: IGoverment) {

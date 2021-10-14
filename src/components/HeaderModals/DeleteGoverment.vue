@@ -1,23 +1,23 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="290">
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark v-bind="attrs" v-on="on"> Open Dialog </v-btn>
-    </template>
+  <v-dialog v-model="show" persistent max-width="420">
     <v-card>
-      <v-card-title class="text-h5">
-        Use Google's location service?
-      </v-card-title>
-      <v-card-text
-        >Let Google help apps determine location. This means sending anonymous
-        location data to Google, even when no apps are running.</v-card-text
+      <v-card-title class="text-h5" style="padding: 36px 24px 8px">Удалить «Название ГО» ?</v-card-title>
+      <v-card-text style="border-bottom: 1px solid #dadada; color: #414649"
+        >Информация о государственном органе, штатной структуре будет удалена безвозвратно без возможности
+        восстановления.</v-card-text
       >
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="green darken-1" text @click="dialog = false">
-          Disagree
+      <v-card-actions style="display: flex; justify-content: space-between">
+        <v-btn
+          style="text-transform: capitalize; font-weight: 400"
+          class="ma-2"
+          outlined
+          color="#2F80ED"
+          @click="show = false"
+        >
+          Отмена
         </v-btn>
-        <v-btn color="green darken-1" text @click="dialog = false">
-          Agree
+        <v-btn style="text-transform: capitalize; font-weight: 400" depressed color="primary" @click="show = false">
+          Удалить
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -26,10 +26,18 @@
 
 <script>
 export default {
-  data() {
-    return {
-      dialog: false,
-    };
+  props: ["visible"],
+  computed: {
+    show: {
+      get() {
+        return this.visible;
+      },
+      set(value) {
+        if (!value) {
+          this.$emit("close");
+        }
+      },
+    },
   },
 };
 </script>

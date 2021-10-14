@@ -1,10 +1,6 @@
 <template>
   <div class="nav-constructor">
-    <v-navigation-drawer
-      width="353"
-      permanent
-      class="pt-5 px-5 nav-constructor_item"
-    >
+    <v-navigation-drawer width="353" permanent class="pt-5 px-5 nav-constructor_item">
       <div class="header d-flex justify-space-between">
         <div class="text-h6 d-inline-block">Штатная структура</div>
         <v-btn
@@ -20,20 +16,12 @@
           <div class="text-caption">Добавить</div>
         </v-btn>
       </div>
-      <v-text-field
-        outlined
-        label="Поиск"
-        prepend-inner-icon="mdi-magnify"
-      ></v-text-field>
+      <v-text-field outlined label="Поиск" prepend-inner-icon="mdi-magnify"></v-text-field>
       <SidebarTree :nodes="[tree]"></SidebarTree>
     </v-navigation-drawer>
     <v-divider></v-divider>
 
-    <v-navigation-drawer
-      width="353"
-      permanent
-      class="pt-5 px-5 nav-constructor_item"
-    >
+    <v-navigation-drawer width="353" permanent class="pt-5 px-5 nav-constructor_item">
       <div class="header d-flex justify-space-between">
         <div class="text-h6 d-inline-block">Должности</div>
         <v-btn
@@ -49,12 +37,7 @@
           <div class="text-caption">Добавить</div>
         </v-btn>
       </div>
-      <v-text-field
-        outlined
-        label="Поиск"
-        v-model="positionsInput"
-        prepend-inner-icon="mdi-magnify"
-      ></v-text-field>
+      <v-text-field outlined label="Поиск" v-model="positionsInput" prepend-inner-icon="mdi-magnify"></v-text-field>
 
       <v-list dense>
         <v-list-item
@@ -101,12 +84,7 @@
 <script>
 import treeMixin from "@/mixins/treeMixin";
 import sidebarTree from "../../components/sidebarTree/SidebarTree";
-import {
-  ADD_POSITION,
-  DELETE_POSITION,
-  INSERT_NODE_TO_TREE,
-  SET_POSITIONS,
-} from "../../store/mutation-types";
+import { ADD_POSITION, DELETE_POSITION, INSERT_NODE_TO_TREE, SET_POSITIONS } from "../../store/mutation-types";
 
 export default {
   data() {
@@ -129,9 +107,7 @@ export default {
   },
   computed: {
     tree() {
-      return !this.$store.state.treeStore.tree
-        ? []
-        : this.$store.state.treeStore.tree;
+      return !this.$store.state.treeStore.tree ? [] : this.$store.state.treeStore.tree;
     },
     positions() {
       if (this.positionsInput !== "") {

@@ -3,7 +3,7 @@
     <v-dialog v-model="show" max-width="400px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Редактировать ГО</span>
+          <span class="text-h5">Добавить ГО</span>
         </v-card-title>
         <v-card-text style="padding: 0 12px 0px">
           <v-container>
@@ -16,7 +16,7 @@
                     outlined
                     class="mb-3"
                     hide-details
-                    v-model="selectedToEditGovOrg[input.name]"
+                    v-model="selectedToCreateGovOrg[input.name]"
                   >
                   </v-text-field>
                 </div>
@@ -59,11 +59,12 @@ export default {
     };
   },
   computed: {
-    selectedToEditGovOrg() {
+    selectedToCreateGovOrg() {
       return {
-        name: "Наименование ГО",
-        bin: "010908550522",
-        state: "created",
+        name: "",
+        nameEn: "",
+        nameKz: "",
+        bin: "",
       };
     },
     show: {
