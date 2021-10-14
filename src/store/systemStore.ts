@@ -18,7 +18,9 @@ export const systemStore: Module<IState, any> =  {
             context.userType = userType
         }
     },
-    actions: {
-
+    getters:{
+        GET_USER_TYPE(ctx){
+            return ctx.userType
+        }
     }
 }

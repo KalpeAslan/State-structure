@@ -4,7 +4,7 @@
       <div class="header d-flex justify-space-between">
         <div class="text-h6 d-inline-block">Штатная структура</div>
         <v-btn
-          @click="addChild()"
+          @click="addGoverment()"
           color="primary"
           class="mb-2 d-inline-block"
           outlined
@@ -44,11 +44,10 @@
           v-for="position in positions"
           :key="position.id"
           draggable
-          @dragend="dragEnd(position)"
-          @dragenter="dragEnter(position)"
+          @dragstart="dragStart($event, position)"
           class="justify-space-between"
         >
-          <span>{{ position.name }}</span>
+          <span>{{ position.nameRu }}</span>
 
           <template>
             <div class="text-center">
@@ -78,15 +77,19 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+    <AddGoverment :show="showAddGoverment" />
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
-import sidebarTree from "../../components/sidebarTree/SidebarTree";
+import { IPosition } from "@/store/interfaces";
+import SidebarTree from "../../components/sidebarTree/SidebarTree.vue";
 import { ADD_POSITION, DELETE_POSITION, INSERT_NODE_TO_TREE, SET_POSITIONS } from "../../store/mutation-types";
+import Vue from "vue";
+import { position } from "@/store/dump";
 
-export default {
+export default Vue.extend({
   data() {
     return {
       dotButtonItems: [
@@ -96,6 +99,7 @@ export default {
         },
       ],
       positionsInput: "",
+      showAddGoverment: false,
     };
   },
   mixins: [treeMixin],
@@ -103,13 +107,14 @@ export default {
     positionsInput(val) {},
   },
   components: {
-    SidebarTree: sidebarTree,
+    SidebarTree: SidebarTree,
+    AddGoverment: () => import("../../components/HeaderModals/AddGoverment.vue"),
   },
   computed: {
     tree() {
       return !this.$store.state.treeStore.tree ? [] : this.$store.state.treeStore.tree;
     },
-    positions() {
+    positions(): IPosition[] {
       if (this.positionsInput !== "") {
         return this.$store.getters.GET_FILTERED_POSITIONS(this.positionsInput);
       }
@@ -117,10 +122,13 @@ export default {
     },
   },
   methods: {
+    addGoverment() {
+      this.showAddGoverment = true;
+    },
     addChild() {
       const newNode = {
         children: [],
-        id: Math.round(Math.random(545545) * 1000),
+        id: Math.round(Math.random() * 1000),
         name: "Департамент",
       };
       this.$store.dispatch(INSERT_NODE_TO_TREE, {
@@ -129,12 +137,9 @@ export default {
       });
     },
     addPosition() {
-      const random = Math.round(Math.random(3435) * 11554);
-      const position = {
-        name: "TestPosition" + random,
-        id: random,
-      };
-      this.$store.dispatch(ADD_POSITION, position);
+      const _position = { ...position };
+      _position.id = Math.round(Math.random() * 1515021);
+      this.$store.dispatch(ADD_POSITION, _position);
     },
     deletePostition(position) {
       this.$store.dispatch(DELETE_POSITION, position);
@@ -143,7 +148,7 @@ export default {
   async beforeCreate() {
     await this.$store.dispatch(SET_POSITIONS);
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
