@@ -1,5 +1,6 @@
 <template>
   <div style="height: 100%">
+    <AddGoverment :show="show" />
     <v-navigation-drawer
       width="353"
       permanent
@@ -15,6 +16,7 @@
         outlined
         style="width: 100%"
         variant="outlined"
+        @click="show = true"
       >
         <v-icon size="14"> mdi-plus-thick </v-icon>
         <div class="text-caption">Добавить</div>
@@ -31,7 +33,7 @@
           :key="index"
         >
           <v-list-item-content class="d-flex justify-space-between badge">
-            {{ govOrg.name }}
+            {{ govOrg.nameRu }}
             <Badge :state="govOrg.state" />
           </v-list-item-content>
         </v-list-item>
@@ -101,7 +103,7 @@ export default Vue.extend({
           bin: "010908550522",
         },
       ] as Array<IGoverment>,
-      dialog: false as boolean,
+      show: false as boolean,
     };
   },
 
@@ -112,6 +114,8 @@ export default Vue.extend({
   },
   components: {
     Badge: () => import("../../components/Badge/Badge.vue"),
+    AddGoverment: () =>
+      import("../../components/HeaderModals/AddGoverment.vue"),
   },
   methods: {
     selectGov(govOrg: IGoverment) {

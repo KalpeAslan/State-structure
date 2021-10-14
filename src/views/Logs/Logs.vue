@@ -148,9 +148,7 @@ export default {
         value.toString().toLocaleUpperCase().indexOf(search) !== -1
       );
     },
-    filterToggle() {
-      alert("Cloc");
-    },
+    filterToggle() {},
   },
 };
 </script>

@@ -1,3 +1,4 @@
+import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import { tree, tree1, tree2 } from "./dump";
 import {
@@ -18,6 +19,8 @@ import {
   INSERT_POSITION_TO_NODE,
   DELETE_EMPLOYEE,
   DELETE_ROLE,
+  SET_PLUS_SELECTED_NODE,
+  ADD_SUBDIVISION,
 } from "./mutation-types";
 
 function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
@@ -78,7 +81,7 @@ function getTreeDetpth(node: ITree): number {
   );
 }
 
-function getNodeById(node: ITree, id) {
+function getNodeById(node: ITree, id): ITree {
   const reduce = [].reduce;
   function runner(result, node) {
     if (result || !node) return result;
@@ -149,6 +152,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     tree: null,
     unlock: false,
     dragTargetNode: null,
+    plusSelectedNode: null,
   },
   mutations: {
     [SET_TREE](state, tree: ITree): void {
@@ -161,6 +165,12 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [SET_DRAG_TREE](state, tree) {
       state.dragTargetNode = tree;
+    },
+    ["DELETE_DRAG_TREE"](state) {
+      state.dragTargetNode = null;
+    },
+    [SET_PLUS_SELECTED_NODE](ctx, selectedNode) {
+      ctx.plusSelectedNode = selectedNode;
     },
   },
   actions: {
@@ -185,17 +195,84 @@ export const treeStore: Module<IStateTreeStore, any> = {
       });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
-      if (dragEnteredNode.type === "employee") {
-        alert("Нельзя перескаивать элементы в должность!");
-        return;
+      if (
+        dragEnteredNode.entityType === "governmentAgency" &&
+        dragTargetNode.entityType === "subdivision"
+      ) {
+        context.state.tree.children.push(dragTargetNode);
+        treeService.connectSubdivisionWithGovermentAgency(
+          dragTargetNode.id,
+          dragEnteredNode.id
+        );
+        return deleteNodeFromTree(context.state.tree, dragTargetNode.id);
       }
-      insertNodeIntoTree(
-        context.state.tree,
-        dragEnteredNode.id,
-        dragTargetNode
-      );
 
-      deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+      if (
+        dragEnteredNode.entityType === "governmentAgency" &&
+        dragTargetNode.entityType === "position"
+      ) {
+        treeService.connectPositionWithGovermentAgency(
+          dragTargetNode.id,
+          dragEnteredNode.id
+        );
+        context.state.tree.children.push(dragTargetNode);
+      }
+
+      //Привязка сотрудника к должности
+      if (
+        dragEnteredNode.entityType === "position" &&
+        dragTargetNode.entityType === "employee"
+      ) {
+        treeService.connectEmployeeWithPosition(
+          dragTargetNode.id,
+          dragEnteredNode.id
+        );
+        dragEnteredNode.children.push(
+          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.id)
+        );
+        return context.dispatch(
+          DELETE_EMPLOYEE,
+          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.id)
+        );
+      }
+
+      if (
+        dragEnteredNode.entityType === "subdivision" &&
+        dragTargetNode.entityType === "subdivision"
+      ) {
+        treeService.connectSubdivisionWithSuperiorSubdivision(
+          dragTargetNode.id,
+          dragEnteredNode.id
+        );
+        insertNodeIntoTree(
+          context.state.tree,
+          dragEnteredNode.id,
+          dragTargetNode
+        );
+        return deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+      }
+
+      if (
+        dragEnteredNode.entityType === "position" &&
+        dragTargetNode.entityType === "role"
+      ) {
+        return context.dispatch(INSERT_POSITION_TO_NODE, {
+          selectedNode: dragEnteredNode,
+          position: dragTargetNode,
+        });
+      }
+      // Привязка должности к отделу
+      if (
+        dragEnteredNode.entityType === "subdivision" &&
+        dragTargetNode.entityType === "position"
+      ) {
+        insertNodeIntoTree(
+          context.state.tree,
+          dragEnteredNode.id,
+          dragTargetNode
+        );
+        dragEnteredNode.children.push(dragEnteredNode);
+      }
     },
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
       insertNodeIntoTree(context.state.tree, selectedNode.id, newNode);
@@ -221,11 +298,21 @@ export const treeStore: Module<IStateTreeStore, any> = {
       }
     },
     [DELETE_POSITION_FROM_NODE](context, { selectedNode, positionChild }) {
-      deletePositionFromNode(
-        context.state.tree,
-        selectedNode.id,
-        positionChild.id
+      selectedNode.children = selectedNode.children.filter(
+        (position) => position.id !== positionChild.id
       );
+    },
+    ["DELETE_DRAG_TREE"](ctx) {
+      ctx.commit("DELETE_DRAG_TREE");
+    },
+    [ADD_SUBDIVISION](ctx, subdivision: ITree) {
+      subdivision.children = [];
+      subdivision.id = Math.round(Math.random() * 566565);
+      subdivision.entityType = "subdivision";
+      getNodeById(ctx.state.tree, ctx.state.plusSelectedNode.id).children.push(
+        subdivision
+      );
+      // this.commit(SET_PLUS_SELECTED_NODE, null);
     },
   },
   getters: {

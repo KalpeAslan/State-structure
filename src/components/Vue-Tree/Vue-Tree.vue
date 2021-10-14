@@ -9,34 +9,20 @@
     >
       <template v-slot:node="{ node, collapsed }">
         <div
-          :class="[
-            'd-flex',
-            'align-items-center',
-            node.entityType === 'position'
-              ? 'justify-center flex-column position-container'
-              : 'justify-space-between',
-          ]"
+          :class="computeClassByNodeType(node)"
           @click="selectPosition(node)"
           :style="{
             border: collapsed ? '2px solid grey' : '',
-            background: unlock(node) ? '#DADADA' : '#414649',
-            textAlign: 'center',
           }"
         >
           <v-icon color="#828282" v-if="unlock(node)"> mdi-lock </v-icon>
           <span
-            style="padding: 4px 8px; font-weight: bold; white-space: nowrap"
-            :style="{
-              color:
-                unlock(node) || node.entityType === 'position'
-                  ? '#828282'
-                  : 'white',
-            }"
+            style="padding: 4px 8px; white-space: nowrap; font-size: 14px"
             >{{ node.nameRu }}</span
           >
           <div
             v-if="node.entityType === 'position'"
-            class="d-flex flex-column justify-center align-items-center"
+            class="d-flex flex-column justify-center align-center"
           >
             <v-list-item
               v-for="positionChild in node.children"
@@ -44,8 +30,10 @@
               @click.stop="setEmployee(positionChild)"
               style="min-height: 0px !important"
             >
-              <div class="position-node_child" style="min-width: 120px">
-                {{ positionChild.user.name }}
+              <div class="position-node_child">
+                <span class="d-flex align-center" style="font-size: 12px">
+                  {{ positionChild.user.name }}
+                </span>
                 <v-btn icon @click="deletePositionChild(node, positionChild)">
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
@@ -80,7 +68,24 @@ export default {
   },
   methods: {
     unlock(node) {
-      return this.$store.getters.GET_UNLOCK && node.type !== "position";
+      return this.$store.getters.GET_UNLOCK && node.entityType !== "position";
+    },
+
+    computeClassByNodeType(node) {
+      const classes = [
+        "d-flex",
+        "align-items-center",
+        "text-md-center text-center",
+      ];
+      if (node.entityType === "position") {
+        classes.push("justify-center flex-column position-node secondary");
+      } else {
+        classes.push("justify-space-between");
+        console.log(node.entityType);
+        if (this.unlock(node)) classes.push("unlock-node secondary");
+        else classes.push("text-white node-subdivision");
+      }
+      return classes;
     },
     deletePositionChild(selectedNode, positionChild) {
       this.$store.dispatch(DELETE_POSITION_FROM_NODE, {
@@ -146,12 +151,12 @@ export default {
     overflow: scroll;
   }
 }
-.position-container {
-  background: transparent !important;
-  color: #414649 !important;
-  border: 1px solid #828282;
-  border-radius: 4px;
+
+.node-subdivision {
+  background: #414649;
+  color: white;
 }
+
 .rich-media-node {
   padding: 8px;
   display: flex;
@@ -162,18 +167,29 @@ export default {
   background-color: #414649;
   border-radius: 4px;
 }
+
+.unlock-node {
+  background: #dadada !important;
+  border: 1px solid #dadada !important;
+  box-sizing: border-box;
+  border-radius: 2px;
+  padding: 12px 18px !important;
+}
+
 .position-node {
+  border: 2px solid #414649;
   background: transparent !important;
-  border: 1px solid #828282;
   border-radius: 4px;
   color: #414649 !important;
   .position-node_child {
-    border: 1px solid #828282;
+    border: 1px solid #dadada;
+    box-sizing: border-box;
+    border-radius: 2px;
     display: flex;
     justify-content: center;
     align-content: center;
     margin: 8px 0;
-    padding: 8px 4px;
+    padding: 6px 8px;
   }
 }
 </style>

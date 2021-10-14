@@ -62,6 +62,7 @@
           :key="position.id"
           draggable
           @dragstart="dragStart($event, position)"
+          @dragend="dragEnd"
           class="justify-space-between"
         >
           <span>{{ position.nameRu }}</span>
@@ -101,7 +102,7 @@
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
 import { IPosition } from "@/store/interfaces";
-import SidebarTree from "../../components/sidebarTree/SidebarTree";
+import SidebarTree from "../../components/sidebarTree/SidebarTree.vue";
 import {
   ADD_POSITION,
   DELETE_POSITION,

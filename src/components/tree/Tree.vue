@@ -1,5 +1,9 @@
 <template>
   <div class="tree-container" ref="container" :style="{}">
+    <AddSubdivison
+      :show="showAddSubdivison"
+      @close-modal="showAddSubdivison = false"
+    />
     <svg class="svg vue-tree" ref="svg" :style="initialTransformStyle"></svg>
 
     <div
@@ -31,6 +35,7 @@
           <div
             :draggable="unlock"
             @dragstart="dragStart($event, node.data)"
+            @dragend="dragEnd"
             class="node-container"
             @click="selectPosition(node.data)"
           >
@@ -53,10 +58,10 @@
             </slot>
             <v-btn
               icon
-              v-if="node.data.type !== 'position'"
+              v-if="node.data.entityType !== 'position'"
               absolute
               class="node-button plus"
-              @click="insertToNode(node.data)"
+              @click.stop="addSubdivison(node.data)"
             >
               <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
             </v-btn>
@@ -72,7 +77,10 @@ import * as d3 from "d3";
 import { uuid } from "./base/utils";
 import draggable from "vuedraggable";
 import treeMixin from "../../mixins/treeMixin";
-import { SET_TEMP_POSITION } from "@/store/mutation-types";
+import {
+  SET_PLUS_SELECTED_NODE,
+  SET_TEMP_POSITION,
+} from "@/store/mutation-types";
 
 const MATCH_TRANSLATE_REGEX = /translate\((-?\d+)px, ?(-?\d+)px\)/i;
 
@@ -98,61 +106,6 @@ function rotatePoint({ x, y }) {
     y: x,
   };
 }
-
-const tempTree = {
-  id: 54545,
-  name: "Название ГО :",
-  children: [
-    {
-      id: 4848,
-      name: "Департамент 1 :",
-      children: [
-        {
-          id: 3534657,
-          name: "Отдел 1 :",
-          type: "division",
-          children: [],
-        },
-        {
-          id: 564811,
-          name: "Отдел 2 :",
-          type: "division",
-          children: [
-            {
-              id: 5454112,
-              type: "position",
-              name: "Должность 1",
-              positionChildren: [
-                {
-                  name: "Сотрудник 1",
-                  id: 44778487,
-                },
-                {
-                  name: "Сотрудник 2",
-                  id: 1548487,
-                },
-              ],
-              positionRole: {
-                name: "Role 1",
-                id: 877878,
-              },
-            },
-            {
-              id: 2151,
-              type: "position",
-              name: "Должность 2",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "Departament 2",
-      children: [],
-      id: 545454,
-    },
-  ],
-};
 
 export default {
   name: "Tree",
@@ -196,6 +149,7 @@ export default {
       currentScale: 1,
       hoverNode: false,
       isVertical: true,
+      showAddSubdivison: false,
     };
   },
   computed: {
@@ -227,9 +181,10 @@ export default {
       this.enableDrag();
       this.initTransform();
     },
-    // isVertical() {
-    //   return this.direction === DIRECTION.VERTICAL;
-    // },
+    addSubdivison(node) {
+      this.showAddSubdivison = true;
+      this.$store.commit(SET_PLUS_SELECTED_NODE, node);
+    },
     computeDirection(node) {
       if (node.type === "division") {
         return DIRECTION.HORIZONTAL;
@@ -407,6 +362,7 @@ export default {
       const treeBuilder = this.d3
         .tree()
         .nodeSize([this.config.nodeWidth, this.config.levelHeight]);
+      console.log(rootNode);
       const tree = treeBuilder(this.d3.hierarchy(rootNode));
       return [tree.descendants(), tree.links()];
     },
@@ -472,12 +428,6 @@ export default {
         this.$store.dispatch(SET_TEMP_POSITION, node);
       }
     },
-    computePositionX(refName) {
-      setTimeout(() => {
-        this.buttonsClientX =
-          this.$refs[refName][0].children[1].clientWidth + "px";
-      }, 0);
-    },
   },
   watch: {
     _dataset: {
@@ -490,6 +440,7 @@ export default {
   },
   components: {
     draggable,
+    AddSubdivison: () => import("../HeaderModals/AddSubdivision.vue"),
   },
 };
 </script>
@@ -516,7 +467,7 @@ export default {
   .link {
     stroke-width: 2px !important;
     fill: transparent !important;
-    stroke: #cecece !important;
+    stroke: #414649 !important;
   }
 }
 

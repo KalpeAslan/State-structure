@@ -1,3 +1,5 @@
+import { treeStore } from "./../store/treeStore";
+import { treeService } from "./../services/treeService";
 import { ITree } from "./../store/interfaces";
 import {
   SET_DRAG_TREE,
@@ -17,18 +19,6 @@ export default Vue.extend({
     };
   },
   methods: {
-    insertToNode(selectedNode: ITree, newNode = {}) {
-      const randomId = Math.round(Math.random() * 45450);
-      newNode = {
-        children: [],
-        nameRu: "TestNode1",
-        id: randomId,
-      };
-      this.$store.dispatch(INSERT_NODE_TO_TREE, {
-        selectedNode,
-        newNode,
-      });
-    },
     deleteNode(selectedNode: ITree) {
       this.$store.dispatch(DELETE_NODE, selectedNode);
     },
@@ -37,50 +27,19 @@ export default Vue.extend({
         this.dragEnteredNode = node;
       }
     },
-    dragEnd($event, node) {
-      if (this.dragEnteredNode.id !== this.getDragTree) {
-        this.$store.dispatch(UPDATE_TREE, {
-          dragEnteredNode: this.dragEnteredNode,
-          dragTargetNode: node,
-        });
-        this.$store.dispatch(SET_DRAG_TREE, null);
-      }
+    dragEnd() {
+      this.$store.dispatch(SET_DRAG_TREE, null);
     },
     dragStart($event: DragEvent, node) {
-      console.log(node);
       if (!this.$store.getters.GET_DRAG_TREE) {
-        if (node.entityType === "position") {
-          $event.dataTransfer.setData("positionId", node.id);
-        } else if (node.entityType === "employee") {
-          $event.dataTransfer.setData("employeeId", node.id);
-        } else {
-          $event.dataTransfer.setData("nodeId", node.id);
-        }
+        this.$store.dispatch(SET_DRAG_TREE, node);
       }
     },
     onDrop($event: DragEvent, node: ITree) {
-      if ($event.dataTransfer.getData("employeeId")) {
-        this.$store.dispatch(INSERT_POSITION_TO_NODE, {
-          selectedNode: node,
-          position: this.$store.getters.GET_EMPLOYEE_BY_ID(
-            +$event.dataTransfer.getData("employeeId")
-          ),
-        });
-      } else if ($event.dataTransfer.getData("nodeId")) {
-        this.$store.dispatch(UPDATE_TREE, {
-          dragEnteredNode: node,
-          dragTargetNode: this.$store.getters.GET_NODE_BY_ID(
-            $event.dataTransfer.getData("nodeId")
-          ),
-        });
-      } else if ($event.dataTransfer.getData("roleId")) {
-        this.$store.dispatch(INSERT_POSITION_TO_NODE, {
-          selectedNode: node,
-          position: this.$store.getters.GET_ROLE_BY_ID(
-            +$event.dataTransfer.getData("roleId")
-          ),
-        });
-      }
+      this.$store.dispatch(UPDATE_TREE, {
+        dragEnteredNode: node,
+        dragTargetNode: this.$store.getters.GET_DRAG_TREE,
+      });
     },
   },
   computed: {
@@ -89,3 +48,44 @@ export default Vue.extend({
     },
   },
 });
+
+// if (
+//   $event.dataTransfer.getData("employeeId") &&
+//   node.entityType === "position"
+// ) {
+//   treeService.connectEmployeeWithPosition(
+//     +$event.dataTransfer.getData("employeeId"),
+//     node.id
+//   );
+//   this.$store.dispatch(INSERT_POSITION_TO_NODE, {
+//     selectedNode: node,
+//     position: this.$store.getters.GET_EMPLOYEE_BY_ID(
+//       +$event.dataTransfer.getData("employeeId")
+//     ),
+//   });
+// } else if (
+//   $event.dataTransfer.getData("nodeId") &&
+//   ["subdivision", "governmentAgency"].includes(node.entityType)
+// ) {
+//   treeService.connectSubdivisionWithSuperiorSubdivision(
+//     +$event.dataTransfer.getData("nodeId"),
+//     node.id
+//   );
+//   this.$store.dispatch(UPDATE_TREE, {
+//     dragEnteredNode: node,
+//     dragTargetNode: this.$store.getters.GET_NODE_BY_ID(
+//       $event.dataTransfer.getData("nodeId")
+//     ),
+//   });
+// } else if (
+//   $event.dataTransfer.getData("roleId") &&
+//   node.entityType === "position"
+// ) {
+//   this.$store.dispatch(INSERT_POSITION_TO_NODE, {
+//     selectedNode: node,
+//     position: this.$store.getters.GET_ROLE_BY_ID(
+//       +$event.dataTransfer.getData("roleId")
+//     ),
+//   });
+// }
+// this.$store.dispatch("DELETE_DRAG_TREE");

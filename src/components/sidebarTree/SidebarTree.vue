@@ -6,9 +6,9 @@
       :style="{ 'margin-left': `${depth * 20}px` }"
       class="node-container"
     >
-      <div draggable @dragstart="dragStart($event, node)">
+      <div draggable @dragstart="dragStart($event, node)" @dragend="dragEnd">
         <v-btn
-          v-if="getNodeChildren(node) && getNodeChildren(node).length"
+          v-if="node.children && node.children.length"
           icon
           @click="nodeClicked(node)"
         >
@@ -19,7 +19,7 @@
         <div class="node">
           <span
             :style="{
-              marginLeft: getNodeChildren(node) && 36,
+              marginLeft: node.children && 36,
             }"
             >{{ node.nameRu }}</span
           >
@@ -33,8 +33,8 @@
           </div>
         </div>
         <SidebarTree
-          v-if="isExpanded(node) && getNodeChildren(node)"
-          :nodes="getNodeChildren(node)"
+          v-if="isExpanded(node) && node.children"
+          :nodes="node.children"
           :depth="depth + 1"
           dropzone
           @drop="onDrop($event, node)"
@@ -74,14 +74,6 @@ export default Vue.extend({
         this.expanded.push(node);
       } else {
         this.expanded.splice(this.expanded.indexOf(node));
-      }
-    },
-    getNodeChildren(node): ITree | IPosition[] {
-      if (node.subdivisions) {
-        return node.subdivisions;
-      }
-      if (node.positions) {
-        return node.positions;
       }
     },
   },

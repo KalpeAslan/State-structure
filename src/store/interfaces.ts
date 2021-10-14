@@ -2,13 +2,14 @@ export interface IStateTreeStore {
   tree: null | ITree;
   unlock: boolean;
   dragTargetNode: null | ITree;
+  plusSelectedNode: ITree | null;
 }
 
 export interface ITree {
   subdivisions?: Array<ITree>;
   children?: ITree[];
   _key?: string;
-  id: string | number;
+  id: number;
   bin?: string | number;
   entityType: string;
   positions?: Array<IPosition>;
@@ -63,6 +64,8 @@ export interface IPosition {
     name: string;
   };
   entityType: string;
+  //Children array for Employees and roles
+  children?: IEmployeeNode[];
 }
 export interface IGoverment {
   bin: string | number;
@@ -103,14 +106,14 @@ export interface IEmployee {
 }
 
 export interface ISubdivisonReq {
-  governmentAgencyId: number; //Long
-  superiorSubdivisionId: number; //Long
-  nameRu: number; //String
-  nameKz: number; //String
-  nameEng: number; //String
-  nameRuShort: number; //String
-  nameKzShort: number; //String
-  nameEngShort: number; //String
+  governmentAgencyId: number | null; //Long
+  superiorSubdivisionId: number | null; //Long
+  nameRu: string | null; //String
+  nameKz: string | null; //String
+  nameEng: string | null; //String
+  nameRuShort: string | null; //String
+  nameKzShort: string | null; //String
+  nameEngShort: string | null; //String
 }
 export interface IEmployeeReq {
   userId: number; //Long

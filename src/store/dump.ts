@@ -1290,6 +1290,7 @@ export const tree2: ITree = {
 
 export const positions: IPosition[] = [
   {
+    children: [],
     id: 59599,
     superiorPosition: null,
     roleId: null,
@@ -1371,6 +1372,7 @@ export const positions: IPosition[] = [
     ],
   },
   {
+    children: [],
     id: 54545454,
     superiorPosition: null,
     roleId: null,

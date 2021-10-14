@@ -17,6 +17,7 @@
       <v-list-item
         draggable
         @dragstart="dragStart($event, employe)"
+        @dragend="dragEnd"
         v-for="employe in employes"
         :key="employe.value"
       >
@@ -45,6 +46,7 @@
         :key="role.value"
         draggable
         @dragstart="dragStart($event, role)"
+        @dragend="dragEnd"
       >
         <v-list-item-content>
           <v-list-item-title>{{ role.name }}</v-list-item-title>
