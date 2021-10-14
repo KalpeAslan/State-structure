@@ -3,6 +3,7 @@
     <NavSidebar />
     <VueTree />
     <ContentSidebar> <router-view /> </ContentSidebar>
+    <Footer />
   </div>
 </template>
 
@@ -17,6 +18,7 @@ export default Vue.extend({
     ContentSidebar,
     VueTree,
     NavSidebar: () => import("../../components/NavSidebar/NavSidebar.vue"),
+    Footer: () => import("../../components/Footer/Footer.vue"),
   },
   created() {
     if (this.$route.path === "/home") {

@@ -18,52 +18,53 @@
         <div class="position_desc mt-7">
           <span class="position_desc_type">Должность</span>
           <span>
-            {{ selectedTempPosition.name }}
+            {{ selectedTempPosition.nameRu }}
           </span>
         </div>
         <v-divider />
         <div class="position_desc">
           <span class="position_desc_type"> Сотрудник </span>
-          <span>
-            {{ selectedTempPosition.employee }}
+          <span v-if="selectedTempPosition.selectedEmployee">
+            {{ selectedTempPosition.selectedEmployee.user.name }}
           </span>
         </div>
-        <v-form ref="form" v-model="validate">
+        <v-form ref="form">
           <div>
             <div class="label">Дата окончания работы сотрудника</div>
             <v-menu
-              ref="menu"
-              v-model="menu"
+              ref="menu1"
+              v-model="menu1"
               :close-on-content-click="false"
-              :return-value.sync="date"
+              :return-value.sync="date1"
               transition="scale-transition"
               offset-y
               min-width="auto"
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="selectedTempPosition.endTempEmployeeDate"
+                  v-model="newEmployeeForm.recruitmentDate"
                   append-icon="mdi-calendar"
                   readonly
                   outlined
                   v-bind="attrs"
                   v-on="on"
                   dense
-                  :rules="dateEndTempEmployeeDateRules"
+                  height="42"
+                  :rules="dateEndEmployeeDateRules"
                   placeholder="ДД/ММ/ГГГГ"
                 ></v-text-field>
               </template>
               <v-date-picker
                 locale="ru"
-                v-model="selectedTempPosition.endTempEmployeeDate"
+                v-model="newEmployeeForm.recruitmentDate"
                 no-title
                 scrollable
               >
                 <v-spacer></v-spacer>
-                <v-btn text color="primary" @click="menu = false">
+                <v-btn text color="primary" @click="menu1 = false">
                   Отменить
                 </v-btn>
-                <v-btn text color="primary" @click="$refs.menu.save(date)">
+                <v-btn text color="primary" @click="$refs.menu1.save(date1)">
                   OK
                 </v-btn>
               </v-date-picker>
@@ -76,12 +77,12 @@
               outlined
               dense
               :rules="selectTempEmployeeRules"
-              :items="selectedTempPosition.employees"
+              :items="selectEmployies"
               label="Выбрать"
             ></v-select>
           </div>
           <div>
-            <div class="label">Дата окончания работы сотрудника</div>
+            <div class="label">Дата окончания работы временного сотрудника</div>
             <v-menu
               ref="menu"
               v-model="menu"
@@ -93,7 +94,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="selectedTempPosition.endEmployeeDate"
+                  v-model="newEmployeeForm.positionRemovalDate"
                   append-icon="mdi-calendar"
                   readonly
                   outlined
@@ -101,13 +102,13 @@
                   v-on="on"
                   dense
                   height="42"
-                  :rules="selectedTempPosition.dateEndEmployeeDateRules"
+                  :rules="dateEndTempEmployeeDateRules"
                   placeholder="ДД/ММ/ГГГГ"
                 ></v-text-field>
               </template>
               <v-date-picker
                 locale="ru"
-                v-model="selectedTempPosition.endEmployeeDate"
+                v-model="newEmployeeForm.positionRemovalDate"
                 no-title
                 scrollable
               >
@@ -146,6 +147,8 @@
 </template>
 
 <script lang="ts">
+import { homeService } from "@/services/homeService";
+import { IEmployeeReq } from "@/store/interfaces";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -153,7 +156,9 @@ export default Vue.extend({
     return {
       dialog: false as boolean,
       date: null,
+      date1: null,
       menu: false,
+      menu1: false,
       dateEndEmployeeDateRules: [
         (v) => !!v || "Поле окончания даты обязательна",
       ],
@@ -163,22 +168,26 @@ export default Vue.extend({
       selectTempEmployeeRules: [
         (v) => !!v || "Поле временного сотрудника обязательно",
       ],
+      newEmployeeForm: {
+        userId: null, //Long
+        positionId: null, //Long
+        recruitmentDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+        positionRemovalDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+        supervisorId: null, //Long
+      } as IEmployeeReq,
     };
   },
 
   computed: {
     selectedTempPosition() {
-      // return this.$store.state.homeStore.tempPosition;
-      return {
-        name: "Dolzhnost",
-        id: 54684678,
-        endEmployeeDate: null,
-        tempEmployee: "",
-        endTempEmployeeDate: null,
-        comment: "",
-        employee: "Sotrudnik 1",
-        employees: ["Sotrudnik1", "Sotrudnik2"],
-      };
+      return this.$store.state.homeStore.tempPosition;
+    },
+    selectEmployies() {
+      if (this.selectedTempPosition.children) {
+        return this.selectedTempPosition.children.map(
+          (child) => child.user.name
+        );
+      }
     },
   },
   components: {
@@ -187,6 +196,18 @@ export default Vue.extend({
   methods: {
     validate() {
       this.$refs.form.validate();
+      if (
+        this.newEmployeeForm.recruitmentDate &&
+        this.newEmployeeForm.positionRemovalDate
+      ) {
+        this.newEmployeeForm.userId = this.selectedTempPosition.userId;
+        this.newEmployeeForm.positionId = this.selectedTempPosition.positionId;
+        this.newEmployeeForm.positionId =
+          this.selectedTempPosition.supervisorId;
+        homeService
+          .postNewEmployee(this.newEmployeeForm)
+          .then(() => this.reset());
+      }
     },
     reset() {
       this.$refs.form.reset();

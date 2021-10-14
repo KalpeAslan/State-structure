@@ -56,47 +56,47 @@ export default Vue.extend({
     return {
       govOrgs: [
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           bin: "010908550522",
           state: "created",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "created",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "created",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "onApproval",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "aproved",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "notAproved",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "onClaim",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "claimed",
           bin: "010908550522",
         },
         {
-          name: "Наименование ГО",
+          nameRu: "Наименование ГО",
           state: "notClaimed",
           bin: "010908550522",
         },

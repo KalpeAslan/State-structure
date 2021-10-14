@@ -11,11 +11,12 @@
         <div
           :class="[
             'd-flex',
-            'justify-space-between',
             'align-items-center',
-            node.type === 'position' ? 'flex-column' : 'flex-row',
-            node.type === 'position' ? 'position-node' : 'rich-media-node',
+            node.entityType === 'position'
+              ? 'justify-center flex-column position-container'
+              : 'justify-space-between',
           ]"
+          @click="selectPosition(node)"
           :style="{
             border: collapsed ? '2px solid grey' : '',
             background: unlock(node) ? '#DADADA' : '#414649',
@@ -24,25 +25,33 @@
         >
           <v-icon color="#828282" v-if="unlock(node)"> mdi-lock </v-icon>
           <span
-            style="padding: 4px 0; font-weight: bold; white-space: nowrap"
-            :style="{ color: unlock(node) ? '#828282' : 'white' }"
-            >{{ node.name }}</span
+            style="padding: 4px 8px; font-weight: bold; white-space: nowrap"
+            :style="{
+              color:
+                unlock(node) || node.entityType === 'position'
+                  ? '#828282'
+                  : 'white',
+            }"
+            >{{ node.nameRu }}</span
           >
-          <template v-if="node.type === 'position'">
+          <div
+            v-if="node.entityType === 'position'"
+            class="d-flex flex-column justify-center align-items-center"
+          >
             <v-list-item
-              class="d-flex flex-column justify-center"
-              v-for="positionChild in node.positionChildren"
+              v-for="positionChild in node.children"
               :key="positionChild.id"
+              @click.stop="setEmployee(positionChild)"
               style="min-height: 0px !important"
             >
-              <span class="position-node_child" style="min-width: 120px">
-                {{ positionChild.name }}
+              <div class="position-node_child" style="min-width: 120px">
+                {{ positionChild.user.name }}
                 <v-btn icon @click="deletePositionChild(node, positionChild)">
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
-              </span>
+              </div>
             </v-list-item>
-          </template>
+          </div>
         </div>
       </template>
     </Tree>
@@ -51,6 +60,8 @@
 <script>
 import {
   DELETE_POSITION_FROM_NODE,
+  SET_EMPLOYEE_TO_TEMP_POSITION,
+  SET_TEMP_POSITION,
   SET_TREE,
 } from "../../store/mutation-types";
 
@@ -76,6 +87,16 @@ export default {
         selectedNode,
         positionChild,
       });
+    },
+    selectPosition(node) {
+      if (node.entityType === "position" && this.$route.name === "home.time") {
+        this.$store.dispatch(SET_TEMP_POSITION, node);
+      }
+    },
+    setEmployee(employee) {
+      if (employee.entityType === "employee") {
+        this.$store.dispatch(SET_EMPLOYEE_TO_TEMP_POSITION, employee);
+      }
     },
   },
   async beforeCreate() {
@@ -125,7 +146,12 @@ export default {
     overflow: scroll;
   }
 }
-
+.position-container {
+  background: transparent !important;
+  color: #414649 !important;
+  border: 1px solid #828282;
+  border-radius: 4px;
+}
 .rich-media-node {
   padding: 8px;
   display: flex;

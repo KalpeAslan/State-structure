@@ -21,7 +21,7 @@
         :key="employe.value"
       >
         <v-list-item-content>
-          <v-list-item-title>{{ employe.name }}</v-list-item-title>
+          <v-list-item-title>{{ employe.user.name }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>
@@ -56,65 +56,40 @@
 </template>
 
 <script lang="ts">
-import { IEmployee } from "@/store/interfaces";
+import treeMixin from "@/mixins/treeMixin";
+import { employees } from "@/store/dump";
+import { IRole } from "@/store/interfaces";
 import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
 import Vue from "vue";
-
-const tempEmployee: IEmployee[] = [
-  {
-    name: "Сотрудник 0",
-    id: 0,
-    type: "employee",
-  },
-  {
-    name: "Сотрудник 1",
-    id: 1,
-    type: "employee",
-  },
-  {
-    name: "Сотрудник 2",
-    id: 3,
-    type: "employee",
-  },
-  {
-    name: "Сотрудник 3",
-    id: 4,
-    type: "employee",
-  },
-  {
-    name: "Сотрудник 4",
-    id: 5,
-    type: "employee",
-  },
-];
 
 export default Vue.extend({
   data() {
     return {
       inputRoles: null,
       inputEmployies: null,
+      roles: [
+        {
+          name: "Роль 78",
+          id: 0,
+        },
+        {
+          name: "Роль 1",
+          id: 1,
+        },
+        {
+          name: "Роль 1",
+          id: 2,
+        },
+        {
+          name: "Роль 1",
+          id: 3,
+        },
+      ] as IRole[],
     };
   },
-  beforeCreate() {
-    this.$store.dispatch(SET_EMPLOYIES, tempEmployee);
-    this.$store.dispatch(SET_ROLES, [
-      {
-        name: "Роль 78",
-        id: 0,
-      },
-      {
-        name: "Роль 1",
-        id: 1,
-      },
-      {
-        name: "Роль 1",
-        id: 2,
-      },
-      {
-        name: "Роль 1",
-        id: 3,
-      },
-    ]);
+  created() {
+    this.$store.dispatch(SET_EMPLOYIES, employees);
+    this.$store.dispatch(SET_ROLES, this.roles);
   },
   computed: {
     roles() {
@@ -127,17 +102,7 @@ export default Vue.extend({
       );
     },
   },
-  methods: {
-    dragStart($event: DragEvent, item) {
-      if (item.type === "employee") {
-        $event.dataTransfer.setData("employeeId", item.id.toString());
-      } else {
-        $event.dataTransfer.setData("roleId", item.id.toString());
-      }
-      $event.dataTransfer.dropEffect = "move";
-      $event.dataTransfer.effectAllowed = "move";
-    },
-  },
+  mixins: [treeMixin],
 });
 </script>
 

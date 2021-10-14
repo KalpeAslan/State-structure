@@ -7,60 +7,62 @@
       ref="domContainer"
       :style="initialTransformStyle"
     >
-      <div
-        class="node-slot"
-        v-for="(node, index) of nodeDataList"
-        :key="node.data.id"
-        :index="index"
-        :style="{
-          left: formatDimension(
-            direction === DIRECTION.VERTICAL ? node.x : node.y
-          ),
-          top: formatDimension(
-            direction === DIRECTION.VERTICAL ? node.y : node.x
-          ),
-          width: formatDimension(config.nodeWidth),
-          height: formatDimension(config.nodeHeight),
-        }"
-        dropzone
-        @dragover.prevent
-        @dragenter.prevent
-        @drop="onDrop($event, node.data)"
-      >
+      <template v-for="(node, index) of nodeDataList">
         <div
-          :draggable="unlock"
-          @dragstart="dragStart($event, node.data)"
-          class="node-container"
-          @click="selectPosition(node.data)"
+          v-if="node.data.entityType !== 'employee'"
+          class="node-slot"
+          :key="node.data.id"
+          :index="index"
+          :style="{
+            left: formatDimension(
+              direction === DIRECTION.VERTICAL ? node.x : node.y
+            ),
+            top: formatDimension(
+              direction === DIRECTION.VERTICAL ? node.y : node.x
+            ),
+            width: formatDimension(config.nodeWidth),
+            height: formatDimension(config.nodeHeight),
+          }"
+          dropzone
+          @dragover.prevent
+          @dragenter.prevent
+          @drop="onDrop($event, node.data)"
         >
-          <v-btn
-            v-if="node.data.type !== 'position'"
-            icon
-            absolute
-            @click="deleteNode(node.data)"
-            class="node-button minus"
+          <div
+            :draggable="unlock"
+            @dragstart="dragStart($event, node.data)"
+            class="node-container"
+            @click="selectPosition(node.data)"
           >
-            <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-          </v-btn>
+            <v-btn
+              v-if="node.data.type !== 'position'"
+              icon
+              absolute
+              @click="deleteNode(node.data)"
+              class="node-button minus"
+            >
+              <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+            </v-btn>
 
-          <slot
-            name="node"
-            v-bind:node="node.data"
-            v-bind:collapsed="node.data._collapsed"
-          >
-            <span> {{ node.data.value }}</span>
-          </slot>
-          <v-btn
-            icon
-            v-if="node.data.type !== 'position'"
-            absolute
-            class="node-button plus"
-            @click="insertToNode(node.data)"
-          >
-            <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
-          </v-btn>
+            <slot
+              name="node"
+              v-bind:node="node.data"
+              v-bind:collapsed="node.data._collapsed"
+            >
+              <span> {{ node.data.value }}</span>
+            </slot>
+            <v-btn
+              icon
+              v-if="node.data.type !== 'position'"
+              absolute
+              class="node-button plus"
+              @click="insertToNode(node.data)"
+            >
+              <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+            </v-btn>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </div>
 </template>
@@ -96,6 +98,61 @@ function rotatePoint({ x, y }) {
     y: x,
   };
 }
+
+const tempTree = {
+  id: 54545,
+  name: "Название ГО :",
+  children: [
+    {
+      id: 4848,
+      name: "Департамент 1 :",
+      children: [
+        {
+          id: 3534657,
+          name: "Отдел 1 :",
+          type: "division",
+          children: [],
+        },
+        {
+          id: 564811,
+          name: "Отдел 2 :",
+          type: "division",
+          children: [
+            {
+              id: 5454112,
+              type: "position",
+              name: "Должность 1",
+              positionChildren: [
+                {
+                  name: "Сотрудник 1",
+                  id: 44778487,
+                },
+                {
+                  name: "Сотрудник 2",
+                  id: 1548487,
+                },
+              ],
+              positionRole: {
+                name: "Role 1",
+                id: 877878,
+              },
+            },
+            {
+              id: 2151,
+              type: "position",
+              name: "Должность 2",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "Departament 2",
+      children: [],
+      id: 545454,
+    },
+  ],
+};
 
 export default {
   name: "Tree",

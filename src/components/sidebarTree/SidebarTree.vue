@@ -4,55 +4,52 @@
       v-for="node in nodes"
       :key="node.id"
       :style="{ 'margin-left': `${depth * 20}px` }"
-      class="node"
-      @mouseover="addButtonHover = true"
-      @mouseleave="addButtonHover = false"
-      draggable
-      :dragId="node.id"
-      @dragstart="dragStart(node)"
-      @dragend="dragEnd(node)"
-      @dragenter="dragEnter(node)"
+      class="node-container"
     >
-      <v-btn
-        v-if="node.children && node.children.length"
-        icon
-        @click="nodeClicked(node)"
-      >
-        <v-icon>
-          {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
-        </v-icon>
-      </v-btn>
-      <span
-        :style="{
-          marginLeft: node.children && 36,
-        }"
-        >{{ node.name }}</span
-      >
-      <v-btn v-if="showButtons" icon @click="insertToNode(node)">
-        <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        v-if="showButtons"
-        class="remove-button"
-        @click="deleteNode(node)"
-      >
-        <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-      </v-btn>
-      <SidebarTree
-        v-if="isExpanded(node) && node.children"
-        :nodes="node.children"
-        :depth="depth + 1"
-        @onClick="(node) => $emit('onClick', node)"
-      />
+      <div draggable @dragstart="dragStart($event, node)">
+        <v-btn
+          v-if="getNodeChildren(node) && getNodeChildren(node).length"
+          icon
+          @click="nodeClicked(node)"
+        >
+          <v-icon>
+            {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
+          </v-icon>
+        </v-btn>
+        <div class="node">
+          <span
+            :style="{
+              marginLeft: getNodeChildren(node) && 36,
+            }"
+            >{{ node.nameRu }}</span
+          >
+          <div class="node-buttons">
+            <v-btn icon @click="insertToNode(node)">
+              <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+            </v-btn>
+            <v-btn icon class="remove-button" @click="deleteNode(node)">
+              <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <SidebarTree
+          v-if="isExpanded(node) && getNodeChildren(node)"
+          :nodes="getNodeChildren(node)"
+          :depth="depth + 1"
+          dropzone
+          @drop="onDrop($event, node)"
+          @onClick="(node) => $emit('onClick', node)"
+        />
+      </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import treeMixin from "../../mixins/treeMixin";
-import { CircularJSON } from "circular-json";
-export default {
+import Vue from "vue";
+import { IPosition, ITree } from "@/store/interfaces";
+export default Vue.extend({
   name: "SidebarTree",
   props: {
     nodes: Array,
@@ -79,6 +76,14 @@ export default {
         this.expanded.splice(this.expanded.indexOf(node));
       }
     },
+    getNodeChildren(node): ITree | IPosition[] {
+      if (node.subdivisions) {
+        return node.subdivisions;
+      }
+      if (node.positions) {
+        return node.positions;
+      }
+    },
   },
   computed: {
     showButtons() {
@@ -91,19 +96,23 @@ export default {
       return Math.round(Math.round(505) * 123456789);
     },
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
-.node {
+.node-container {
   text-align: left;
   font-size: 18px;
-  .add-button {
-    display: none;
-  }
-  &:hover {
-    .add-button {
-      display: inline-block;
+
+  .node {
+    display: inline-block;
+    .node-buttons {
+      display: none;
+    }
+    &:hover {
+      .node-buttons {
+        display: inline-block;
+      }
     }
   }
 }
