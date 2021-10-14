@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" max-width="400px">
+    <v-dialog v-model="modalDialog" max-width="400px">
       <v-card>
         <v-card-title>
           <span class="text-h5">Добавить Подразделение</span>
@@ -88,6 +88,17 @@ export default Vue.extend({
         this.$store.dispatch(ADD_SUBDIVISION, { ...this.subdivision });
         this.reset();
       }
+    },
+  },
+  computed: {
+    modalDialog: {
+      set(val) {
+        console.log(val);
+        this.$emit("close-modal");
+      },
+      get() {
+        return this.show;
+      },
     },
   },
 });

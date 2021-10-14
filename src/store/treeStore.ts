@@ -180,7 +180,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
           let _tree;
           switch (treeId) {
             case 0:
-              _tree = tree1;
+              _tree = tree;
               break;
             case 1:
               _tree = tree1;

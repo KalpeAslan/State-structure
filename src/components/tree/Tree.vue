@@ -94,7 +94,7 @@ const DIRECTION = {
   HORIZONTAL: "horizontal",
 };
 
-const DEFAULT_NODE_WIDTH = 100;
+const DEFAULT_NODE_WIDTH = 200;
 const DEFAULT_NODE_HEIGHT = 100;
 const DEFAULT_LEVEL_HEIGHT = 200;
 
