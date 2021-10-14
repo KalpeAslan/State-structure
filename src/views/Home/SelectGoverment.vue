@@ -102,7 +102,7 @@ export default Vue.extend({
           state: "notClaimed",
           bin: "010908550522",
         },
-      ] as Array<IGoverment>,
+      ],
       show: false as boolean,
     };
   },

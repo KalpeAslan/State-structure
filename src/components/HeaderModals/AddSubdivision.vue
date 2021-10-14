@@ -35,11 +35,11 @@
     </v-dialog>
   </v-row>
 </template>
-<script lang="ts">
+<script>
 import { ISubdivisonReq } from "@/store/interfaces";
 import { ADD_SUBDIVISION } from "@/store/mutation-types";
 import Vue from "vue";
-export default Vue.extend({
+export default {
   props: {
     show: {
       type: Boolean,
@@ -58,7 +58,7 @@ export default Vue.extend({
         nameRuShort: null,
         nameKzShort: null,
         nameEngShort: null,
-      } as ISubdivisonReq,
+      },
       subdivisionForm: [
         {
           name: "nameRu",
@@ -101,7 +101,7 @@ export default Vue.extend({
       },
     },
   },
-});
+};
 </script>
 
 <style scoped>
