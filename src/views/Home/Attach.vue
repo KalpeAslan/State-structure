@@ -49,7 +49,7 @@
         @dragend="dragEnd"
       >
         <v-list-item-content>
-          <v-list-item-title>{{ role.name }}</v-list-item-title>
+          <v-list-item-title>{{ role.roleId }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>
@@ -59,8 +59,7 @@
 
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
-import { employees } from "@/store/dump";
-import { IRole } from "@/store/interfaces";
+import { employees, roles } from "@/store/dump";
 import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
 import Vue from "vue";
 
@@ -69,29 +68,11 @@ export default Vue.extend({
     return {
       inputRoles: null,
       inputEmployies: null,
-      roles: [
-        {
-          name: "Роль 78",
-          id: 0,
-        },
-        {
-          name: "Роль 1",
-          id: 1,
-        },
-        {
-          name: "Роль 1",
-          id: 2,
-        },
-        {
-          name: "Роль 1",
-          id: 3,
-        },
-      ] as IRole[],
     };
   },
   created() {
     this.$store.dispatch(SET_EMPLOYIES, employees);
-    this.$store.dispatch(SET_ROLES, this.roles);
+    this.$store.dispatch(SET_ROLES, roles);
   },
   computed: {
     roles() {

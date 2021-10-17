@@ -1,6 +1,9 @@
 <template>
   <div style="height: 100%">
-    <AddGoverment :show="show" />
+    <AddGoverment
+      :modalDialog="modalDialog"
+      @close-modal="modalDialog = false"
+    />
     <v-navigation-drawer
       width="353"
       permanent
@@ -16,7 +19,7 @@
         outlined
         style="width: 100%"
         variant="outlined"
-        @click="show = true"
+        @click="modalDialog = true"
       >
         <v-icon size="14"> mdi-plus-thick </v-icon>
         <div class="text-caption">Добавить</div>
@@ -26,9 +29,9 @@
         label="Поиск"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <v-list>
+      <v-list v-if="govermentAgencies.length">
         <v-list-item
-          v-for="(govOrg, index) in govOrgs"
+          v-for="(govOrg, index) in govermentAgencies"
           @click="selectGov(govOrg)"
           :key="index"
         >
@@ -44,7 +47,10 @@
 
 <script lang="ts">
 import { IGoverment } from "@/store/interfaces";
-import { SELECT_GOVERMENT } from "@/store/mutation-types";
+import {
+  SELECT_GOVERMENT,
+  SET_ALL_GOVERMENT_AGENCIES,
+} from "@/store/mutation-types";
 import Vue from "vue";
 
 export type VForm = Vue & {
@@ -56,71 +62,34 @@ export type VForm = Vue & {
 export default Vue.extend({
   data() {
     return {
-      govOrgs: [
-        {
-          nameRu: "Наименование ГО",
-          bin: "010908550522",
-          state: "created",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "created",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "created",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "onApproval",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "aproved",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "notAproved",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "onClaim",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "claimed",
-          bin: "010908550522",
-        },
-        {
-          nameRu: "Наименование ГО",
-          state: "notClaimed",
-          bin: "010908550522",
-        },
-      ],
-      show: false as boolean,
+      modalDialog: false as boolean,
+      loading: false,
     };
-  },
-
-  computed: {
-    form() {
-      return this.$refs.form as VForm;
-    },
-  },
-  components: {
-    Badge: () => import("../../components/Badge/Badge.vue"),
-    AddGoverment: () =>
-      import("../../components/HeaderModals/AddGoverment.vue"),
   },
   methods: {
     selectGov(govOrg: IGoverment) {
       this.$store.dispatch(SELECT_GOVERMENT, govOrg);
     },
+  },
+  computed: {
+    form() {
+      return this.$refs.form as VForm;
+    },
+    govermentAgencies(): IGoverment[] {
+      console.log(this.$store.getters.GET_ALL_GOVERMENT_AGENCIES);
+      return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
+    },
+  },
+  created() {
+    this.loading = true;
+    this.$store.dispatch(SET_ALL_GOVERMENT_AGENCIES).then(() => {
+      this.loading = false;
+    });
+  },
+  components: {
+    Badge: () => import("../../components/Badge/Badge.vue"),
+    AddGoverment: () =>
+      import("../../components/HeaderModals/AddGoverment.vue"),
   },
 });
 </script>

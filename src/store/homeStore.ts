@@ -13,6 +13,7 @@ import {
   DELETE_EMPLOYEE,
   DELETE_ROLE,
   SET_EMPLOYEE_TO_TEMP_POSITION,
+  SET_ALL_GOVERMENT_AGENCIES,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -20,6 +21,7 @@ import {
   IEmployee,
   IEmployeeReq,
   IGoverment,
+  IGovermentReq,
   IPosition,
   IRole,
   IStateHomeStore,
@@ -28,7 +30,6 @@ import { positions } from "./dump";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
-    selectedGovOrg: {},
     positions: [],
     tempPosition: null,
     mode: "default",
@@ -59,9 +60,6 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SELECT_GOVERMENT](context, goverment: IGoverment) {
       context.selectedGoverment = goverment;
     },
-    [ADD_GOVERMENT](ctx, goverment) {
-      ctx.goverments.push(goverment);
-    },
     [DELETE_GOVERMENT](ctx, goverments: IGoverment[]) {
       ctx.goverments = goverments;
     },
@@ -70,6 +68,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     [SET_EMPLOYIES](ctx, employies) {
       ctx.employies = employies;
+    },
+    [SET_ALL_GOVERMENT_AGENCIES](ctx, allGovermentAgencies: IGoverment[]) {
+      console.log(allGovermentAgencies);
+      ctx.goverments = allGovermentAgencies;
     },
   },
   actions: {
@@ -83,48 +85,30 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(DELETE_POSITION, position);
     },
     [SET_TEMP_POSITION](context, position: IPosition) {
-      const {
-        roleId, //Long
-        governmentAgencyId, //Long
-        subdivisionId, //Long
-        nameRu,
-        nameEng, //String
-        nameRuShort, //String
-        nameKzShort,
-        children,
-      } = position;
-      context.commit(SET_TEMP_POSITION, {
-        superiorPositionId: 4545,
-        roleId, //Long
-        governmentAgencyId, //Long
-        subdivisionId, //Long
-        nameRu,
-        nameEng, //String
-        nameRuShort, //String
-        nameKzShort, //String
-        children,
-      });
-    },
-    [SET_EMPLOYEE_TO_TEMP_POSITION](ctx, employee: IEmployeeReq) {
-      const tempPos = JSON.parse(JSON.stringify(ctx.state.tempPosition));
-      tempPos.selectedEmployee = employee;
-      ctx.commit(SET_TEMP_POSITION, tempPos);
+      context.commit(SET_TEMP_POSITION, position);
     },
     [SET_MODE](context, mode: string) {
       context.commit(SET_MODE, mode);
     },
     [SELECT_GOVERMENT](context, goverment: IGoverment) {
-      context.commit(SELECT_GOVERMENT, goverment);
+      if (
+        !context.state.selectedGoverment ||
+        context.state.selectedGoverment.id !== goverment.id
+      ) {
+        context.commit(SELECT_GOVERMENT, goverment);
+      }
     },
-    [ADD_GOVERMENT](context, goverment: IGoverment) {
-      context.commit(ADD_GOVERMENT, goverment);
-      homeService.postNewGovermentAgence(goverment);
+    [ADD_GOVERMENT](context, goverment: IGovermentReq) {
+      //После добавления ГО, запрашиваю заново все ГО
+      homeService.postNewGovermentAgence(goverment).then(() => {
+        context.dispatch(SET_ALL_GOVERMENT_AGENCIES);
+      });
     },
-    [DELETE_GOVERMENT](context, govermentBin: number) {
+    [DELETE_GOVERMENT](context, govermentId: number) {
       context.commit(
         DELETE_GOVERMENT,
         context.state.goverments.filter(
-          (goverment) => goverment.bin !== govermentBin
+          (goverment) => goverment.id !== govermentId
         )
       );
     },
@@ -147,6 +131,11 @@ export const homeStore: Module<IStateHomeStore, any> = {
         SET_ROLES,
         ctx.state.roles.filter((roleChild) => roleChild.id !== role.id)
       );
+    },
+    async [SET_ALL_GOVERMENT_AGENCIES](ctx) {
+      await homeService.getAllGovermentAgencies().then((res) => {
+        ctx.commit(SET_ALL_GOVERMENT_AGENCIES, res);
+      });
     },
   },
   getters: {
@@ -172,5 +161,11 @@ export const homeStore: Module<IStateHomeStore, any> = {
       (id: number): IRole => {
         return state.roles.filter((role) => role.id === id)[0];
       },
+    GET_ALL_GOVERMENT_AGENCIES(state) {
+      return state.goverments;
+    },
+    GET_EMPLOYIES(state) {
+      return state.employies;
+    },
   },
 };

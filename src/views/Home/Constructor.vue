@@ -95,7 +95,10 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <AddGoverment :show="showAddGoverment" />
+    <AddGoverment
+      :modalDialog="modalDialog"
+      @close-modal="modalDialog = false"
+    />
   </div>
 </template>
 
@@ -122,7 +125,7 @@ export default Vue.extend({
         },
       ],
       positionsInput: "",
-      showAddGoverment: false,
+      modalDialog: false,
     };
   },
   mixins: [treeMixin],
@@ -149,7 +152,7 @@ export default Vue.extend({
   },
   methods: {
     addGoverment() {
-      this.showAddGoverment = true;
+      this.modalDialog = true;
     },
     addChild() {
       const newNode = {

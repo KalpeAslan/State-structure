@@ -24,8 +24,8 @@
         <v-divider />
         <div class="position_desc">
           <span class="position_desc_type"> Сотрудник </span>
-          <span v-if="selectedTempPosition.selectedEmployee">
-            {{ selectedTempPosition.selectedEmployee.user.name }}
+          <span v-if="selectedTempPositionEmployee">
+            {{ selectedTempPositionEmployee }}
           </span>
         </div>
         <v-form ref="form">
@@ -77,7 +77,8 @@
               outlined
               dense
               :rules="selectTempEmployeeRules"
-              :items="selectEmployies"
+              :items="employies"
+              v-model="selectedEmployee"
               label="Выбрать"
             ></v-select>
           </div>
@@ -148,7 +149,9 @@
 
 <script lang="ts">
 import { homeService } from "@/services/homeService";
+import { employees } from "@/store/dump";
 import { IEmployeeReq } from "@/store/interfaces";
+import { SET_EMPLOYIES } from "@/store/mutation-types";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -175,19 +178,28 @@ export default Vue.extend({
         positionRemovalDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
         supervisorId: null, //Long
       } as IEmployeeReq,
+      selectedEmployee: null,
     };
   },
 
   computed: {
     selectedTempPosition() {
+      console.log(this.$store.state.homeStore.tempPosition);
       return this.$store.state.homeStore.tempPosition;
     },
-    selectEmployies() {
-      if (this.selectedTempPosition.children) {
-        return this.selectedTempPosition.children.map(
-          (child) => child.user.name
-        );
-      }
+    selectedTempPositionEmployee() {
+      const tempPosition = this.$store.state.homeStore.tempPosition;
+      return tempPosition.employees && tempPosition.employees[0].user.name;
+    },
+    employies() {
+      return this.$store.getters.GET_EMPLOYIES
+        ? this.$store.getters.GET_EMPLOYIES.map((employee) => {
+            return {
+              text: employee.user.name,
+              value: employee.id,
+            };
+          })
+        : [];
     },
   },
   components: {
@@ -215,6 +227,9 @@ export default Vue.extend({
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+  },
+  beforeCreate() {
+    this.$store.dispatch(SET_EMPLOYIES, employees);
   },
 });
 </script>
@@ -259,3 +274,6 @@ export default Vue.extend({
   padding-right: 16px;
 }
 </style>
+
+function employies(SET_EMPLOYIES: string, employies: any) { throw new
+Error("Function not implemented."); }

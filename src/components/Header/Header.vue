@@ -143,12 +143,11 @@ export default Vue.extend({
   },
   computed: {
     selectedGovOrg() {
-      return this.$store.state.homeStore.selectedGovOrg;
+      return this.$store.state.homeStore.selectedGoverment;
     },
   },
   methods: {
     editGovOrg() {
-      // this.selectedToEditGovOrg = this.$store.homeStore.selectedGovOrg;
       this.editDialogvalid = true;
     },
     validate() {

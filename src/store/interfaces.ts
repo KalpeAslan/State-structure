@@ -10,6 +10,7 @@ export interface ITree {
   children?: ITree[];
   _key?: string;
   id: number;
+  employees?: IEmployee[];
   bin?: string | number;
   entityType: string;
   positions?: Array<IPosition>;
@@ -34,7 +35,6 @@ export interface IRole {
 }
 
 export interface IStateHomeStore {
-  selectedGovOrg: Object;
   positions: Array<IPosition>;
   tempPosition: null | IPosition;
   mode: string;
@@ -67,7 +67,30 @@ export interface IPosition {
   //Children array for Employees and roles
   children?: IEmployeeNode[];
 }
+
 export interface IGoverment {
+  id: number;
+  bin: string;
+  nameEng: string;
+  nameEngShort: string;
+  nameKz: string;
+  nameKzShort: string;
+  nameRu: string;
+  nameRuShort: string;
+  status: {
+    id: number;
+    nameKaz: string;
+    nameRus: string;
+    value: null | string;
+    code: {
+      code: number;
+      description: string;
+      id: number;
+    };
+  };
+}
+
+export interface IGovermentReq {
   bin: string | number;
   nameRu: string;
   nameKz: string;
@@ -76,7 +99,6 @@ export interface IGoverment {
   nameKzShort: string;
   nameEngShort: string;
 }
-
 export interface IEmployeeNode {
   id: number;
   governmentAgencyId: null | number;

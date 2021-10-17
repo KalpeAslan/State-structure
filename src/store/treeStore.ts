@@ -1,13 +1,7 @@
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import { tree, tree1, tree2 } from "./dump";
-import {
-  IEmployee,
-  IPosition,
-  IRole,
-  IStateTreeStore,
-  ITree,
-} from "./interfaces";
+import { IPosition, IRole, IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
   UPDATE_TREE,
@@ -21,6 +15,7 @@ import {
   DELETE_ROLE,
   SET_PLUS_SELECTED_NODE,
   ADD_SUBDIVISION,
+  DELETE_ROLE_FROM_TREE,
 } from "./mutation-types";
 
 function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
@@ -122,6 +117,9 @@ function traverse(tree: ITree | any) {
   if (!(tree.subdivisions || tree.positions || tree.employees)) {
     return;
   }
+  if (tree.entityType === "position") {
+    return;
+  }
   const children = JSON.parse(
     JSON.stringify(
       tree.subdivisions
@@ -133,8 +131,6 @@ function traverse(tree: ITree | any) {
   );
   if (tree.subdivisions) {
     delete tree.subdivisions;
-  } else if (tree.positions) {
-    delete tree.positions;
   } else if (tree.employees) {
     delete tree.employees;
   }
@@ -206,7 +202,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
         );
         return deleteNodeFromTree(context.state.tree, dragTargetNode.id);
       }
-
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "position"
@@ -223,11 +218,16 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "position" &&
         dragTargetNode.entityType === "employee"
       ) {
+        //Проверка на существующих сотрудников должности
+        // если сотрудник уже есть вывести предупреждение
+        if (dragEnteredNode.employees.length >= 1) {
+          return alert("У должности может быть только 1 сотрудник");
+        }
         treeService.connectEmployeeWithPosition(
           dragTargetNode.id,
           dragEnteredNode.id
         );
-        dragEnteredNode.children.push(
+        dragEnteredNode.employees.push(
           context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.id)
         );
         return context.dispatch(
@@ -256,22 +256,32 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "position" &&
         dragTargetNode.entityType === "role"
       ) {
-        return context.dispatch(INSERT_POSITION_TO_NODE, {
-          selectedNode: dragEnteredNode,
-          position: dragTargetNode,
-        });
+        console.log(dragTargetNode);
+
+        if (dragEnteredNode.roleId) {
+          return alert("У должности может быть только 1 сотрудник");
+        }
+        return (dragEnteredNode.roleId = dragTargetNode.roleId);
+        // return context.dispatch(INSERT_POSITION_TO_NODE, {
+        //   selectedNode: dragEnteredNode,
+        //   position: dragTargetNode,
+        // });
       }
       // Привязка должности к отделу
       if (
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "position"
       ) {
+        treeService.connectPositionWithSubdivision(
+          dragTargetNode.id,
+          dragEnteredNode.id
+        );
         insertNodeIntoTree(
           context.state.tree,
           dragEnteredNode.id,
           dragTargetNode
         );
-        dragEnteredNode.children.push(dragEnteredNode);
+        dragEnteredNode.positions.push(dragEnteredNode);
       }
     },
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
@@ -297,8 +307,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
         context.dispatch(DELETE_ROLE, position);
       }
     },
-    [DELETE_POSITION_FROM_NODE](context, { selectedNode, positionChild }) {
-      selectedNode.children = selectedNode.children.filter(
+    [DELETE_EMPLOYEE](context, { selectedNode, positionChild }) {
+      selectedNode.employees = selectedNode.employees.filter(
         (position) => position.id !== positionChild.id
       );
     },
@@ -313,6 +323,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
         subdivision
       );
       // this.commit(SET_PLUS_SELECTED_NODE, null);
+    },
+    [DELETE_ROLE_FROM_TREE](ctx, selectedNode) {
+      selectedNode.roleId = null;
     },
   },
   getters: {

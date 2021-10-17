@@ -68,46 +68,6 @@ export const tree: ITree = {
               entityType: "position",
               employees: [
                 {
-                  id: 4,
-                  governmentAgencyId: null,
-                  subdivisionId: null,
-                  userId: null,
-                  user: {
-                    id: 1,
-                    name: "Maksim 97",
-                  },
-                  positionId: null,
-                  recruitmentDate: 1634127372091,
-                  positionRemovalDate: null,
-                  supervisorId: null,
-                  statusId: null,
-                  status: {
-                    id: 1,
-                    name: "OK",
-                  },
-                  entityType: "employee",
-                },
-                {
-                  id: 5,
-                  governmentAgencyId: null,
-                  subdivisionId: null,
-                  userId: null,
-                  user: {
-                    id: 1,
-                    name: "Maksim 117",
-                  },
-                  positionId: null,
-                  recruitmentDate: 1634127372091,
-                  positionRemovalDate: null,
-                  supervisorId: null,
-                  statusId: null,
-                  status: {
-                    id: 1,
-                    name: "OK",
-                  },
-                  entityType: "employee",
-                },
-                {
                   id: 6,
                   governmentAgencyId: null,
                   subdivisionId: null,
@@ -153,6 +113,7 @@ export const tree1: ITree = {
     id: 1,
     name: "OK",
   },
+  employees: [],
   subdivisions: [
     {
       id: 3,
@@ -1473,68 +1434,7 @@ export const position: IPosition = {
     name: "OK",
   },
   entityType: "position",
-  employees: [
-    {
-      id: 45,
-      governmentAgencyId: null,
-      subdivisionId: null,
-      userId: null,
-      user: {
-        id: 1,
-        name: "Maksim",
-      },
-      positionId: null,
-      recruitmentDate: 1634127372091,
-      positionRemovalDate: null,
-      supervisorId: null,
-      statusId: null,
-      status: {
-        id: 1,
-        name: "OK",
-      },
-      entityType: "employee",
-    },
-    {
-      id: 2,
-      governmentAgencyId: null,
-      subdivisionId: null,
-      userId: null,
-      user: {
-        id: 1,
-        name: "Maksim",
-      },
-      positionId: null,
-      recruitmentDate: 1634127372091,
-      positionRemovalDate: null,
-      supervisorId: null,
-      statusId: null,
-      status: {
-        id: 1,
-        name: "OK",
-      },
-      entityType: "employee",
-    },
-    {
-      id: 3,
-      governmentAgencyId: null,
-      subdivisionId: null,
-      userId: null,
-      user: {
-        id: 1,
-        name: "Maksim",
-      },
-      positionId: null,
-      recruitmentDate: 1634127372091,
-      positionRemovalDate: null,
-      supervisorId: null,
-      statusId: null,
-      status: {
-        id: 1,
-        name: "OK",
-      },
-      entityType: "employee",
-    },
-  ],
+  employees: [],
 };
 
 export const employees: IEmployeeNode[] = [
@@ -1577,5 +1477,20 @@ export const employees: IEmployeeNode[] = [
       name: "OK",
     },
     entityType: "employee",
+  },
+];
+
+export const roles = [
+  {
+    roleId: 1234546,
+    entityType: "role",
+  },
+  {
+    roleId: 787845345,
+    entityType: "role",
+  },
+  {
+    roleId: 456656,
+    entityType: "role",
   },
 ];

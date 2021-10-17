@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="show" max-width="400px">
+    <v-dialog v-model="modalDialogMixin" max-width="400px">
       <v-card>
         <v-card-title>
           <span class="text-h5">Добавить ГО</span>
@@ -36,16 +36,18 @@
   </v-row>
 </template>
 <script lang="ts">
-import { IGoverment } from "@/store/interfaces";
+import { IGovermentReq } from "@/store/interfaces";
 import { ADD_GOVERMENT } from "@/store/mutation-types";
+import {modalMixin} from '../../mixins/modalMixin'
 import Vue from "vue";
 export default Vue.extend({
   props: {
-    show: {
+    modalDialog: {
       type: Boolean,
       default: false,
     },
   },
+  mixins:[modalMixin('modalDialog')],
   data() {
     return {
       valid: true,
@@ -57,7 +59,7 @@ export default Vue.extend({
         nameRuShort: null,
         nameKzShort: null,
         nameEngShort: null,
-      } as IGoverment,
+      } as IGovermentReq,
       govermentForm: [
         {
           name: "bin",
@@ -87,7 +89,10 @@ export default Vue.extend({
     },
     submit() {
       if (this.govermentForm.every((f) => this.goverment[f.name])) {
-        this.show = false;
+        this.$emit('close-modal')
+        this.goverment.nameEngShort = "Test Value"
+        this.goverment.nameRuShort = "Test Value"
+        this.goverment.nameKzShort = "Test Value"
         this.$store.dispatch(ADD_GOVERMENT, this.goverment);
       }
     },
@@ -102,3 +107,11 @@ export default Vue.extend({
   color: #000000;
 }
 </style>
+
+function modalMixin(): import("vue").VueConstructor<Vue>|import("vue").ComponentOptions<Vue, import("vue/types/options").DefaultData<Vue>, import("vue/types/options").DefaultMethods<Vue>, import("vue/types/options").DefaultComputed, import("vue/types/options").PropsDefinition<...>, import("vue/types/options").DefaultProps> {
+  throw new Error("Function not implemented.");
+}
+
+function modalMixin(props: any): import("vue").VueConstructor<Vue>|import("vue").ComponentOptions<Vue, import("vue/types/options").DefaultData<Vue>, import("vue/types/options").DefaultMethods<Vue>, import("vue/types/options").DefaultComputed, import("vue/types/options").PropsDefinition<...>, import("vue/types/options").DefaultProps> {
+  throw new Error("Function not implemented.");
+}

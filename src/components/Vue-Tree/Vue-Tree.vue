@@ -25,20 +25,34 @@
             class="d-flex flex-column justify-center align-center"
           >
             <v-list-item
-              v-for="positionChild in node.children"
+              v-for="positionChild in node.employees"
               :key="positionChild.id"
-              @click.stop="setEmployee(positionChild)"
               style="min-height: 0px !important"
             >
               <div class="position-node_child">
                 <span class="d-flex align-center" style="font-size: 12px">
                   {{ positionChild.user.name }}
                 </span>
-                <v-btn icon @click="deletePositionChild(node, positionChild)">
+                <v-btn icon @click="deleteEmployee(node, positionChild)">
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
               </div>
             </v-list-item>
+            <template v-if="node.roleId">
+              <v-list-item
+                :key="node.roleId"
+                style="min-height: 0px !important"
+              >
+                <div class="position-node_child">
+                  <span class="d-flex align-center" style="font-size: 12px">
+                    {{ node.roleId }}
+                  </span>
+                  <v-btn icon @click="deleteRole(node)">
+                    <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+                  </v-btn>
+                </div>
+              </v-list-item>
+            </template>
           </div>
         </div>
       </template>
@@ -48,6 +62,7 @@
 <script>
 import {
   DELETE_POSITION_FROM_NODE,
+  DELETE_ROLE_FROM_TREE,
   SET_EMPLOYEE_TO_TEMP_POSITION,
   SET_TEMP_POSITION,
   SET_TREE,
@@ -70,7 +85,6 @@ export default {
     unlock(node) {
       return this.$store.getters.GET_UNLOCK && node.entityType !== "position";
     },
-
     computeClassByNodeType(node) {
       const classes = [
         "d-flex",
@@ -81,26 +95,23 @@ export default {
         classes.push("justify-center flex-column position-node secondary");
       } else {
         classes.push("justify-space-between");
-        console.log(node.entityType);
         if (this.unlock(node)) classes.push("unlock-node secondary");
         else classes.push("text-white node-subdivision");
       }
       return classes;
     },
-    deletePositionChild(selectedNode, positionChild) {
-      this.$store.dispatch(DELETE_POSITION_FROM_NODE, {
+    deleteEmployee(selectedNode, positionChild) {
+      this.$store.dispatch(DELETE_EMPLOYEE, {
         selectedNode,
         positionChild,
       });
     },
+    deleteRole(selectedNode) {
+      this.$store.dispatch(DELETE_ROLE_FROM_TREE, selectedNode);
+    },
     selectPosition(node) {
       if (node.entityType === "position" && this.$route.name === "home.time") {
         this.$store.dispatch(SET_TEMP_POSITION, node);
-      }
-    },
-    setEmployee(employee) {
-      if (employee.entityType === "employee") {
-        this.$store.dispatch(SET_EMPLOYEE_TO_TEMP_POSITION, employee);
       }
     },
   },

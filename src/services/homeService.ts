@@ -1,17 +1,26 @@
+import { AxiosRequestConfig } from "axios";
 import {
   IEmployee,
   IEmployeeReplacementReq,
   IEmployeeReq,
   IPositionReq,
 } from "./../store/interfaces";
-import { IGoverment, ISubdivisonReq } from "@/store/interfaces";
+import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 
 class HomeService {
   constructor(private httpService: HttpService) {}
 
-  postNewGovermentAgence(data: IGoverment) {
-    return this.httpService.post("/api/v1/new/governmentAgency", data);
+  postNewGovermentAgence(data: IGovermentReq) {
+    return this.httpService.post("/api/v1/new/governmentAgencyFull", {
+      bin: 123456789012,
+      nameRu: "nameRu",
+      nameKz: "nameKz",
+      nameEng: "nameEng",
+      nameRuShort: "nameRuShort",
+      nameKzShort: "nameKzShort",
+      nameEngShort: "nameEngShort",
+    });
   }
 
   postNewSudivision(data: ISubdivisonReq) {
@@ -27,6 +36,10 @@ class HomeService {
   }
   postNewEmployeeReplacement(data: IEmployeeReplacementReq) {
     return this.httpService.post("/api/v1/new/employeeReplacement", data);
+  }
+
+  getAllGovermentAgencies(options?: AxiosRequestConfig): Promise<any> {
+    return this.httpService.get("/api/v1/get/all/GovernmentAgencies/", options);
   }
 
   getPositions() {

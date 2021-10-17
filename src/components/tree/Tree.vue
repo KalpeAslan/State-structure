@@ -362,7 +362,6 @@ export default {
       const treeBuilder = this.d3
         .tree()
         .nodeSize([this.config.nodeWidth, this.config.levelHeight]);
-      console.log(rootNode);
       const tree = treeBuilder(this.d3.hierarchy(rootNode));
       return [tree.descendants(), tree.links()];
     },

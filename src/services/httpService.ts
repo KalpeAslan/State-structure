@@ -4,7 +4,7 @@ export class HttpService {
   http: AxiosInstance;
   constructor() {
     this.http = axios.create({
-      baseURL: process.env.API_BASE_URL,
+      baseURL: "http://45.147.177.151:8081",
     });
   }
 
