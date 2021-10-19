@@ -55,7 +55,7 @@ export default Vue.extend({
         bin: null,
         nameRu: null,
         nameKz: null,
-        nameEn: null,
+        nameEng: null,
         nameRuShort: null,
         nameKzShort: null,
         nameEngShort: null,
@@ -74,7 +74,7 @@ export default Vue.extend({
           label: "Наименование на казахском",
         },
         {
-          name: "nameEn",
+          name: "nameEng",
           label: "Наименование на английском",
         },
       ],
@@ -90,9 +90,9 @@ export default Vue.extend({
     submit() {
       if (this.govermentForm.every((f) => this.goverment[f.name])) {
         this.$emit('close-modal')
-        this.goverment.nameEngShort = "Test Value"
-        this.goverment.nameRuShort = "Test Value"
-        this.goverment.nameKzShort = "Test Value"
+        this.goverment.nameEngShort = "Test ValueEng"
+        this.goverment.nameRuShort = "Test ValueRu"
+        this.goverment.nameKzShort = "Test ValueKz"
         this.$store.dispatch(ADD_GOVERMENT, this.goverment);
       }
     },

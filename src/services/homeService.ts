@@ -8,19 +8,17 @@ import {
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 
-class HomeService {
+export class HomeService {
   constructor(private httpService: HttpService) {}
 
+  getGovermentAgencyTree(id: number) {
+    return this.httpService.get(
+      "/api/v1/get/governmentAgencyFull?governmentAgencyId=" + id
+    );
+  }
+
   postNewGovermentAgence(data: IGovermentReq) {
-    return this.httpService.post("/api/v1/new/governmentAgencyFull", {
-      bin: 123456789012,
-      nameRu: "nameRu",
-      nameKz: "nameKz",
-      nameEng: "nameEng",
-      nameRuShort: "nameRuShort",
-      nameKzShort: "nameKzShort",
-      nameEngShort: "nameEngShort",
-    });
+    return this.httpService.post("/api/v1/new/governmentAgency", data);
   }
 
   postNewSudivision(data: ISubdivisonReq) {
@@ -39,7 +37,7 @@ class HomeService {
   }
 
   getAllGovermentAgencies(options?: AxiosRequestConfig): Promise<any> {
-    return this.httpService.get("/api/v1/get/all/GovernmentAgencies/", options);
+    return this.httpService.get("/api/v1/get/all/GovernmentAgencies", options);
   }
 
   getPositions() {
@@ -86,3 +84,19 @@ class HomeService {
 }
 
 export const homeService = new HomeService(new HttpService());
+
+// bin: "123456789999"
+// nameEn: "dsgdf"
+// nameEngShort: "Test Value"
+// nameKz: "dsgdf"
+// nameKzShort: "Test Value"
+// nameRu: "dsgdf"
+// nameRuShort: "Test Value"
+
+// bin //12-digit bumber
+//  nameRu //String
+//  nameKz //String
+//  nameEng //String
+//  nameRuShort //String
+//  nameKzShort //String
+//  nameEngShort //String

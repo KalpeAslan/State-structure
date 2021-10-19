@@ -76,7 +76,6 @@ export default Vue.extend({
       return this.$refs.form as VForm;
     },
     govermentAgencies(): IGoverment[] {
-      console.log(this.$store.getters.GET_ALL_GOVERMENT_AGENCIES);
       return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
     },
   },

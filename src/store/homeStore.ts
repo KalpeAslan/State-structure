@@ -14,6 +14,8 @@ import {
   DELETE_ROLE,
   SET_EMPLOYEE_TO_TEMP_POSITION,
   SET_ALL_GOVERMENT_AGENCIES,
+  SET_SUBDIVISION_UNDER_GA,
+  SET_TREE,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -37,6 +39,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     selectedGoverment: null,
     roles: [],
     employies: [],
+    subdivisionUnderGovernmentAgency: false,
   },
   mutations: {
     [SET_USER_TYPE](context) {},
@@ -73,6 +76,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
       console.log(allGovermentAgencies);
       ctx.goverments = allGovermentAgencies;
     },
+    [SET_SUBDIVISION_UNDER_GA](ctx, subdivisionUnderGaState: boolean) {
+      ctx.subdivisionUnderGovernmentAgency = subdivisionUnderGaState;
+    },
   },
   actions: {
     [SET_POSITIONS](context) {
@@ -90,11 +96,12 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SET_MODE](context, mode: string) {
       context.commit(SET_MODE, mode);
     },
-    [SELECT_GOVERMENT](context, goverment: IGoverment) {
+    async [SELECT_GOVERMENT](context, goverment: IGoverment) {
       if (
         !context.state.selectedGoverment ||
         context.state.selectedGoverment.id !== goverment.id
       ) {
+        context.dispatch(SET_TREE, goverment.id);
         context.commit(SELECT_GOVERMENT, goverment);
       }
     },
@@ -166,6 +173,12 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     GET_EMPLOYIES(state) {
       return state.employies;
+    },
+    GET_SUBDIVISON_UNDER_GA(state) {
+      return state.subdivisionUnderGovernmentAgency;
+    },
+    GET_SELECTED_GA(state) {
+      return state.selectedGoverment;
     },
   },
 };

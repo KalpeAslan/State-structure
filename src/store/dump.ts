@@ -54,7 +54,7 @@ export const tree: ITree = {
               roleId: null,
               governmentAgencyId: null,
               subdivisionId: null,
-              nameRu: "nameRu",
+              nameRu: "Dolzhnost",
               nameKz: "nameKz",
               nameEng: "nameEng",
               nameRuShort: "nmRu",
@@ -1435,6 +1435,7 @@ export const position: IPosition = {
   },
   entityType: "position",
   employees: [],
+  hidden: false,
 };
 
 export const employees: IEmployeeNode[] = [

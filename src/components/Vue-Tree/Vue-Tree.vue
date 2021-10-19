@@ -9,6 +9,7 @@
     >
       <template v-slot:node="{ node, collapsed }">
         <div
+          v-if="!node.hidden"
           :class="computeClassByNodeType(node)"
           @click="selectPosition(node)"
           :style="{
@@ -33,7 +34,11 @@
                 <span class="d-flex align-center" style="font-size: 12px">
                   {{ positionChild.user.name }}
                 </span>
-                <v-btn icon @click="deleteEmployee(node, positionChild)">
+                <v-btn
+                  v-if="unlock(node)"
+                  icon
+                  @click="deleteEmployee(node, positionChild)"
+                >
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
               </div>

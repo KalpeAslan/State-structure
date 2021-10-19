@@ -13,7 +13,7 @@
     >
       <template v-for="(node, index) of nodeDataList">
         <div
-          v-if="node.data.entityType !== 'employee'"
+          v-if="node.data.entityType !== 'employee' && !node.hidden"
           class="node-slot"
           :key="node.data.id"
           :index="index"
@@ -40,7 +40,7 @@
             @click="selectPosition(node.data)"
           >
             <v-btn
-              v-if="node.data.type !== 'position'"
+              v-if="node.data.type !== 'position' && unlock"
               icon
               absolute
               @click="deleteNode(node.data)"
@@ -58,7 +58,7 @@
             </slot>
             <v-btn
               icon
-              v-if="node.data.entityType !== 'position'"
+              v-if="node.data.entityType !== 'position' && unlock"
               absolute
               class="node-button plus"
               @click.stop="addSubdivison(node.data)"

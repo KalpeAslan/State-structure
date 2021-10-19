@@ -10,6 +10,7 @@ export interface ITree {
   children?: ITree[];
   _key?: string;
   id: number;
+  hidden?: boolean;
   employees?: IEmployee[];
   bin?: string | number;
   entityType: string;
@@ -42,11 +43,13 @@ export interface IStateHomeStore {
   selectedGoverment: IGoverment | null;
   roles: IRole[];
   employies: IEmployee[];
+  subdivisionUnderGovernmentAgency: boolean;
 }
 
 export interface IPosition {
   nameRu: string;
   id: number | string;
+  hidden?: boolean;
   employees: IEmployeeNode[];
   superiorPosition: null | number;
   subdivisionId: null | number;
@@ -94,7 +97,7 @@ export interface IGovermentReq {
   bin: string | number;
   nameRu: string;
   nameKz: string;
-  nameEn: string;
+  nameEng: string;
   nameRuShort: string;
   nameKzShort: string;
   nameEngShort: string;
@@ -136,6 +139,7 @@ export interface ISubdivisonReq {
   nameRuShort: string | null; //String
   nameKzShort: string | null; //String
   nameEngShort: string | null; //String
+  subdivisionUnderGovernmentAgency: boolean;
 }
 export interface IEmployeeReq {
   userId: number; //Long

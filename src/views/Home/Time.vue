@@ -184,7 +184,6 @@ export default Vue.extend({
 
   computed: {
     selectedTempPosition() {
-      console.log(this.$store.state.homeStore.tempPosition);
       return this.$store.state.homeStore.tempPosition;
     },
     selectedTempPositionEmployee() {

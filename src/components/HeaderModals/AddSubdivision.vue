@@ -36,9 +36,7 @@
   </v-row>
 </template>
 <script>
-import { ISubdivisonReq } from "@/store/interfaces";
 import { ADD_SUBDIVISION } from "@/store/mutation-types";
-import Vue from "vue";
 export default {
   props: {
     show: {
@@ -93,7 +91,6 @@ export default {
   computed: {
     modalDialog: {
       set(val) {
-        console.log(val);
         this.$emit("close-modal");
       },
       get() {

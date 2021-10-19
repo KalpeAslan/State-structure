@@ -1,6 +1,6 @@
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
-import { tree, tree1, tree2 } from "./dump";
+import { position, positions, tree, tree1, tree2 } from "./dump";
 import { IPosition, IRole, IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
@@ -89,30 +89,6 @@ function getNodeById(node: ITree, id): ITree {
   return runner(null, node);
 }
 
-function insertPositionItem(
-  node: ITree,
-  nodeId: string | number,
-  positionItem
-) {
-  if (node.children != null) {
-    for (let i = 0; i < node.children.length; i++) {
-      if (node.children.length !== 0) {
-        node.children.map((f) => {
-          if (f.id === nodeId) {
-            f.positions = f.positions ? f.positions : [];
-            f.positions.push(positionItem);
-          } else {
-            insertPositionItem(f, nodeId, positionItem);
-          }
-          return f;
-        });
-        return;
-      }
-      insertPositionItem(node.children[i], nodeId, positionItem);
-    }
-  }
-}
-
 function traverse(tree: ITree | any) {
   if (!(tree.subdivisions || tree.positions || tree.employees)) {
     return;
@@ -134,6 +110,7 @@ function traverse(tree: ITree | any) {
   } else if (tree.employees) {
     delete tree.employees;
   }
+  tree.hidden = false;
   tree.children = children;
   tree.id = Math.round(Math.random() * 4451454121454);
   if (children.length) {
@@ -143,6 +120,20 @@ function traverse(tree: ITree | any) {
   }
 }
 
+function deletePositionParentByPositionId(tree: any, positionId) {
+  if (tree.children != null) {
+    for (let i = 0; i < tree.children.length; i++) {
+      tree.children = tree.children.filter((f) => {
+        if (f.id === positionId) {
+          return false;
+        }
+        return f.nodeId != positionId;
+      });
+      if (!tree.children.length) return;
+      deletePositionParentByPositionId(tree.children[i], positionId);
+    }
+  }
+}
 export const treeStore: Module<IStateTreeStore, any> = {
   state: {
     tree: null,
@@ -170,37 +161,24 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
   },
   actions: {
-    [SET_TREE](context, treeId): Promise<any> {
-      return new Promise((res, rej) => {
-        setTimeout(() => {
-          let _tree;
-          switch (treeId) {
-            case 0:
-              _tree = tree;
-              break;
-            case 1:
-              _tree = tree1;
-              break;
-            case 2:
-              _tree = tree2;
-              break;
-          }
-          context.commit(SET_TREE, _tree);
-          res(_tree);
-        }, 0);
-      });
+    async [SET_TREE](context, treeId): Promise<any> {
+      await treeService.homeService
+        .getGovermentAgencyTree(treeId)
+        .then((tree) => {
+          context.commit(SET_TREE, tree);
+        });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        context.state.tree.children.push(dragTargetNode);
+        deleteNodeFromTree(context.state.tree, dragTargetNode.id);
         treeService.connectSubdivisionWithGovermentAgency(
           dragTargetNode.id,
           dragEnteredNode.id
         );
-        return deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+        return context.state.tree.children.push(dragTargetNode);
       }
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
@@ -244,20 +222,19 @@ export const treeStore: Module<IStateTreeStore, any> = {
           dragTargetNode.id,
           dragEnteredNode.id
         );
-        insertNodeIntoTree(
+
+        deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+        return insertNodeIntoTree(
           context.state.tree,
           dragEnteredNode.id,
           dragTargetNode
         );
-        return deleteNodeFromTree(context.state.tree, dragTargetNode.id);
       }
 
       if (
         dragEnteredNode.entityType === "position" &&
         dragTargetNode.entityType === "role"
       ) {
-        console.log(dragTargetNode);
-
         if (dragEnteredNode.roleId) {
           return alert("У должности может быть только 1 сотрудник");
         }
@@ -276,12 +253,14 @@ export const treeStore: Module<IStateTreeStore, any> = {
           dragTargetNode.id,
           dragEnteredNode.id
         );
+        deletePositionParentByPositionId(context.state.tree, dragTargetNode.id);
+        dragTargetNode = JSON.parse(JSON.stringify(dragTargetNode));
+        dragTargetNode.id = Math.round(Math.random() * 545155);
         insertNodeIntoTree(
           context.state.tree,
           dragEnteredNode.id,
           dragTargetNode
         );
-        dragEnteredNode.positions.push(dragEnteredNode);
       }
     },
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
@@ -315,7 +294,12 @@ export const treeStore: Module<IStateTreeStore, any> = {
     ["DELETE_DRAG_TREE"](ctx) {
       ctx.commit("DELETE_DRAG_TREE");
     },
-    [ADD_SUBDIVISION](ctx, subdivision: ITree) {
+    [ADD_SUBDIVISION](ctx, subdivision) {
+      const subdivisionForm = { ...subdivision };
+      subdivisionForm.superiorSubdivisionId =
+        ctx.state.plusSelectedNode.entityType === "governmentAgency";
+      treeService.homeService.postNewSudivision(subdivisionForm);
+
       subdivision.children = [];
       subdivision.id = Math.round(Math.random() * 566565);
       subdivision.entityType = "subdivision";

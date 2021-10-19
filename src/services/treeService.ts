@@ -1,7 +1,12 @@
+import { HomeService, homeService } from "./homeService";
 import { HttpService } from "./httpService";
+import store from "@/store";
 
 class TreeService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    public homeService: HomeService
+  ) {}
 
   connectEmployeeWithUser(employeeId: number, userId: number) {
     return this.httpService.get("/api/v1/connect/employee/with/user", {
@@ -82,4 +87,4 @@ class TreeService {
   }
 }
 
-export const treeService = new TreeService(new HttpService());
+export const treeService = new TreeService(new HttpService(), homeService);
