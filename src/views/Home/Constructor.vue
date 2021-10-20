@@ -6,7 +6,17 @@
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="header d-flex justify-space-between">
-        <div class="text-h6 d-inline-block">Штатная структура</div>
+        <div
+          class="text-h6 d-inline-block"
+          style="
+            font-weight: 500;
+            font-size: 16px !important;
+            line-height: 24px;
+            margin-bottom: 10px;
+          "
+        >
+          Штатная структура
+        </div>
         <v-btn
           @click="addGoverment()"
           color="primary"
@@ -17,7 +27,12 @@
           variant="outlined"
         >
           <v-icon size="14"> mdi-plus-thick </v-icon>
-          <div class="text-caption">Добавить</div>
+          <div
+            class="text-caption"
+            style="font-style: normal; font-weight: normal; line-height: 16px"
+          >
+            Добавить
+          </div>
         </v-btn>
       </div>
       <v-text-field
@@ -35,7 +50,17 @@
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="header d-flex justify-space-between">
-        <div class="text-h6 d-inline-block">Должности</div>
+        <div
+          class="text-h6 d-inline-block"
+          style="
+            font-weight: 500;
+            font-size: 16px !important;
+            line-height: 24px;
+            margin-bottom: 10px;
+          "
+        >
+          Должности
+        </div>
         <v-btn
           color="primary"
           class="mb-2 d-inline-block"
@@ -46,7 +71,12 @@
           variant="outlined"
         >
           <v-icon size="14"> mdi-plus-thick </v-icon>
-          <div class="text-caption">Добавить</div>
+          <div
+            class="text-caption"
+            style="font-style: normal; font-weight: normal; line-height: 16px"
+          >
+            Добавить
+          </div>
         </v-btn>
       </div>
       <v-text-field
@@ -68,10 +98,13 @@
           <span>{{ position.nameRu }}</span>
 
           <template>
-            <div class="text-center">
+            <div
+              class="text-center"
+              style="flex: none; right: 20px; position: absolute"
+            >
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon style="flex: none" v-bind="attrs" v-on="on">
+                  <v-btn icon v-bind="attrs" v-on="on">
                     <v-icon> mdi-dots-horizontal </v-icon>
                   </v-btn>
                 </template>

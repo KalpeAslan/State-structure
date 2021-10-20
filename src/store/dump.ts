@@ -1,4 +1,4 @@
-import { IEmployeeNode, IPosition } from "./interfaces";
+import { IEmployeeNode, IGoverment, IPosition } from "./interfaces";
 import { ITree } from "@/store/interfaces";
 export const tree: ITree = {
   id: 1,
@@ -1444,6 +1444,7 @@ export const employees: IEmployeeNode[] = [
     governmentAgencyId: null,
     subdivisionId: null,
     userId: null,
+    key: Math.round(Math.random() * 545456446),
     user: {
       id: 1,
       name: "Maksim 97",
@@ -1464,6 +1465,8 @@ export const employees: IEmployeeNode[] = [
     governmentAgencyId: null,
     subdivisionId: null,
     userId: null,
+    key: Math.round(Math.random() * 545456446),
+
     user: {
       id: 1,
       name: "Maksim 97",
@@ -1485,13 +1488,61 @@ export const roles = [
   {
     roleId: 1234546,
     entityType: "role",
+    key: Math.round(Math.random() * 545456446),
   },
   {
     roleId: 787845345,
     entityType: "role",
+    key: Math.round(Math.random() * 545456446),
   },
   {
     roleId: 456656,
     entityType: "role",
+    key: Math.round(Math.random() * 545456446),
+  },
+];
+
+export const governmentAgencies: IGoverment[] = [
+  {
+    id: 1,
+    bin: "string",
+    nameEng: "string",
+    nameEngShort: "string",
+    nameKz: "string",
+    nameKzShort: "string",
+    nameRu: "testValue front",
+    nameRuShort: "string",
+    status: {
+      id: 1,
+      nameKaz: "kaz_Черновик",
+      nameRus: "Черновик",
+      value: null,
+      code: {
+        code: 1,
+        description: "заявка",
+        id: 1,
+      },
+    },
+  },
+  {
+    id: 1,
+    bin: "string",
+    nameEng: "string",
+    nameEngShort: "string",
+    nameKz: "string",
+    nameKzShort: "string",
+    nameRu: "Test value front",
+    nameRuShort: "string",
+    status: {
+      id: 1,
+      nameKaz: "kaz_Черновик",
+      nameRus: "Черновик",
+      value: null,
+      code: {
+        code: 1,
+        description: "заявка",
+        id: 1,
+      },
+    },
   },
 ];

@@ -81,6 +81,10 @@ export class HomeService {
       }, 500);
     });
   }
+
+  changeGovermentAgency(goverment: IGovermentReq): Promise<any> {
+    return this.httpService.post("/api/v1/change/governmentAgency", goverment);
+  }
 }
 
 export const homeService = new HomeService(new HttpService());

@@ -48,14 +48,14 @@ export default {
     return {
       valid: true,
       subdivision: {
-        governmentAgencyId: null,
+        governmentAgencyId: this.$store.getters.GET_SELECTED_GA.id,
         superiorSubdivisionId: null,
         nameRu: null,
         nameKz: null,
         nameEng: null,
-        nameRuShort: null,
-        nameKzShort: null,
-        nameEngShort: null,
+        nameRuShort: "test nameRuShort",
+        nameKzShort: "test nameKzShort",
+        nameEngShort: "test nameEngShort",
       },
       subdivisionForm: [
         {
@@ -67,7 +67,7 @@ export default {
           label: "Наименование на казахском",
         },
         {
-          name: "nameEn",
+          name: "nameEng",
           label: "Наименование на английском",
         },
       ],

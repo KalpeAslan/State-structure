@@ -15,7 +15,7 @@
         <div
           v-if="node.data.entityType !== 'employee' && !node.hidden"
           class="node-slot"
-          :key="node.data.id"
+          :key="node.data.key"
           :index="index"
           :style="{
             left: formatDimension(
@@ -466,7 +466,7 @@ export default {
   .link {
     stroke-width: 2px !important;
     fill: transparent !important;
-    stroke: #414649 !important;
+    stroke: red !important;
   }
 }
 

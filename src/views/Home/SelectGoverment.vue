@@ -11,7 +11,18 @@
     >
       <div class="d-flex align-items-center">
         <v-icon size="20"> mdi-close </v-icon>
-        <div class="text-h6 d-inline-block ml-4">Штатная структура</div>
+        <div
+          class="text-h6 d-inline-block ml-4"
+          style="
+            font-weight: 500;
+            font-size: 16px !important;
+            line-height: 24px;
+            margin-top: 12px;
+            margin-bottom: 10px;
+          "
+        >
+          Штатная структура
+        </div>
       </div>
       <v-btn
         color="primary"
@@ -46,6 +57,7 @@
 </template>
 
 <script lang="ts">
+import { governmentAgencies } from "@/store/dump";
 import { IGoverment } from "@/store/interfaces";
 import {
   SELECT_GOVERMENT,
@@ -76,7 +88,8 @@ export default Vue.extend({
       return this.$refs.form as VForm;
     },
     govermentAgencies(): IGoverment[] {
-      return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
+      return governmentAgencies;
+      // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
     },
   },
   created() {

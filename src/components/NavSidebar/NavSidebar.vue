@@ -8,16 +8,27 @@
       <v-btn
         width="96"
         height="68"
-        class="px-1"
+        class="px-1 text-capitalize"
         depressed
         @click="navClick(item.routeName)"
         :color="sidebarItemColor(item.routeName)"
       >
         <div class="text-caption sidebar-item">
-          <v-icon>
+          <v-icon :color="computeIconColor(item.routeName)">
             {{ item.iconName }}
           </v-icon>
-          {{ item.title }}
+          <span
+            :style="{ color: computeIconColor(item.routeName) }"
+            style="
+              font-style: normal;
+              font-weight: normal;
+              font-size: 12px;
+              line-height: 16px;
+              margin-top: 7px;
+            "
+          >
+            {{ item.title }}
+          </span>
         </div>
       </v-btn>
     </div>
@@ -62,6 +73,9 @@ export default Vue.extend({
         return this.$store.dispatch(SET_MODE);
       }
       return this.$router.push({ name: routeName });
+    },
+    computeIconColor(routeName) {
+      return routeName === this.$route.name ? "white" : "#828282";
     },
   },
 });

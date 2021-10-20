@@ -1,6 +1,6 @@
 <template>
-  <v-row v-if="false" justify="center">
-    <v-dialog v-model="editDialog" max-width="400px">
+  <v-row justify="center">
+    <v-dialog v-model="modalDialogMixin" width="420px">
       <v-card>
         <v-card-title>
           <span class="text-h5">Редактировать ГО</span>
@@ -8,35 +8,89 @@
         <v-card-text>
           <v-container>
             <template>
-              <v-form ref="form" lazy-validation>
-                <div v-for="input in editForm" :key="input.title">
-                  <div class="text-subtitle1">{{ input.title }}</div>
+              <v-form
+                @submit.prevent="submit"
+                ref="form"
+                lazy-validation
+                v-model="valid"
+              >
+                <div v-for="input in govermentForm" :key="input.name">
+                  <div class="label">{{ input.label }}</div>
                   <v-text-field
-                    :placeholder="selectedToEditGovOrg[input.name]"
+                    :rules="[(v) => !!v || 'Заполните это поле!']"
                     outlined
                     class="mb-3"
                     hide-details
-                    v-model="selectedToEditGovOrg[input.name]"
+                    required
+                    v-model="goverment[input.name]"
                   >
                   </v-text-field>
                 </div>
+                <v-btn type="submit" color="primary" @click="validate">
+                  Сохранить
+                </v-btn>
               </v-form>
             </template>
           </v-container>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="editDialog = false"> Сохранить </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { modalsMixin } from "@/mixins/modalsMixin";
+import { IGovermentReq } from "@/store/interfaces";
+import { EDIT_GOVERMENT } from "@/store/mutation-types";
+import Vue from "vue";
+export default Vue.extend({
+  mixins: [modalsMixin],
   data() {
     return {
-      dialog: false,
+      valid: true,
+      govermentForm: [
+        {
+          name: "bin",
+          label: "БИН",
+        },
+        {
+          name: "nameRu",
+          label: "Наименование на русском",
+        },
+        {
+          name: "nameKz",
+          label: "Наименование на казахском",
+        },
+        {
+          name: "nameEng",
+          label: "Наименование на английском",
+        },
+      ],
     };
   },
-};
+  computed: {
+    goverment(): IGovermentReq {
+      return this.$store.getters.GET_SELECTED_GA;
+    },
+  },
+  methods: {
+    validate() {
+      this.$refs.form.validate();
+    },
+    reset() {
+      this.$refs.form.reset();
+    },
+    editGovermentAgency() {
+      console.log(this.goverment);
+    },
+    submit() {
+      if (this.govermentForm.every((f) => this.goverment[f.name])) {
+        this.$emit("close-modal");
+        this.goverment.nameEngShort = "Test ValueEng";
+        this.goverment.nameRuShort = "Test ValueRu";
+        this.goverment.nameKzShort = "Test ValueKz";
+        this.$store.dispatch(EDIT_GOVERMENT, { ...this.goverment });
+      }
+    },
+  },
+});
 </script>

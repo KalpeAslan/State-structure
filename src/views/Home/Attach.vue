@@ -6,7 +6,17 @@
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="header d-flex justify-space-between">
-        <div class="text-h6 d-inline-block">Сотрудники</div>
+        <div
+          class="text-h6 d-inline-block"
+          style="
+            font-weight: 500;
+            font-size: 16px !important;
+            line-height: 24px;
+            margin-bottom: 10px;
+          "
+        >
+          Сотрудники
+        </div>
       </div>
       <v-text-field
         outlined
@@ -33,7 +43,17 @@
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="header d-flex justify-space-between">
-        <div class="text-h6 d-inline-block">Роли</div>
+        <div
+          class="text-h6 d-inline-block"
+          style="
+            font-weight: 500;
+            font-size: 16px !important;
+            line-height: 24px;
+            margin-bottom: 10px;
+          "
+        >
+          Роли
+        </div>
       </div>
       <v-text-field
         outlined

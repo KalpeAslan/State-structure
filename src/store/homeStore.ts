@@ -16,6 +16,8 @@ import {
   SET_ALL_GOVERMENT_AGENCIES,
   SET_SUBDIVISION_UNDER_GA,
   SET_TREE,
+  EDIT_GOVERMENT,
+  RELOAD_TREE,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -44,14 +46,17 @@ export const homeStore: Module<IStateHomeStore, any> = {
   mutations: {
     [SET_USER_TYPE](context) {},
     [SET_POSITIONS](context, positions: IPosition[]) {
-      context.positions = positions;
+      context.positions = positions.map((position) => {
+        position.key = Math.round(Math.random() * 545145544);
+        return position;
+      });
     },
     [ADD_POSITION](context, position: IPosition) {
       context.positions.push(position);
     },
     [DELETE_POSITION](context, position: IPosition) {
       context.positions = context.positions.filter(
-        (cPosition) => cPosition.id !== position.id
+        (cPosition) => cPosition.key !== position.key
       );
     },
     [SET_TEMP_POSITION](context, tempPosition: IPosition) {
@@ -85,6 +90,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(SET_POSITIONS, positions);
     },
     [ADD_POSITION](context, postition: IPosition) {
+      postition.key = Math.round(Math.random() * 465465464154);
       context.commit(ADD_POSITION, postition);
     },
     [DELETE_POSITION](context, position: IPosition) {
@@ -115,7 +121,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(
         DELETE_GOVERMENT,
         context.state.goverments.filter(
-          (goverment) => goverment.id !== govermentId
+          (goverment) => goverment.key !== govermentId
         )
       );
     },
@@ -129,19 +135,25 @@ export const homeStore: Module<IStateHomeStore, any> = {
       ctx.commit(
         SET_EMPLOYIES,
         ctx.state.employies.filter(
-          (employeeChild) => employeeChild.id !== employee.id
+          (employeeChild) => employeeChild.key !== employee.key
         )
       );
     },
     [DELETE_ROLE](ctx, role: IRole) {
       ctx.commit(
         SET_ROLES,
-        ctx.state.roles.filter((roleChild) => roleChild.id !== role.id)
+        ctx.state.roles.filter((roleChild) => roleChild.key !== role.key)
       );
     },
     async [SET_ALL_GOVERMENT_AGENCIES](ctx) {
       await homeService.getAllGovermentAgencies().then((res) => {
         ctx.commit(SET_ALL_GOVERMENT_AGENCIES, res);
+      });
+    },
+    async [EDIT_GOVERMENT](ctx, goverment: IGovermentReq | any) {
+      goverment.status = goverment.status.id;
+      await homeService.changeGovermentAgency(goverment).then(() => {
+        ctx.dispatch(RELOAD_TREE);
       });
     },
   },
@@ -161,12 +173,12 @@ export const homeStore: Module<IStateHomeStore, any> = {
     GET_EMPLOYEE_BY_ID:
       (state) =>
       (id: number): IEmployee => {
-        return state.employies.filter((employee) => employee.id === id)[0];
+        return state.employies.filter((employee) => employee.key === id)[0];
       },
     GET_ROLE_BY_ID:
       (state) =>
       (id: number): IRole => {
-        return state.roles.filter((role) => role.id === id)[0];
+        return state.roles.filter((role) => role.key === id)[0];
       },
     GET_ALL_GOVERMENT_AGENCIES(state) {
       return state.goverments;

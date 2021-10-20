@@ -1,14 +1,13 @@
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
-import { position, positions, tree, tree1, tree2 } from "./dump";
-import { IPosition, IRole, IStateTreeStore, ITree } from "./interfaces";
+import { tree } from "./dump";
+import { IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
   UPDATE_TREE,
   INSERT_NODE_TO_TREE,
   DELETE_NODE,
   SET_UNLOCK,
-  DELETE_POSITION_FROM_NODE,
   SET_DRAG_TREE,
   INSERT_POSITION_TO_NODE,
   DELETE_EMPLOYEE,
@@ -16,56 +15,37 @@ import {
   SET_PLUS_SELECTED_NODE,
   ADD_SUBDIVISION,
   DELETE_ROLE_FROM_TREE,
+  RELOAD_TREE,
 } from "./mutation-types";
 
-function insertNodeIntoTree(node, nodeId: string | number, newNode: ITree) {
-  if (node.id == nodeId) {
-    newNode._key = node.id;
+function insertNodeIntoTree(node, nodeKey: string | number, newNode: ITree) {
+  if (node.key == nodeKey) {
+    newNode._key = node.key;
     if (!node.children) {
       node.children = [];
     }
     node.children.push(newNode);
   } else if (node.children != null) {
     for (let i = 0; i < node.children.length; i++) {
-      insertNodeIntoTree(node.children[i], nodeId, newNode);
+      insertNodeIntoTree(node.children[i], nodeKey, newNode);
     }
   }
 }
 
-function deleteNodeFromTree(node, nodeId) {
+function deleteNodeFromTree(node, nodeKey) {
   if (node.children != null) {
     for (let i = 0; i < node.children.length; i++) {
-      let filtered = node.children.filter((f) => f.id == nodeId);
+      let filtered = node.children.filter((f) => f.key == nodeKey);
       if (filtered.length !== 0) {
         node.children = node.children.filter((f) => {
-          if (f.id === nodeId) {
+          if (f.key === nodeKey) {
             return false;
           }
           return true;
         });
         return;
       }
-      deleteNodeFromTree(node.children[i], nodeId);
-    }
-  }
-}
-
-function deletePositionFromNode(node, nodeId, positionId) {
-  if (node.children != null) {
-    for (let i = 0; i < node.children.length; i++) {
-      let filtered = node.children.filter((f) => f.id == nodeId);
-      if (filtered.length !== 0) {
-        node.children = node.children.map((f) => {
-          if (f.id === nodeId) {
-            f.positionChildren = f.positionChildren.filter((positionChild) => {
-              return positionChild.id !== positionId;
-            });
-          }
-          return f;
-        });
-        return;
-      }
-      deletePositionFromNode(node.children[i], nodeId, positionId);
+      deleteNodeFromTree(node.children[i], nodeKey);
     }
   }
 }
@@ -76,12 +56,12 @@ function getTreeDetpth(node: ITree): number {
   );
 }
 
-function getNodeById(node: ITree, id): ITree {
+function getNodeById(node: ITree, key): ITree {
   const reduce = [].reduce;
   function runner(result, node) {
     if (result || !node) return result;
     return (
-      (node.id == id && node) ||
+      (node.key == key && node) ||
       runner(null, node.children) ||
       reduce.call(Object(node), runner, result)
     );
@@ -93,6 +73,7 @@ function traverse(tree: ITree | any) {
   if (!(tree.subdivisions || tree.positions || tree.employees)) {
     return;
   }
+  tree.key = Math.round(Math.random() * 4451454121454);
   if (tree.entityType === "position") {
     return;
   }
@@ -112,7 +93,6 @@ function traverse(tree: ITree | any) {
   }
   tree.hidden = false;
   tree.children = children;
-  tree.id = Math.round(Math.random() * 4451454121454);
   if (children.length) {
     children.map((child) => traverse(child));
   } else {
@@ -124,10 +104,10 @@ function deletePositionParentByPositionId(tree: any, positionId) {
   if (tree.children != null) {
     for (let i = 0; i < tree.children.length; i++) {
       tree.children = tree.children.filter((f) => {
-        if (f.id === positionId) {
+        if (f.key === positionId) {
           return false;
         }
-        return f.nodeId != positionId;
+        return f.nodeKey != positionId;
       });
       if (!tree.children.length) return;
       deletePositionParentByPositionId(tree.children[i], positionId);
@@ -142,7 +122,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     plusSelectedNode: null,
   },
   mutations: {
-    [SET_TREE](state, tree: ITree): void {
+    [SET_TREE](state, tree1: ITree): void {
       const _tree = JSON.parse(JSON.stringify(tree));
       traverse(_tree);
       state.tree = _tree;
@@ -169,14 +149,16 @@ export const treeStore: Module<IStateTreeStore, any> = {
         });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
+      if (dragEnteredNode.id === dragTargetNode.id) return;
+
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+        deleteNodeFromTree(context.state.tree, dragTargetNode.key);
         treeService.connectSubdivisionWithGovermentAgency(
-          dragTargetNode.id,
-          dragEnteredNode.id
+          dragTargetNode.key,
+          dragEnteredNode.key
         );
         return context.state.tree.children.push(dragTargetNode);
       }
@@ -185,8 +167,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragTargetNode.entityType === "position"
       ) {
         treeService.connectPositionWithGovermentAgency(
-          dragTargetNode.id,
-          dragEnteredNode.id
+          dragTargetNode.key,
+          dragEnteredNode.key
         );
         context.state.tree.children.push(dragTargetNode);
       }
@@ -202,15 +184,15 @@ export const treeStore: Module<IStateTreeStore, any> = {
           return alert("У должности может быть только 1 сотрудник");
         }
         treeService.connectEmployeeWithPosition(
-          dragTargetNode.id,
-          dragEnteredNode.id
+          dragTargetNode.key,
+          dragEnteredNode.key
         );
         dragEnteredNode.employees.push(
-          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.id)
+          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
         );
         return context.dispatch(
           DELETE_EMPLOYEE,
-          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.id)
+          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
         );
       }
 
@@ -219,14 +201,14 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragTargetNode.entityType === "subdivision"
       ) {
         treeService.connectSubdivisionWithSuperiorSubdivision(
-          dragTargetNode.id,
-          dragEnteredNode.id
+          dragTargetNode.key,
+          dragEnteredNode.key
         );
 
-        deleteNodeFromTree(context.state.tree, dragTargetNode.id);
+        deleteNodeFromTree(context.state.tree, dragTargetNode.key);
         return insertNodeIntoTree(
           context.state.tree,
-          dragEnteredNode.id,
+          dragEnteredNode.key,
           dragTargetNode
         );
       }
@@ -250,24 +232,27 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragTargetNode.entityType === "position"
       ) {
         treeService.connectPositionWithSubdivision(
-          dragTargetNode.id,
-          dragEnteredNode.id
+          dragTargetNode.key,
+          dragEnteredNode.key
         );
-        deletePositionParentByPositionId(context.state.tree, dragTargetNode.id);
+        deletePositionParentByPositionId(
+          context.state.tree,
+          dragTargetNode.key
+        );
         dragTargetNode = JSON.parse(JSON.stringify(dragTargetNode));
-        dragTargetNode.id = Math.round(Math.random() * 545155);
+        dragTargetNode.key = Math.round(Math.random() * 545155);
         insertNodeIntoTree(
           context.state.tree,
-          dragEnteredNode.id,
+          dragEnteredNode.key,
           dragTargetNode
         );
       }
     },
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
-      insertNodeIntoTree(context.state.tree, selectedNode.id, newNode);
+      insertNodeIntoTree(context.state.tree, selectedNode.key, newNode);
     },
     [DELETE_NODE](context, selectedNode: ITree) {
-      deleteNodeFromTree(context.state.tree, selectedNode.id);
+      deleteNodeFromTree(context.state.tree, selectedNode.key);
     },
     [SET_UNLOCK](context, unlock: boolean) {
       context.commit(SET_UNLOCK, unlock);
@@ -288,7 +273,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [DELETE_EMPLOYEE](context, { selectedNode, positionChild }) {
       selectedNode.employees = selectedNode.employees.filter(
-        (position) => position.id !== positionChild.id
+        (position) => position.key !== positionChild.key
       );
     },
     ["DELETE_DRAG_TREE"](ctx) {
@@ -296,20 +281,25 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [ADD_SUBDIVISION](ctx, subdivision) {
       const subdivisionForm = { ...subdivision };
-      subdivisionForm.superiorSubdivisionId =
+      subdivisionForm.subdivisionUnderGovernmentAgency =
         ctx.state.plusSelectedNode.entityType === "governmentAgency";
+      subdivisionForm.superiorSubdivisionId = ctx.state.plusSelectedNode.id;
       treeService.homeService.postNewSudivision(subdivisionForm);
 
       subdivision.children = [];
-      subdivision.id = Math.round(Math.random() * 566565);
+      subdivision.key = Math.round(Math.random() * 566565);
       subdivision.entityType = "subdivision";
-      getNodeById(ctx.state.tree, ctx.state.plusSelectedNode.id).children.push(
+      console.log(subdivision);
+      getNodeById(ctx.state.tree, ctx.state.plusSelectedNode.key).children.push(
         subdivision
       );
       // this.commit(SET_PLUS_SELECTED_NODE, null);
     },
     [DELETE_ROLE_FROM_TREE](ctx, selectedNode) {
       selectedNode.roleId = null;
+    },
+    [RELOAD_TREE](ctx) {
+      ctx.commit(SET_TREE, ctx.state.plusSelectedNode.id);
     },
   },
   getters: {
@@ -322,8 +312,11 @@ export const treeStore: Module<IStateTreeStore, any> = {
     GET_DRAG_TREE(state) {
       return state.dragTargetNode;
     },
-    GET_NODE_BY_ID: (state) => (id) => {
-      return getNodeById(state.tree, id);
+    GET_NODE_BY_ID: (state) => (key) => {
+      return getNodeById(state.tree, key);
+    },
+    GET_PLUS_SELECTED_NODE(state) {
+      return state.plusSelectedNode;
     },
   },
 };

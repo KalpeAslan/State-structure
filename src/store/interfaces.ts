@@ -9,6 +9,7 @@ export interface ITree {
   subdivisions?: Array<ITree>;
   children?: ITree[];
   _key?: string;
+  key?: number | string;
   id: number;
   hidden?: boolean;
   employees?: IEmployee[];
@@ -33,6 +34,7 @@ export interface ITree {
 export interface IRole {
   name: string;
   id: number | string;
+  key: number | string;
 }
 
 export interface IStateHomeStore {
@@ -48,6 +50,7 @@ export interface IStateHomeStore {
 
 export interface IPosition {
   nameRu: string;
+  key?: number | string;
   id: number | string;
   hidden?: boolean;
   employees: IEmployeeNode[];
@@ -75,6 +78,7 @@ export interface IGoverment {
   id: number;
   bin: string;
   nameEng: string;
+  key?: number | string;
   nameEngShort: string;
   nameKz: string;
   nameKzShort: string;
@@ -106,6 +110,7 @@ export interface IEmployeeNode {
   id: number;
   governmentAgencyId: null | number;
   subdivisionId: number;
+  key?: number | string;
   recruitmentDate?: string | number;
   positionRemovalDate?: string;
   status: {
@@ -127,6 +132,7 @@ export interface IEmployeeNode {
 export interface IEmployee {
   name: string;
   id: number;
+  key: number | string;
   type?: string;
 }
 
@@ -169,4 +175,14 @@ export interface IEmployeeReplacementReq {
   endDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
   substitutionBasisRu: string; //String
   substitutionBasisKz: string; //String
+}
+
+export interface IStateGlobalStore {
+  selectedModalName: string | null;
+}
+
+export type language = "ru" | "kz" | "en";
+export interface IStateSystemStore {
+  currentLanguage: language;
+  userType: string;
 }

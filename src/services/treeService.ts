@@ -8,11 +8,16 @@ class TreeService {
     public homeService: HomeService
   ) {}
 
+  private get governmentAgencyId(): number {
+    return store.getters.GET_SELECTED_GA;
+  }
+
   connectEmployeeWithUser(employeeId: number, userId: number) {
     return this.httpService.get("/api/v1/connect/employee/with/user", {
       params: {
         employeeId,
         userId,
+        governmentAgencyId: this.governmentAgencyId,
       },
     });
   }
@@ -22,6 +27,7 @@ class TreeService {
       params: {
         employeeId,
         positionId,
+        governmentAgencyId: this.governmentAgencyId,
       },
     });
   }
@@ -51,6 +57,7 @@ class TreeService {
         params: {
           subdivisionId,
           superiorSubdivisionId,
+          governmentAgencyId: this.governmentAgencyId,
         },
       }
     );

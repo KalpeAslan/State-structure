@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <Header />
+    <Modals />
     <v-main>
       <router-view />
     </v-main>
@@ -16,6 +17,7 @@ export default Vue.extend({
 
   components: {
     Header: () => import("../src/components/Header/Header.vue"),
+    Modals: () => import("../src/components/Modals/Modals.vue"),
   },
   created() {
     if (this.$route.path === "/") {

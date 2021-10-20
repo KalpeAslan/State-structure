@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
+  <div class="container d-flex justify-center align-items-center">
     <Tree
-      v-if="!loading"
+      v-if="tree"
       style="border: 1px solid gray"
-      :dataset="vehicules"
+      :dataset="tree"
       :config="treeConfig"
       linkStyle="straight"
     >
@@ -18,7 +18,18 @@
         >
           <v-icon color="#828282" v-if="unlock(node)"> mdi-lock </v-icon>
           <span
-            style="padding: 4px 8px; white-space: nowrap; font-size: 14px"
+            style="
+              padding: 12px 16px;
+              white-space: nowrap;
+              font-size: 14px;
+              border-radius: 2px;
+            "
+            :style="{
+              fontWeight:
+                node.entityType === 'governmentAgency' && '500 !important',
+              fontSize:
+                node.entityType === 'governmentAgency' && '20px !important',
+            }"
             >{{ node.nameRu }}</span
           >
           <div
@@ -27,7 +38,7 @@
           >
             <v-list-item
               v-for="positionChild in node.employees"
-              :key="positionChild.id"
+              :key="positionChild.key"
               style="min-height: 0px !important"
             >
               <div class="position-node_child">
@@ -62,27 +73,27 @@
         </div>
       </template>
     </Tree>
+    <div v-else class="text-body">
+      Выберите ГО из списка ГО или же создадите его
+    </div>
   </div>
 </template>
 <script>
 import {
-  DELETE_POSITION_FROM_NODE,
   DELETE_ROLE_FROM_TREE,
-  SET_EMPLOYEE_TO_TEMP_POSITION,
   SET_TEMP_POSITION,
-  SET_TREE,
 } from "../../store/mutation-types";
 
 export default {
   name: "treemap",
   data() {
     return {
-      treeConfig: { nodeWidth: 140, nodeHeight: 80, levelHeight: 200 },
-      loading: true,
+      treeConfig: { nodeWidth: 400, nodeHeight: 80, levelHeight: 200 },
     };
   },
   computed: {
-    vehicules() {
+    tree() {
+      console.log(this.$store.state.treeStore.tree);
       return this.$store.state.treeStore.tree;
     },
   },
@@ -120,11 +131,11 @@ export default {
       }
     },
   },
-  async beforeCreate() {
-    this.loading = true;
-    await this.$store.dispatch(SET_TREE, 0);
-    this.loading = false;
-  },
+  // async beforeCreate() {
+  //   this.loading = true;
+  //   await this.$store.dispatch(SET_TREE, 0);
+  //   this.loading = false;
+  // },
   mounted() {
     const treeContainer = document.querySelector(
       ".container > .tree-container"
@@ -171,6 +182,7 @@ export default {
 .node-subdivision {
   background: #414649;
   color: white;
+  border-radius: 2px;
 }
 
 .rich-media-node {
@@ -194,7 +206,7 @@ export default {
 
 .position-node {
   border: 2px solid #414649;
-  background: transparent !important;
+  background: #f7f7f8 !important;
   border-radius: 4px;
   color: #414649 !important;
   .position-node_child {
