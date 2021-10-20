@@ -1,3 +1,4 @@
+import { treeService } from "@/services/treeService";
 import {
   SET_USER_TYPE,
   SET_POSITIONS,
@@ -78,7 +79,6 @@ export const homeStore: Module<IStateHomeStore, any> = {
       ctx.employies = employies;
     },
     [SET_ALL_GOVERMENT_AGENCIES](ctx, allGovermentAgencies: IGoverment[]) {
-      console.log(allGovermentAgencies);
       ctx.goverments = allGovermentAgencies;
     },
     [SET_SUBDIVISION_UNDER_GA](ctx, subdivisionUnderGaState: boolean) {
@@ -93,7 +93,21 @@ export const homeStore: Module<IStateHomeStore, any> = {
       postition.key = Math.round(Math.random() * 465465464154);
       context.commit(ADD_POSITION, postition);
     },
-    [DELETE_POSITION](context, position: IPosition) {
+    async [DELETE_POSITION](context, position: IPosition) {
+      treeService.changePosition({
+        id: position.id,
+        governmentAgency: position.governmentAgencyId,
+        nameRu: position.nameRu,
+        nameKz: position.nameKz,
+        nameEng: position.nameEng,
+        nameRuShort: position.nameRuShort,
+        nameKzShort: position.nameKzShort,
+        nameEngShort: position.nameEngShort,
+        subdivisions: position.subdivisionId,
+        role: position.roleId,
+        status: 8,
+      });
+
       context.commit(DELETE_POSITION, position);
     },
     [SET_TEMP_POSITION](context, position: IPosition) {
@@ -117,13 +131,12 @@ export const homeStore: Module<IStateHomeStore, any> = {
         context.dispatch(SET_ALL_GOVERMENT_AGENCIES);
       });
     },
-    [DELETE_GOVERMENT](context, govermentId: number) {
-      context.commit(
-        DELETE_GOVERMENT,
-        context.state.goverments.filter(
-          (goverment) => goverment.key !== govermentId
-        )
-      );
+    async [DELETE_GOVERMENT](context) {
+      const goverment: any = { ...context.state.selectedGoverment };
+      goverment.status = goverment.status.code.code;
+      await homeService.changeGovermentAgency(goverment).then(() => {
+        context.dispatch(SET_TREE, null);
+      });
     },
     [SET_ROLES](context, roles: IRole[]) {
       context.commit(SET_ROLES, roles);
@@ -166,9 +179,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
     GET_ATTACH_ITEMS: (state) => (input: string, type: string) => {
       const items: any[] = type === "roles" ? state.roles : state.employies;
       if (!input) return items;
-      return items.filter((role) =>
-        role.name.toLowerCase().includes(input.toLowerCase())
-      );
+      return items.filter((role) => {
+        const item = type === "roles" ? role.roleId.toString() : role.user.name;
+        return item.toLowerCase().includes(input.toLowerCase());
+      });
     },
     GET_EMPLOYEE_BY_ID:
       (state) =>

@@ -54,6 +54,7 @@ export default {
         nameKz: null,
         nameEng: null,
         nameRuShort: "test nameRuShort",
+        id: Math.round(Math.random() * 45457),
         nameKzShort: "test nameKzShort",
         nameEngShort: "test nameEngShort",
       },

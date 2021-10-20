@@ -32,7 +32,7 @@
         <v-btn
           color="primary"
           style="font-size: 14px; font-weight: normal"
-          @click="modalDialogMixin = false"
+          @click="deleteGa"
         >
           Удалить
         </v-btn>
@@ -43,8 +43,15 @@
 
 <script>
 import { modalsMixin } from "@/mixins/modalsMixin";
+import { DELETE_GOVERMENT } from "../../store/mutation-types";
 export default {
   mixins: [modalsMixin],
+  methods: {
+    deleteGa() {
+      this.$store.dispatch(DELETE_GOVERMENT);
+      this.modalDialogMixin = false;
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

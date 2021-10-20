@@ -15,7 +15,7 @@
             margin-bottom: 10px;
           "
         >
-          Штатная структура
+          {{ $t("stateStructure") }}
         </div>
         <v-btn
           @click="addGoverment()"
@@ -59,7 +59,7 @@
             margin-bottom: 10px;
           "
         >
-          Должности
+          {{ $t("positions") }}
         </div>
         <v-btn
           color="primary"
@@ -82,6 +82,7 @@
       <v-text-field
         outlined
         label="Поиск"
+        hide-details
         v-model="positionsInput"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
@@ -95,7 +96,7 @@
           @dragend="dragEnd"
           class="justify-space-between"
         >
-          <span>{{ position.nameRu }}</span>
+          <span style="font-size: 14px">{{ position | translate }}</span>
 
           <template>
             <div
@@ -116,7 +117,9 @@
                     v-for="(item, index) in dotButtonItems"
                     :key="index"
                   >
-                    {{ item.title }}
+                    <span style="font-size: 14px">
+                      {{ item.title }}
+                    </span>
                     <v-icon>
                       {{ item.iconName }}
                     </v-icon>

@@ -4,7 +4,7 @@
       v-if="userType === 'dispatcher'"
       class="dispatcher d-flex justify-space-between align-items-center"
     >
-      <v-btn outlined color="primary">Сохранить</v-btn>
+      <v-btn outlined color="primary">{{ $t("save") }}</v-btn>
       <v-btn color="primary">На согласование</v-btn>
     </div>
   </div>

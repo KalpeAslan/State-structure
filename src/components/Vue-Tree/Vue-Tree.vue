@@ -30,7 +30,7 @@
               fontSize:
                 node.entityType === 'governmentAgency' && '20px !important',
             }"
-            >{{ node.nameRu }}</span
+            >{{ node | translate }}</span
           >
           <div
             v-if="node.entityType === 'position'"
@@ -45,11 +45,7 @@
                 <span class="d-flex align-center" style="font-size: 12px">
                   {{ positionChild.user.name }}
                 </span>
-                <v-btn
-                  v-if="unlock(node)"
-                  icon
-                  @click="deleteEmployee(node, positionChild)"
-                >
+                <v-btn icon @click="deleteEmployee(node, positionChild)">
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
               </div>
@@ -93,7 +89,6 @@ export default {
   },
   computed: {
     tree() {
-      console.log(this.$store.state.treeStore.tree);
       return this.$store.state.treeStore.tree;
     },
   },
@@ -131,11 +126,6 @@ export default {
       }
     },
   },
-  // async beforeCreate() {
-  //   this.loading = true;
-  //   await this.$store.dispatch(SET_TREE, 0);
-  //   this.loading = false;
-  // },
   mounted() {
     const treeContainer = document.querySelector(
       ".container > .tree-container"

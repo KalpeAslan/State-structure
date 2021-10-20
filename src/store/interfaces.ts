@@ -105,6 +105,8 @@ export interface IGovermentReq {
   nameRuShort: string;
   nameKzShort: string;
   nameEngShort: string;
+  status?: number;
+  id?: number;
 }
 export interface IEmployeeNode {
   id: number;
@@ -145,7 +147,9 @@ export interface ISubdivisonReq {
   nameRuShort: string | null; //String
   nameKzShort: string | null; //String
   nameEngShort: string | null; //String
-  subdivisionUnderGovernmentAgency: boolean;
+  subdivisionUnderGovernmentAgency?: boolean;
+  id?: number;
+  status?: number;
 }
 export interface IEmployeeReq {
   userId: number; //Long
@@ -158,7 +162,7 @@ export interface IEmployeeReq {
 export interface IPositionReq {
   superiorPositionId: number; //Long
   roleId: number; //Long
-  governmentAgencyId: number; //Long
+  governmentAgency: number; //Long
   subdivisionId: number; //Long
   nameRu: string; //String
   nameKz: string; //String
@@ -166,6 +170,10 @@ export interface IPositionReq {
   nameRuShort: string; //String
   nameKzShort: string; //String
   nameEngShort: string; //String
+  id?: number | string;
+  subdivisions?: number;
+  role?: number;
+  status?: number;
 }
 
 export interface IEmployeeReplacementReq {

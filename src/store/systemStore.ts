@@ -1,6 +1,7 @@
 import { IStateSystemStore, language } from "./interfaces";
 import { SET_LANGUAGE, SET_USER_TYPE } from "./mutation-types";
 import { Module } from "vuex";
+import { i18n } from "@/main";
 
 const userTypes = ["admin", "dispatcher"];
 export const systemStore: Module<IStateSystemStore, any> = {
@@ -18,6 +19,7 @@ export const systemStore: Module<IStateSystemStore, any> = {
   },
   actions: {
     [SET_LANGUAGE](ctx, language: language) {
+      i18n.locale = language;
       ctx.commit(SET_LANGUAGE, language);
     },
   },

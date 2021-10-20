@@ -21,7 +21,7 @@
             :style="{
               marginLeft: node.children && 36,
             }"
-            >{{ node.nameRu }}</span
+            >{{ node | translate }}</span
           >
           <div class="node-buttons">
             <v-btn icon @click="insertToNode(node)">

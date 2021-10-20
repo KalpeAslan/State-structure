@@ -21,7 +21,7 @@
             margin-bottom: 10px;
           "
         >
-          Штатная структура
+          {{ $t("stateStructure") }}
         </div>
       </div>
       <v-btn
@@ -38,16 +38,28 @@
       <v-text-field
         outlined
         label="Поиск"
+        v-model="inputSearch"
+        hide-details
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <v-list v-if="govermentAgencies.length">
+      <v-list v-if="govermentAgencies(inputSearch).length">
         <v-list-item
-          v-for="(govOrg, index) in govermentAgencies"
+          v-for="(govOrg, index) in govermentAgencies(inputSearch)"
           @click="selectGov(govOrg)"
+          style="padding: 0 !important"
           :key="index"
         >
           <v-list-item-content class="d-flex justify-space-between badge">
-            {{ govOrg.nameRu }}
+            <span
+              style="
+                font-size: 14px;
+                line-height: 16px;
+                color: #000000;
+                max-width: 170px;
+              "
+            >
+              {{ govOrg | translate }}
+            </span>
             <Badge :state="govOrg.state" />
           </v-list-item-content>
         </v-list-item>
@@ -76,20 +88,25 @@ export default Vue.extend({
     return {
       modalDialog: false as boolean,
       loading: false,
+      inputSearch: null,
     };
   },
   methods: {
     selectGov(govOrg: IGoverment) {
       this.$store.dispatch(SELECT_GOVERMENT, govOrg);
     },
+    govermentAgencies(inputSearch: string | null): IGoverment[] {
+      return !inputSearch
+        ? governmentAgencies
+        : governmentAgencies.filter((govAgency) =>
+            govAgency.nameRu.includes(inputSearch)
+          );
+      // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
+    },
   },
   computed: {
     form() {
       return this.$refs.form as VForm;
-    },
-    govermentAgencies(): IGoverment[] {
-      return governmentAgencies;
-      // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
     },
   },
   created() {

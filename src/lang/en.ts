@@ -1,0 +1,27 @@
+import { IDict } from "./dict-interface";
+
+export const en: IDict = {
+  history: "History",
+  historyActions: "History of actions",
+  historyVersions: "History of versions",
+  exportPdf: "Export as PDF",
+  edit: "Edit",
+  delete: "Delete",
+  constructor: "Constructor",
+  attach: "Attach",
+  time: "Time",
+  stateStructure: "State structure",
+  positions: "Positions",
+  position: "Position",
+  employees: "Employees",
+  roles: "Roles",
+  tempAppointEmployee: "Temporary assignment employee",
+  notSelected: "Not selected",
+  endDateOfEmployee: "Employee's end date",
+  tempEmployee: "Employee's end date",
+  endDateOfTempEmployee: "The end date of the temporary employee's work",
+  groundsForAppoindEmployee: "Основания для назначения",
+  comments: "Коментарий",
+  save: "Сохранить",
+  tempAppoint: "Temporarily appoint",
+};

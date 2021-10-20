@@ -1,5 +1,12 @@
 <template>
-  <v-app-bar elevation="0" app absolute color="white" max-height="56px">
+  <v-app-bar
+    style="z-index: 10"
+    elevation="0"
+    app
+    absolute
+    color="white"
+    max-height="56px"
+  >
     <div class="header-content_left">
       <v-btn
         @click="
@@ -7,10 +14,8 @@
             name: 'home.select-goverment',
           })
         "
-        color="white"
+        text
         elevation="0"
-        v-bind="attrs"
-        v-on="on"
       >
         <div
           style="display: flex; flex-direction: column; align-items: self-start"
@@ -27,15 +32,15 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            color="white"
             elevation="0"
             v-bind="attrs"
             v-on="on"
+            text
             style="font-size: 14px; line-height: 16px"
-            class="secondary--text button"
+            class="secondary--text button text-capitalize"
           >
             <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
-            История
+            {{ $t("history") }}
             <v-icon size="18"> mdi-chevron-down </v-icon>
           </v-btn>
         </template>
@@ -46,27 +51,28 @@
             :to="{
               name: item.routeName,
             }"
+            style="text-decoration: none"
           >
             <v-list-item>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
             </v-list-item>
           </router-link>
         </v-list>
       </v-menu>
       <template v-for="button in headerButtons">
         <v-btn
-          color="white"
+          text
           :key="button.title"
           v-if="showButton(button)"
           style="font-size: 14px; line-height: 16px"
           @click="clickHeaderButton(button)"
-          class="ma-2 secondary--text button"
+          class="ma-2 secondary--text button text-capitalize"
           elevation="0"
         >
           <v-icon size="16" style="margin-right: 5px">{{
             button.iconName
           }}</v-icon>
-          {{ button.title }}
+          {{ $t(button.title) }}
         </v-btn>
       </template>
       <span class="divider"></span>
@@ -87,6 +93,7 @@
             <v-list-item
               selectable
               class="language-item"
+              @click="selectLanguage(item.name)"
               v-for="(item, index) in languages"
               :key="index"
             >
@@ -100,7 +107,8 @@
 </template>
 
 <script lang="ts">
-import { SET_MODAL_NAME } from "@/store/mutation-types";
+import { language } from "@/store/interfaces";
+import { SET_LANGUAGE, SET_MODAL_NAME } from "@/store/mutation-types";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -109,28 +117,28 @@ export default Vue.extend({
       editDialog: false,
       headerButtons: [
         {
-          title: "Экспорт в PDF",
+          title: "exportPdf",
           iconName: "mdi-export-variant",
           name: "exportPdf",
         },
         {
-          title: "Редактировать",
+          title: "edit",
           iconName: "mdi-pencil",
           name: "edit-goverment",
         },
         {
-          title: "Удалить ГО",
+          title: "delete",
           iconName: "mdi-delete-outline",
           name: "delete-goverment",
         },
       ],
       historyItems: [
         {
-          title: "История действий",
+          title: "historyActions",
           routeName: "Logs",
         },
         {
-          title: "История версий",
+          title: "historyVersions",
           routeName: "versions-history",
         },
       ],
@@ -181,13 +189,16 @@ export default Vue.extend({
         case "ru":
           return "Рус";
         case "kz":
-          return "Каз";
+          return "Қаз";
         case "en":
-          return "Анг";
+          return "Eng";
       }
     },
   },
   methods: {
+    selectLanguage(languageName: language) {
+      this.$store.dispatch(SET_LANGUAGE, languageName);
+    },
     editGovOrg() {
       this.editDialogvalid = true;
     },

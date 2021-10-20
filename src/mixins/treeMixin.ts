@@ -10,8 +10,11 @@ export default Vue.extend({
     };
   },
   methods: {
-    deleteNode(selectedNode: ITree) {
-      this.$store.dispatch(DELETE_NODE, selectedNode);
+    deleteNode(selectedNode: ITree, parentNode: ITree) {
+      this.$store.dispatch(DELETE_NODE, {
+        selectedNode,
+        parentId: parentNode.id,
+      });
     },
     dragEnter(node) {
       if (node) {

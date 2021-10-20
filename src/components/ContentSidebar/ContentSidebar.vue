@@ -11,5 +11,7 @@
   right: 0;
   bottom: 0;
   position: absolute;
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none;
 }
 </style>

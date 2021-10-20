@@ -15,7 +15,7 @@
             margin-bottom: 10px;
           "
         >
-          Сотрудники
+          {{ $t("employees") }}
         </div>
       </div>
       <v-text-field
@@ -32,7 +32,7 @@
         :key="employe.value"
       >
         <v-list-item-content>
-          <v-list-item-title>{{ employe.user.name }}</v-list-item-title>
+          <span style="font-size: 14px"> {{ employe.user.name }}</span>
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>
@@ -52,7 +52,7 @@
             margin-bottom: 10px;
           "
         >
-          Роли
+          {{ $t("roles") }}
         </div>
       </div>
       <v-text-field
@@ -69,7 +69,9 @@
         @dragend="dragEnd"
       >
         <v-list-item-content>
-          <v-list-item-title>{{ role.roleId }}</v-list-item-title>
+          <span style="font-size: 14px">
+            {{ role.roleId }}
+          </span>
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>

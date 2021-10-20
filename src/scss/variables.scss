@@ -5,3 +5,10 @@ $primary: #2f80ed;
 $success: #27ae60;
 $danger: #f2994a;
 $dark-secondary: "#E91E63";
+
+$text-field-filled-full-width-outlined-slot-min-height: 44px;
+$text-field-filled-full-width-label-top: 14px !important;
+$text-field-enclosed-prepend-append-margin-top: 12px;
+.v-text-field--outlined .v-label {
+  top: 14px !important;
+}

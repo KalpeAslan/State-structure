@@ -1,8 +1,8 @@
 <template>
   <nav class="sidebar">
     <div
-      v-for="item in sidebarItems"
-      :key="item.title"
+      v-for="(item, i) in sidebarItems"
+      :key="item.title + i"
       style="margin-bottom: 12px"
     >
       <v-btn
@@ -27,7 +27,7 @@
               margin-top: 7px;
             "
           >
-            {{ item.title }}
+            {{ $t(item.title) }}
           </span>
         </div>
       </v-btn>
@@ -44,19 +44,19 @@ export default Vue.extend({
       currentSidbarItem: "constructor",
       sidebarItems: [
         {
-          title: "Конструктор",
+          title: "constructor",
           iconName: "mdi-view-grid-plus-outline",
           value: "constructor",
           routeName: "home.constructor",
         },
         {
-          title: "Привязка",
+          title: "attach",
           iconName: "mdi-pin-outline",
           value: "pin",
           routeName: "home.attach",
         },
         {
-          title: "Время",
+          title: "time",
           iconName: "mdi-clock-time-four-outline",
           value: "clock",
           routeName: "home.time",

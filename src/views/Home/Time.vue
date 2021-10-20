@@ -11,26 +11,30 @@
           class="text-h6 d-inline-block ml-4"
           style="font-size: 16px !important; line-height: 24px"
         >
-          Временно назначить на должность
+          {{ $t("tempAppoint") }}
         </div>
       </div>
       <template v-if="selectedTempPosition">
         <div class="position_desc mt-7">
-          <span class="position_desc_type">Должность</span>
+          <span class="position_desc_type">
+            {{ $t("position") }}
+          </span>
           <span>
-            {{ selectedTempPosition.nameRu }}
+            {{ selectedTempPosition | translate }}
           </span>
         </div>
         <v-divider />
         <div class="position_desc">
-          <span class="position_desc_type"> Сотрудник </span>
+          <span class="position_desc_type"> {{ $t("employee") }} </span>
           <span v-if="selectedTempPositionEmployee">
             {{ selectedTempPositionEmployee }}
           </span>
         </div>
         <v-form ref="form">
           <div>
-            <div class="label">Дата окончания работы сотрудника</div>
+            <div class="label">
+              {{ $t("endDateOfEmployee") }}
+            </div>
             <v-menu
               ref="menu1"
               v-model="menu1"
@@ -72,7 +76,9 @@
           </div>
           <v-divider />
           <div>
-            <div class="label">Сотрудник для временного назначения</div>
+            <div class="label">
+              {{ $t("tempAppointEmployee") }}
+            </div>
             <v-select
               outlined
               dense
@@ -83,7 +89,9 @@
             ></v-select>
           </div>
           <div>
-            <div class="label">Дата окончания работы временного сотрудника</div>
+            <div class="label">
+              {{ $t("endDateOfTempEmployee") }}
+            </div>
             <v-menu
               ref="menu"
               v-model="menu"
@@ -124,7 +132,9 @@
             </v-menu>
           </div>
           <div>
-            <div class="label">Основания для назначения</div>
+            <div class="label">
+              {{ $t("groundsForAppoindEmployee") }}
+            </div>
             <v-textarea
               solo
               name="input-7-4"
@@ -139,8 +149,10 @@
       </template>
       <template v-else>
         <div class="position_desc">
-          <span class="position_desc_type">Должность</span>
-          <span> Не выбрана </span>
+          <span class="position_desc_type">
+            {{ $t("position") }}
+          </span>
+          <span> {{ $t("notSelected") }} </span>
         </div>
       </template>
     </div>

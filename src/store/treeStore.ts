@@ -16,6 +16,7 @@ import {
   ADD_SUBDIVISION,
   DELETE_ROLE_FROM_TREE,
   RELOAD_TREE,
+  CHANGE_SUBDIVISION,
 } from "./mutation-types";
 
 function insertNodeIntoTree(node, nodeKey: string | number, newNode: ITree) {
@@ -122,7 +123,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
     plusSelectedNode: null,
   },
   mutations: {
-    [SET_TREE](state, tree1: ITree): void {
+    [SET_TREE](state, tree1: ITree | null): void {
+      if (tree1 === null) return (state.tree = null);
+
       const _tree = JSON.parse(JSON.stringify(tree));
       traverse(_tree);
       state.tree = _tree;
@@ -142,14 +145,18 @@ export const treeStore: Module<IStateTreeStore, any> = {
   },
   actions: {
     async [SET_TREE](context, treeId): Promise<any> {
-      await treeService.homeService
-        .getGovermentAgencyTree(treeId)
-        .then((tree) => {
-          context.commit(SET_TREE, tree);
-        });
+      if (treeId === null) return context.commit(SET_TREE, null);
+
+      context.commit(SET_TREE, tree);
+
+      // await treeService.homeService
+      //   .getGovermentAgencyTree(treeId)
+      //   .then((tree) => {
+      //     context.commit(SET_TREE, tree);
+      //   });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
-      if (dragEnteredNode.id === dragTargetNode.id) return;
+      if (dragEnteredNode.key === dragTargetNode.key) return;
 
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
@@ -200,11 +207,11 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        treeService.connectSubdivisionWithSuperiorSubdivision(
-          dragTargetNode.key,
-          dragEnteredNode.key
-        );
-
+        context.dispatch(CHANGE_SUBDIVISION, {
+          subdivision: dragTargetNode,
+          isDelete: false,
+          parentId: dragEnteredNode.id,
+        });
         deleteNodeFromTree(context.state.tree, dragTargetNode.key);
         return insertNodeIntoTree(
           context.state.tree,
@@ -251,7 +258,16 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
       insertNodeIntoTree(context.state.tree, selectedNode.key, newNode);
     },
-    [DELETE_NODE](context, selectedNode: ITree) {
+    [DELETE_NODE](context, selectedNode) {
+      const parentId = selectedNode.id;
+      if (selectedNode.entityType === "subdivision") {
+        context.dispatch(CHANGE_SUBDIVISION, {
+          subdivision: selectedNode,
+          isDelete: true,
+          parentId,
+        });
+      }
+
       deleteNodeFromTree(context.state.tree, selectedNode.key);
     },
     [SET_UNLOCK](context, unlock: boolean) {
@@ -281,8 +297,10 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [ADD_SUBDIVISION](ctx, subdivision) {
       const subdivisionForm = { ...subdivision };
-      subdivisionForm.subdivisionUnderGovernmentAgency =
-        ctx.state.plusSelectedNode.entityType === "governmentAgency";
+      if (ctx.state.plusSelectedNode.entityType === "governmentAgency") {
+        subdivisionForm.subdivisionUnderGovernmentAgency = false;
+      }
+
       subdivisionForm.superiorSubdivisionId = ctx.state.plusSelectedNode.id;
       treeService.homeService.postNewSudivision(subdivisionForm);
 
@@ -297,6 +315,22 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [DELETE_ROLE_FROM_TREE](ctx, selectedNode) {
       selectedNode.roleId = null;
+    },
+    [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parentId }) {
+      console.log(subdivision);
+      const subdivisionReq = {
+        id: subdivision.id,
+        governmentAgencyId: subdivision.governmentAgencyId,
+        nameEng: subdivision.nameEng,
+        nameEngShort: subdivision.nameEngShort,
+        nameKz: subdivision.nameKz,
+        nameKzShort: subdivision.nameKzShort,
+        nameRu: subdivision.nameRu,
+        nameRuShort: subdivision.nameRuShort,
+        superiorSubdivisionId: parentId.id,
+        status: isDelete ? 8 : 1,
+      };
+      treeService.changeSubdivision(subdivisionReq);
     },
     [RELOAD_TREE](ctx) {
       ctx.commit(SET_TREE, ctx.state.plusSelectedNode.id);

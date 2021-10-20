@@ -33,14 +33,14 @@
           @drop="onDrop($event, node.data)"
         >
           <div
-            :draggable="unlock"
+            :draggable="unlock && isCreatedByDispatcher"
             @dragstart="dragStart($event, node.data)"
             @dragend="dragEnd"
             class="node-container"
             @click="selectPosition(node.data)"
           >
             <v-btn
-              v-if="node.data.type !== 'position' && unlock"
+              v-if="unlock && isShowNodeButtons(node.data.entityType)"
               icon
               absolute
               @click="deleteNode(node.data)"
@@ -58,7 +58,11 @@
             </slot>
             <v-btn
               icon
-              v-if="node.data.entityType !== 'position' && unlock"
+              v-if="
+                node.data.entityType !== 'position' &&
+                unlock &&
+                isShowNodeButtons(node.data.entityType)
+              "
               absolute
               class="node-button plus"
               @click.stop="addSubdivison(node.data)"
@@ -153,6 +157,9 @@ export default {
     };
   },
   computed: {
+    isCreatedByDispatcher() {
+      return this.$store.getters.GET_SELECTED_GA.status.code.code === 1;
+    },
     initialTransformStyle() {
       return {
         transform: `scale(1) translate(${this.initTransformX}px, ${this.initTransformY}px)`,
@@ -176,6 +183,9 @@ export default {
     this.init();
   },
   methods: {
+    isShowNodeButtons(nodeEntityType) {
+      return nodeEntityType !== "position" ? this.isCreatedByDispatcher : true;
+    },
     init() {
       this.draw();
       this.enableDrag();
@@ -191,9 +201,6 @@ export default {
       }
       return this.direction;
     },
-    /**
-     * Returns updated dataset by deep copying every nodes from the externalData and adding unique '_key' attributes.
-     **/
     updatedInternalData(externalData) {
       var data = { name: "__invisible_root", children: [] };
       if (!externalData) return data;
@@ -206,10 +213,6 @@ export default {
       }
       return data;
     },
-    /**
-     * Returns a deep copy of selected node (copy of itself and it's children).
-     * If selected node or it's children have no '_key' attribute it will assign a new one.
-     **/
     deepCopy(node) {
       let obj = { _key: uuid() };
       for (var key in node) {
@@ -513,6 +516,8 @@ export default {
 .node-container {
   position: relative;
   &:hover {
+    border: 3px solid $primary;
+    border-radius: 2px;
     .node-button {
       display: inline-block;
     }
@@ -522,10 +527,10 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     &.plus {
-      right: -30px;
+      right: -35px;
     }
     &.minus {
-      left: -30px;
+      left: -35px;
     }
   }
 }
