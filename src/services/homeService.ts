@@ -7,6 +7,7 @@ import {
 } from "./../store/interfaces";
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
+import Vue from "vue";
 
 export class HomeService {
   constructor(private httpService: HttpService) {}
@@ -18,11 +19,25 @@ export class HomeService {
   }
 
   postNewGovermentAgence(data: IGovermentReq) {
-    return this.httpService.post("/api/v1/new/governmentAgency", data);
+    return this.httpService
+      .post("/api/v1/new/governmentAgency", data)
+      .then(() => {
+        Vue.notify({
+          group: "alert",
+          text: "Государственный орган добавлен",
+          type: "success",
+        });
+      });
   }
 
   postNewSudivision(data: ISubdivisonReq) {
-    return this.httpService.post("/api/v1/new/subdivision", data);
+    return this.httpService.post("/api/v1/new/subdivision", data).then(() => {
+      Vue.notify({
+        group: "alert",
+        text: "Подразделение добавлено",
+        type: "success",
+      });
+    });
   }
 
   postNewPosition(data: IPositionReq) {
@@ -33,7 +48,15 @@ export class HomeService {
     return this.httpService.post("/api/v1/new/employee", data);
   }
   postNewEmployeeReplacement(data: IEmployeeReplacementReq) {
-    return this.httpService.post("/api/v1/new/employeeReplacement", data);
+    return this.httpService
+      .post("/api/v1/new/employeeReplacement", data)
+      .then(() => {
+        Vue.notify({
+          group: "alert",
+          text: "Временный сотрудник назначен",
+          type: "success",
+        });
+      });
   }
 
   getAllGovermentAgencies(options?: AxiosRequestConfig): Promise<any> {

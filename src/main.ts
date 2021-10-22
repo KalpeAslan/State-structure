@@ -7,25 +7,10 @@ import vuetify from "./plugins/vuetify";
 import PerfectScrollbarPlugin from "vue2-perfect-scrollbar";
 import Fragment from "vue-fragment";
 import VueTree from "@ssthouse/vue-tree-chart";
-import VueI18n from "vue-i18n";
 
 import Notifications from "vue-notification";
-import { en } from "./lang/en";
-import { ru } from "./lang/ru";
+import { i18n } from "./plugins/i18n";
 
-Vue.use(VueI18n);
-
-export const i18n = new VueI18n({
-  locale: localStorage.getItem("lang") || "ru",
-  messages: {
-    ru: {
-      ...ru,
-    },
-    en: {
-      ...en,
-    },
-  },
-});
 Vue.config.productionTip = false;
 
 Vue.use(PerfectScrollbarPlugin);

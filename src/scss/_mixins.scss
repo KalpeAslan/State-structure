@@ -4,3 +4,34 @@
   justify-content: center;
   align-items: center;
 }
+
+@mixin bg($url, $size, $position: center, $repeat: no-repeat) {
+  background: url($url);
+}
+
+@mixin notification($class, $bg: #414649, $color: white) {
+  .#{$class} {
+    font-family: Roboto, sans-serif;
+    .vue-notification-wrapper {
+      .vue-notification {
+        background: $bg;
+
+        .notification-title {
+          background: $bg;
+        }
+
+        .notification-content {
+          background: $bg;
+        }
+
+        &.success {
+          &::before {
+            display: inline-block;
+            content: "";
+            @include bg("../assets/icons/mark.svg", 24px);
+          }
+        }
+      }
+    }
+  }
+}

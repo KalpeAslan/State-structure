@@ -2,6 +2,8 @@
   <v-app>
     <Header />
     <Modals />
+    <notifications group="alert" class="alert" position="bottom right" />
+
     <v-main>
       <router-view />
     </v-main>
@@ -35,3 +37,39 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style lang="scss">
+$bg: #414649;
+$color: white;
+.alert {
+  font-family: Roboto, sans-serif;
+  border-radius: 4px !important;
+  bottom: 16px !important;
+  right: 16px !important;
+
+  .vue-notification-wrapper {
+    .vue-notification {
+      border-left: 5px solid $bg;
+      padding: 16px;
+      background: $bg;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 16px;
+      .notification-title {
+        background: $bg;
+      }
+
+      .notification-content {
+        background: $bg;
+      }
+
+      &.success {
+        &::before {
+          display: inline-block;
+          content: "";
+        }
+      }
+    }
+  }
+}
+</style>

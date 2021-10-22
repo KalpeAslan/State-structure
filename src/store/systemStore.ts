@@ -1,7 +1,7 @@
 import { IStateSystemStore, language } from "./interfaces";
 import { SET_LANGUAGE, SET_USER_TYPE } from "./mutation-types";
 import { Module } from "vuex";
-import { i18n } from "@/main";
+import { i18n } from "@/plugins/i18n";
 
 const userTypes = ["admin", "dispatcher"];
 export const systemStore: Module<IStateSystemStore, any> = {

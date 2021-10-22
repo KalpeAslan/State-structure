@@ -1,6 +1,7 @@
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import { tree } from "./dump";
+import Vue from "vue";
 import { IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
@@ -187,9 +188,18 @@ export const treeStore: Module<IStateTreeStore, any> = {
       ) {
         //Проверка на существующих сотрудников должности
         // если сотрудник уже есть вывести предупреждение
-        if (dragEnteredNode.employees.length >= 1) {
-          return alert("У должности может быть только 1 сотрудник");
-        }
+        if (!dragEnteredNode.roleId)
+          return Vue.notify({
+            group: "alert",
+            text: "Добавьте роль к должности!",
+            type: "danger",
+          });
+        if (dragEnteredNode.employees.length >= 1)
+          return Vue.notify({
+            group: "alert",
+            text: "У должности может быть только 1 сотрудник",
+            type: "danger",
+          });
         treeService.connectEmployeeWithPosition(
           dragTargetNode.key,
           dragEnteredNode.key
@@ -224,9 +234,12 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "position" &&
         dragTargetNode.entityType === "role"
       ) {
-        if (dragEnteredNode.roleId) {
-          return alert("У должности может быть только 1 сотрудник");
-        }
+        if (dragEnteredNode.roleId)
+          return Vue.notify({
+            group: "alert",
+            text: "У должности может быть только 1 роль",
+            type: "danger",
+          });
         return (dragEnteredNode.roleId = dragTargetNode.roleId);
         // return context.dispatch(INSERT_POSITION_TO_NODE, {
         //   selectedNode: dragEnteredNode,

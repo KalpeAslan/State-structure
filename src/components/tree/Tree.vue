@@ -34,8 +34,8 @@
         >
           <div
             :draggable="unlock && isCreatedByDispatcher"
-            @dragstart="dragStart($event, node.data)"
-            @dragend="dragEnd"
+            @dragstart.stop="dragStart($event, node.data)"
+            @dragend.stop="dragEnd"
             class="node-container"
             @click="selectPosition(node.data)"
           >
@@ -79,7 +79,6 @@
 <script>
 import * as d3 from "d3";
 import { uuid } from "./base/utils";
-import draggable from "vuedraggable";
 import treeMixin from "../../mixins/treeMixin";
 import {
   SET_PLUS_SELECTED_NODE,
@@ -160,6 +159,9 @@ export default {
     isCreatedByDispatcher() {
       return this.$store.getters.GET_SELECTED_GA.status.code.code === 1;
     },
+    dragTree() {
+      return this.$store.getters.GET_DRAG_TREE;
+    },
     initialTransformStyle() {
       return {
         transform: `scale(1) translate(${this.initTransformX}px, ${this.initTransformY}px)`,
@@ -188,7 +190,6 @@ export default {
     },
     init() {
       this.draw();
-      this.enableDrag();
       this.initTransform();
     },
     addSubdivison(node) {
@@ -369,7 +370,15 @@ export default {
       return [tree.descendants(), tree.links()];
     },
     enableDrag() {
-      const path = this.$refs.svg;
+      console.log(this.$refs.svg);
+      console.log(this.$refs.container);
+      console.log(this.$store.getters.GET_DRAG_TREE);
+      if (this.$store.getters.GET_DRAG_TREE) {
+        console.log("block");
+        return;
+      }
+
+      const path = this.$refs.container;
 
       let startX = 0;
       let startY = 0;
@@ -441,7 +450,6 @@ export default {
     },
   },
   components: {
-    draggable,
     AddSubdivison: () => import("../HeaderModals/AddSubdivision.vue"),
   },
 };

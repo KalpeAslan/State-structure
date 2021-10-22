@@ -92,7 +92,25 @@ export default {
       return this.$store.state.treeStore.tree;
     },
   },
+  watch: {
+    tree: {
+      deep: true,
+      handler(val) {
+        if (val) {
+          setTimeout(() => {
+            console.log(jQuery(".tree-container"));
+            window
+              .$(".tree-container")
+              .draggable({ cancel: ".node-container" });
+          }, 1000);
+        }
+      },
+    },
+  },
   methods: {
+    drag(e) {
+      console.log(e);
+    },
     unlock(node) {
       return this.$store.getters.GET_UNLOCK && node.entityType !== "position";
     },
@@ -130,6 +148,7 @@ export default {
     const treeContainer = document.querySelector(
       ".container > .tree-container"
     );
+
     let scale = 1;
     treeContainer &&
       treeContainer.addEventListener("wheel", (e) => {
@@ -191,11 +210,11 @@ export default {
   border: 1px solid #dadada !important;
   box-sizing: border-box;
   border-radius: 2px;
-  padding: 12px 18px !important;
+  padding: 0 12px !important;
 }
 
 .position-node {
-  border: 2px solid #414649;
+  border: 2px solid #828282 !important;
   background: #f7f7f8 !important;
   border-radius: 4px;
   color: #414649 !important;
