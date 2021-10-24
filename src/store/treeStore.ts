@@ -2,7 +2,7 @@ import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import { tree } from "./dump";
 import Vue from "vue";
-import { IStateTreeStore, ITree } from "./interfaces";
+import { IEmployeeReq, IPosition, IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
   UPDATE_TREE,
@@ -18,6 +18,8 @@ import {
   DELETE_ROLE_FROM_TREE,
   RELOAD_TREE,
   CHANGE_SUBDIVISION,
+  SET_TEMP_POSITION,
+  SET_EMPLOYEE_REPLACEMENT,
 } from "./mutation-types";
 
 function insertNodeIntoTree(node, nodeKey: string | number, newNode: ITree) {
@@ -75,8 +77,12 @@ function traverse(tree: ITree | any) {
   if (!(tree.subdivisions || tree.positions || tree.employees)) {
     return;
   }
+
   tree.key = Math.round(Math.random() * 4451454121454);
   if (tree.entityType === "position") {
+    tree.employeeReplacement = tree.employeeReplacement
+      ? tree.employeeReplacement
+      : null;
     return;
   }
   const children = JSON.parse(
@@ -116,15 +122,71 @@ function deletePositionParentByPositionId(tree: any, positionId) {
     }
   }
 }
+
+function isChildOfNode(_node: ITree, childKey: number): boolean {
+  let res: boolean = false;
+  function _isChildOfNode(node) {
+    if (node.key === childKey) {
+      res = true;
+      return;
+    }
+    if (node.children) {
+      node.children.map((child) => _isChildOfNode(child));
+    } else {
+      _isChildOfNode(node.children);
+    }
+  }
+  _isChildOfNode(_node);
+  return res;
+}
+
+function getParentId(_tree: ITree, childKey) {
+  let parentId;
+
+  function _getParentId(tree) {
+    if (tree.children) {
+      const isFindParent = tree.children.some((node) => node.key === childKey);
+      if (isFindParent) {
+        parentId = tree;
+        return;
+      }
+      tree.children.map((node) => _getParentId(node));
+    } else {
+      _getParentId(tree.children);
+    }
+  }
+  _getParentId(_tree);
+  return parentId;
+}
+
+function setTempEmployeeToPosition(
+  tree,
+  selectedPositionKey: number | string,
+  tempEmployee: IEmployeeReq
+) {
+  if (tree.key === selectedPositionKey) {
+    tree.employeeReplacement = tempEmployee;
+    return;
+  } else if (tree.children) {
+    tree.children.forEach((node) =>
+      setTempEmployeeToPosition(node, selectedPositionKey, tempEmployee)
+    );
+  }
+}
+
 export const treeStore: Module<IStateTreeStore, any> = {
   state: {
     tree: null,
+    oldTree: null,
     unlock: false,
     dragTargetNode: null,
     plusSelectedNode: null,
+    isUpdated: false,
+    tempPosition: null,
   },
   mutations: {
     [SET_TREE](state, tree1: ITree | null): void {
+      state.oldTree = JSON.parse(JSON.stringify(tree));
       if (tree1 === null) return (state.tree = null);
 
       const _tree = JSON.parse(JSON.stringify(tree));
@@ -143,6 +205,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [SET_PLUS_SELECTED_NODE](ctx, selectedNode) {
       ctx.plusSelectedNode = selectedNode;
     },
+    [SET_TEMP_POSITION](context, tempPosition) {
+      context.tempPosition = tempPosition;
+    },
   },
   actions: {
     async [SET_TREE](context, treeId): Promise<any> {
@@ -157,8 +222,13 @@ export const treeStore: Module<IStateTreeStore, any> = {
       //   });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
-      if (dragEnteredNode.key === dragTargetNode.key) return;
+      if (
+        dragEnteredNode.key === dragTargetNode.key ||
+        isChildOfNode(dragEnteredNode, dragTargetNode.key)
+      )
+        return;
 
+      context.state.isUpdated = true;
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "subdivision"
@@ -271,8 +341,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
       insertNodeIntoTree(context.state.tree, selectedNode.key, newNode);
     },
-    [DELETE_NODE](context, selectedNode) {
-      const parentId = selectedNode.id;
+    [DELETE_NODE](context, { selectedNode, parentId }) {
       if (selectedNode.entityType === "subdivision") {
         context.dispatch(CHANGE_SUBDIVISION, {
           subdivision: selectedNode,
@@ -280,7 +349,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
           parentId,
         });
       }
-
       deleteNodeFromTree(context.state.tree, selectedNode.key);
     },
     [SET_UNLOCK](context, unlock: boolean) {
@@ -301,14 +369,35 @@ export const treeStore: Module<IStateTreeStore, any> = {
       }
     },
     [DELETE_EMPLOYEE](context, { selectedNode, positionChild }) {
+      console.log(positionChild);
+      const {
+        id,
+        user,
+        positionId,
+        governmentAgency,
+        recruitmentDate,
+        positionRemovalDate,
+        status,
+        key,
+      } = positionChild;
       selectedNode.employees = selectedNode.employees.filter(
-        (position) => position.key !== positionChild.key
-      );
+        (position) => position.key !== key
+      ); //Long //Long, user id //Long, position id //Long, government agency id //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Long, status id
+      treeService.homeService.changeEmployee({
+        id,
+        user: user.id,
+        positions: positionId,
+        governmentAgency,
+        recruitmentDate,
+        positionRemovalDate,
+        status: status.id,
+      });
     },
     ["DELETE_DRAG_TREE"](ctx) {
       ctx.commit("DELETE_DRAG_TREE");
     },
     [ADD_SUBDIVISION](ctx, subdivision) {
+      ctx.state.isUpdated = true;
       const subdivisionForm = { ...subdivision };
       if (ctx.state.plusSelectedNode.entityType === "governmentAgency") {
         subdivisionForm.subdivisionUnderGovernmentAgency = false;
@@ -320,7 +409,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
       subdivision.children = [];
       subdivision.key = Math.round(Math.random() * 566565);
       subdivision.entityType = "subdivision";
-      console.log(subdivision);
       getNodeById(ctx.state.tree, ctx.state.plusSelectedNode.key).children.push(
         subdivision
       );
@@ -330,7 +418,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
       selectedNode.roleId = null;
     },
     [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parentId }) {
-      console.log(subdivision);
       const subdivisionReq = {
         id: subdivision.id,
         governmentAgencyId: subdivision.governmentAgencyId,
@@ -348,6 +435,17 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [RELOAD_TREE](ctx) {
       ctx.commit(SET_TREE, ctx.state.plusSelectedNode.id);
     },
+    async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
+      setTempEmployeeToPosition(
+        ctx.state.tree,
+        ctx.state.tempPosition.key,
+        employee
+      );
+      await treeService.homeService.postNewEmployeeReplacement(employee);
+    },
+    [SET_TEMP_POSITION](context, position: IPosition | null) {
+      context.commit(SET_TEMP_POSITION, position);
+    },
   },
   getters: {
     GET_UNLOCK(state) {
@@ -364,6 +462,22 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     GET_PLUS_SELECTED_NODE(state) {
       return state.plusSelectedNode;
+    },
+    GET_DIFFERENCE_BTW_TREE(state): boolean {
+      const currentTree = JSON.parse(JSON.stringify(state.tree));
+      return (
+        JSON.stringify(state.oldTree) ===
+        JSON.stringify(JSON.parse(JSON.stringify(currentTree)))
+      );
+    },
+    GET_IS_UPDATED(state) {
+      return state.isUpdated;
+    },
+    tree(state) {
+      return state.tree;
+    },
+    tempPosition(state) {
+      return state.tempPosition;
     },
   },
 };

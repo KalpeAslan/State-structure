@@ -1,5 +1,5 @@
 <template>
-  <div :class="['badge', state]">
+  <div :class="['badge', className]">
     <span>{{ stateText }}</span>
   </div>
 </template>
@@ -9,38 +9,42 @@ import Vue from "vue";
 export default Vue.extend({
   props: {
     state: {
-      type: String,
-      default: "created",
-      validator: (prop: string): boolean => {
-        return [
-          "created",
-          "onApproval",
-          "aproved",
-          "notAproved",
-          "onClaim",
-          "claimed",
-          "notClaimed",
-        ].includes(prop);
+      type: Number,
+      default: 1,
+      validator: (prop: number): boolean => {
+        return [...Array(8).keys()].map((i) => i + 1).includes(prop);
       },
     },
   },
+  data: () => ({
+    className: null,
+  }),
   computed: {
     stateText(): string {
       switch (this.state) {
-        case "created":
+        case 1:
+          this.className = "created";
           return "Создан диспетчером";
-        case "onApproval":
+        case 2:
+          this.className = "onApproval";
           return "На согласовании";
-        case "aproved":
+        case 3:
+          this.className = "aproved";
           return "Согласован";
-        case "notAproved":
+        case 4:
+          this.className = "notAproved";
           return "Не согласован";
-        case "onClaim":
-          return "На согласовании";
-        case "claimed":
+        case 5:
+          this.className = "onClaim";
+          return "На Утверждении";
+        case 6:
+          this.className = "claimed";
           return "Утвержден";
-        case "notClaimed":
+        case 7:
+          this.className = "notClaimed";
           return "Не утвержден";
+        case 8:
+          return "Удален";
         default:
           return "Создан диспетчером";
       }

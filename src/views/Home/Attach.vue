@@ -81,7 +81,7 @@
 
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
-import { employees, roles } from "@/store/dump";
+import { employees } from "@/store/dump";
 import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
 import Vue from "vue";
 
@@ -94,7 +94,7 @@ export default Vue.extend({
   },
   created() {
     this.$store.dispatch(SET_EMPLOYIES, employees);
-    this.$store.dispatch(SET_ROLES, roles);
+    this.$store.dispatch(SET_ROLES);
   },
   computed: {
     roles() {

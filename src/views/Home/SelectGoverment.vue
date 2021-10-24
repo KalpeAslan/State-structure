@@ -35,6 +35,19 @@
         <v-icon size="14"> mdi-plus-thick </v-icon>
         <div class="text-caption">Добавить</div>
       </v-btn>
+
+      <template v-if="isShowTabs">
+        <v-tabs v-model="selectedTab" style="font-size: 12px !important">
+          <v-tab value="all" va>Все</v-tab>
+          <v-tab v-if="userType === 'departmentBoss'" value="departmentBoss">
+            <v-badge :content="listOfGAForApply.length">
+              На согласование
+            </v-badge>
+          </v-tab>
+          <v-tab v-else value="departmentHead">На утверждении</v-tab>
+        </v-tabs>
+        <v-divider style="margin-bottom: 18px" />
+      </template>
       <v-text-field
         outlined
         label="Поиск"
@@ -42,9 +55,9 @@
         hide-details
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
-      <v-list v-if="govermentAgencies(inputSearch).length">
+      <v-list v-if="listOfGA">
         <v-list-item
-          v-for="(govOrg, index) in govermentAgencies(inputSearch)"
+          v-for="(govOrg, index) in listOfGA"
           @click="selectGov(govOrg)"
           style="padding: 0 !important"
           :key="index"
@@ -60,7 +73,7 @@
             >
               {{ govOrg | translate }}
             </span>
-            <Badge :state="govOrg.state" />
+            <Badge :state="govOrg.status.code.code" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -89,24 +102,40 @@ export default Vue.extend({
       modalDialog: false as boolean,
       loading: false,
       inputSearch: null,
+      selectedTab: "all",
     };
   },
   methods: {
     selectGov(govOrg: IGoverment) {
       this.$store.dispatch(SELECT_GOVERMENT, govOrg);
     },
-    govermentAgencies(inputSearch: string | null): IGoverment[] {
-      return !inputSearch
-        ? governmentAgencies
-        : governmentAgencies.filter((govAgency) =>
-            govAgency.nameRu.includes(inputSearch)
-          );
-      // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
-    },
   },
   computed: {
     form() {
       return this.$refs.form as VForm;
+    },
+    listOfGA(): IGoverment[] {
+      const listOfGA =
+        this.selectedTab === "all" ? governmentAgencies : this.listOfGAForApply;
+      console.log(this.selectedTab);
+      return !this.inputSearch
+        ? listOfGA
+        : listOfGA.filter((govAgency) =>
+            govAgency.nameRu.includes(this.inputSearch)
+          );
+      // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
+    },
+    userType() {
+      return this.$store.getters.GET_USER_TYPE;
+    },
+    isShowTabs(): boolean {
+      return ["departmentBoss", "departmentHead"].includes(this.userType);
+    },
+    listOfGAForApply(): IGoverment[] {
+      const codeForApply = this.userType === "departmentBoss" ? 2 : 5;
+      return governmentAgencies.filter(
+        (govAgency) => govAgency.status.code.code === codeForApply
+      );
     },
   },
   created() {
@@ -131,14 +160,5 @@ export default Vue.extend({
 }
 .badge {
   font-size: 12px;
-}
-
-.v-card {
-  .v-card__text {
-    padding-bottom: 0 !important;
-  }
-  .v-text-field__details {
-    display: none !important;
-  }
 }
 </style>

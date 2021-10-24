@@ -24,4 +24,6 @@ export const en: IDict = {
   comments: "Коментарий",
   save: "Сохранить",
   tempAppoint: "Temporarily appoint",
+  apply: "Apply",
+  returnForRevision: "Return for revision",
 };

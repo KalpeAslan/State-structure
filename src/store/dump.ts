@@ -1,4 +1,4 @@
-import { IEmployeeNode, IGoverment, IPosition } from "./interfaces";
+import { IEmployee, IGoverment, IPosition } from "./interfaces";
 import { ITree } from "@/store/interfaces";
 export const tree: ITree = {
   id: 1,
@@ -66,6 +66,7 @@ export const tree: ITree = {
                 name: "OK",
               },
               entityType: "position",
+
               employees: [
                 {
                   id: 6,
@@ -1438,7 +1439,7 @@ export const position: IPosition = {
   hidden: false,
 };
 
-export const employees: IEmployeeNode[] = [
+export const employees: IEmployee[] = [
   {
     id: 4,
     governmentAgencyId: null,
@@ -1488,17 +1489,29 @@ export const roles = [
   {
     roleId: 1234546,
     entityType: "role",
-    key: Math.round(Math.random() * 545456446),
+    id: 0,
+    name: "string",
+    nameKaz: "string",
+    nameRus: "string",
+    removed: true,
   },
   {
     roleId: 787845345,
     entityType: "role",
-    key: Math.round(Math.random() * 545456446),
+    id: 0,
+    name: "string",
+    nameKaz: "string",
+    nameRus: "string",
+    removed: true,
   },
   {
     roleId: 456656,
     entityType: "role",
-    key: Math.round(Math.random() * 545456446),
+    id: 0,
+    name: "string",
+    nameKaz: "string",
+    nameRus: "string",
+    removed: true,
   },
 ];
 
@@ -1518,7 +1531,7 @@ export const governmentAgencies: IGoverment[] = [
       nameRus: "Черновик",
       value: null,
       code: {
-        code: 1,
+        code: 2,
         description: "заявка",
         id: 1,
       },

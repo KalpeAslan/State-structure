@@ -37,7 +37,6 @@
             @dragstart.stop="dragStart($event, node.data)"
             @dragend.stop="dragEnd"
             class="node-container"
-            @click="selectPosition(node.data)"
           >
             <v-btn
               v-if="unlock && isShowNodeButtons(node.data.entityType)"
@@ -80,10 +79,7 @@
 import * as d3 from "d3";
 import { uuid } from "./base/utils";
 import treeMixin from "../../mixins/treeMixin";
-import {
-  SET_PLUS_SELECTED_NODE,
-  SET_TEMP_POSITION,
-} from "@/store/mutation-types";
+import { SET_PLUS_SELECTED_NODE } from "@/store/mutation-types";
 
 const MATCH_TRANSLATE_REGEX = /translate\((-?\d+)px, ?(-?\d+)px\)/i;
 
@@ -432,11 +428,6 @@ export default {
         return dimension;
       } else {
         return `${dimension}px`;
-      }
-    },
-    selectPosition(node) {
-      if (node.type === "position") {
-        this.$store.dispatch(SET_TEMP_POSITION, node);
       }
     },
   },

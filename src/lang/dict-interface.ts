@@ -22,4 +22,6 @@ export interface IDict {
   save: string;
   tempAppoint: string;
   position: string;
+  apply: string;
+  returnForRevision: string;
 }

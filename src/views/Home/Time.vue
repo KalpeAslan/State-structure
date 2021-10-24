@@ -46,7 +46,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="newEmployeeForm.recruitmentDate"
+                  v-model="newEmployeeForm.startDate"
                   append-icon="mdi-calendar"
                   readonly
                   outlined
@@ -60,7 +60,7 @@
               </template>
               <v-date-picker
                 locale="ru"
-                v-model="newEmployeeForm.recruitmentDate"
+                v-model="newEmployeeForm.startDate"
                 no-title
                 scrollable
               >
@@ -103,7 +103,7 @@
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-text-field
-                  v-model="newEmployeeForm.positionRemovalDate"
+                  v-model="newEmployeeForm.endDate"
                   append-icon="mdi-calendar"
                   readonly
                   outlined
@@ -117,7 +117,7 @@
               </template>
               <v-date-picker
                 locale="ru"
-                v-model="newEmployeeForm.positionRemovalDate"
+                v-model="newEmployeeForm.endDate"
                 no-title
                 scrollable
               >
@@ -163,7 +163,11 @@
 import { homeService } from "@/services/homeService";
 import { employees } from "@/store/dump";
 import { IEmployeeReq } from "@/store/interfaces";
-import { SET_EMPLOYIES } from "@/store/mutation-types";
+import {
+  SET_EMPLOYEE_REPLACEMENT,
+  SET_EMPLOYIES,
+  SET_TEMP_POSITION,
+} from "@/store/mutation-types";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -184,11 +188,12 @@ export default Vue.extend({
         (v) => !!v || "Поле временного сотрудника обязательно",
       ],
       newEmployeeForm: {
-        userId: null, //Long
-        positionId: null, //Long
-        recruitmentDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-        positionRemovalDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-        supervisorId: null, //Long
+        replacementEmployeeId: null, //Long, employee that temporarly holds office
+        substituteEmployeeId: null, //Long, employee that temporarly left this position
+        startDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+        endDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+        substitutionBasisRu: null, //String
+        substitutionBasisKz: null, //String
       } as IEmployeeReq,
       selectedEmployee: null,
     };
@@ -196,10 +201,10 @@ export default Vue.extend({
 
   computed: {
     selectedTempPosition() {
-      return this.$store.state.homeStore.tempPosition;
+      return this.$store.getters.tempPosition;
     },
     selectedTempPositionEmployee() {
-      const tempPosition = this.$store.state.homeStore.tempPosition;
+      const tempPosition = this.selectedTempPosition;
       return tempPosition.employees && tempPosition.employees[0].user.name;
     },
     employies() {
@@ -219,17 +224,20 @@ export default Vue.extend({
   methods: {
     validate() {
       this.$refs.form.validate();
-      if (
-        this.newEmployeeForm.recruitmentDate &&
-        this.newEmployeeForm.positionRemovalDate
-      ) {
-        this.newEmployeeForm.userId = this.selectedTempPosition.userId;
-        this.newEmployeeForm.positionId = this.selectedTempPosition.positionId;
-        this.newEmployeeForm.positionId =
-          this.selectedTempPosition.supervisorId;
-        homeService
-          .postNewEmployee(this.newEmployeeForm)
-          .then(() => this.reset());
+      if (this.newEmployeeForm.startDate && this.newEmployeeForm.endDate) {
+        this.newEmployeeForm.replacementEmployeeId =
+          this.selectedTempPosition.employees[0].id;
+        this.newEmployeeForm.substituteEmployeeId = this.selectedEmployee;
+        this.newEmployeeForm.substitutionBasisKz = "Test Name Kz";
+        this.newEmployeeForm.substitutionBasisRu = "Test Name Ru";
+        this.$store
+          .dispatch(SET_EMPLOYEE_REPLACEMENT, {
+            ...this.newEmployeeForm,
+          })
+          .then(() => {
+            this.$refs.form.reset();
+            this.$store.dispatch(SET_TEMP_POSITION, null);
+          });
       }
     },
     reset() {
@@ -285,6 +293,3 @@ export default Vue.extend({
   padding-right: 16px;
 }
 </style>
-
-function employies(SET_EMPLOYIES: string, employies: any) { throw new
-Error("Function not implemented."); }

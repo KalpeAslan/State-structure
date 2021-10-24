@@ -3,15 +3,15 @@ import { SET_LANGUAGE, SET_USER_TYPE } from "./mutation-types";
 import { Module } from "vuex";
 import { i18n } from "@/plugins/i18n";
 
-const userTypes = ["admin", "dispatcher"];
+const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
-    userType: userTypes[1],
+    userType: "departmentBoss",
     currentLanguage: "ru",
   },
   mutations: {
-    [SET_USER_TYPE](context, userType: string) {
-      context.userType = userType;
+    [SET_USER_TYPE](context, userType) {
+      context.userType = "departmentBoss";
     },
     [SET_LANGUAGE](ctx, language: language) {
       ctx.currentLanguage = language;

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import {
   IEmployee,
-  IEmployeeReplacementReq,
+  IEmployeeChange,
   IEmployeeReq,
   IPositionReq,
 } from "./../store/interfaces";
@@ -16,6 +16,10 @@ export class HomeService {
     return this.httpService.get(
       "/api/v1/get/governmentAgencyFull?governmentAgencyId=" + id
     );
+  }
+
+  getRoles() {
+    return this.httpService.get("/api/v1/get/roles");
   }
 
   postNewGovermentAgence(data: IGovermentReq) {
@@ -47,7 +51,7 @@ export class HomeService {
   postNewEmployee(data: IEmployeeReq) {
     return this.httpService.post("/api/v1/new/employee", data);
   }
-  postNewEmployeeReplacement(data: IEmployeeReplacementReq) {
+  postNewEmployeeReplacement(data: IEmployeeReq) {
     return this.httpService
       .post("/api/v1/new/employeeReplacement", data)
       .then(() => {
@@ -107,6 +111,16 @@ export class HomeService {
 
   changeGovermentAgency(goverment: IGovermentReq): Promise<any> {
     return this.httpService.post("/api/v1/change/governmentAgency", goverment);
+  }
+
+  changeEmployee(data: IEmployeeChange) {
+    return this.httpService.post("/api/v1/change/employee", data).then(() => {
+      Vue.notify({
+        group: "alert",
+        text: "Временный сотрудник назначен",
+        type: "success",
+      });
+    });
   }
 }
 

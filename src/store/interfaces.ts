@@ -1,8 +1,11 @@
 export interface IStateTreeStore {
   tree: null | ITree;
+  oldTree: null | ITree;
   unlock: boolean;
   dragTargetNode: null | ITree;
   plusSelectedNode: ITree | null;
+  isUpdated: boolean;
+  tempPosition: null | IPosition;
 }
 
 export interface ITree {
@@ -35,17 +38,20 @@ export interface IRole {
   name: string;
   id: number | string;
   key: number | string;
+  nameKaz: string;
+  nameRus: string;
+  removed: boolean;
 }
 
 export interface IStateHomeStore {
   positions: Array<IPosition>;
-  tempPosition: null | IPosition;
   mode: string;
   goverments: IGoverment[];
   selectedGoverment: IGoverment | null;
   roles: IRole[];
   employies: IEmployee[];
   subdivisionUnderGovernmentAgency: boolean;
+  gaState: number;
 }
 
 export interface IPosition {
@@ -53,7 +59,8 @@ export interface IPosition {
   key?: number | string;
   id: number | string;
   hidden?: boolean;
-  employees: IEmployeeNode[];
+  employees: IEmployee[];
+  employeeReplacement?: IEmployeeReq;
   superiorPosition: null | number;
   subdivisionId: null | number;
   roleId: null | number;
@@ -71,7 +78,7 @@ export interface IPosition {
   };
   entityType: string;
   //Children array for Employees and roles
-  children?: IEmployeeNode[];
+  children?: IEmployee[];
 }
 
 export interface IGoverment {
@@ -108,7 +115,7 @@ export interface IGovermentReq {
   status?: number;
   id?: number;
 }
-export interface IEmployeeNode {
+export interface IEmployee {
   id: number;
   governmentAgencyId: null | number;
   subdivisionId: number;
@@ -131,13 +138,6 @@ export interface IEmployeeNode {
   userId: null | number;
 }
 
-export interface IEmployee {
-  name: string;
-  id: number;
-  key: number | string;
-  type?: string;
-}
-
 export interface ISubdivisonReq {
   governmentAgencyId: number | null; //Long
   superiorSubdivisionId: number | null; //Long
@@ -152,11 +152,22 @@ export interface ISubdivisonReq {
   status?: number;
 }
 export interface IEmployeeReq {
-  userId: number; //Long
-  positionId: number; //Long
-  recruitmentDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-  positionRemovalDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-  supervisorId: number; //Long
+  replacementEmployeeId: number; //Long, employee that temporarly holds office
+  substituteEmployeeId: number; //Long, employee that temporarly left this position
+  startDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+  endDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+  substitutionBasisRu: string; //String
+  substitutionBasisKz: string; //String
+}
+
+export interface IEmployeeChange {
+  id; //Long
+  user; //Long, user id
+  positions; //Long, position id
+  governmentAgency; //Long, government agency id
+  recruitmentDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"
+  positionRemovalDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"
+  status; //Long, status id
 }
 
 export interface IPositionReq {
@@ -176,21 +187,17 @@ export interface IPositionReq {
   status?: number;
 }
 
-export interface IEmployeeReplacementReq {
-  replacementEmployeeId: number; //Long
-  substituteEmployeeId: number; //Long
-  startDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-  endDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-  substitutionBasisRu: string; //String
-  substitutionBasisKz: string; //String
-}
-
 export interface IStateGlobalStore {
   selectedModalName: string | null;
 }
 
 export type language = "ru" | "kz" | "en";
+export type userTypes =
+  | "dispatcher"
+  | "departmentBoss"
+  | "departmentHead"
+  | "admin";
 export interface IStateSystemStore {
   currentLanguage: language;
-  userType: string;
+  userType: userTypes;
 }

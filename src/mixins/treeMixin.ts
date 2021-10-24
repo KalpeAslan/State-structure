@@ -13,7 +13,7 @@ export default Vue.extend({
     deleteNode(selectedNode: ITree, parentNode: ITree) {
       this.$store.dispatch(DELETE_NODE, {
         selectedNode,
-        parentId: parentNode.id,
+        parentId: 56,
       });
     },
     dragEnter(node) {

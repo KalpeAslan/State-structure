@@ -41,15 +41,35 @@
               :key="positionChild.key"
               style="min-height: 0px !important"
             >
-              <div class="position-node_child">
-                <span class="d-flex align-center" style="font-size: 12px">
+              <div
+                :class="[
+                  'position-node_child',
+                  node.employeeReplacement && 'flex-column',
+                ]"
+              >
+                <div class="d-flex align-center" style="font-size: 12px">
                   {{ positionChild.user.name }}
-                </span>
-                <v-btn icon @click="deleteEmployee(node, positionChild)">
-                  <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-                </v-btn>
+                </div>
+                <template v-if="node.employeeReplacement">
+                  <div>
+                    <v-icon> mdi-chevron-down </v-icon>
+                  </div>
+                  <div
+                    class="d-flex flex-column align-center"
+                    style="font-size: 12px"
+                  >
+                    {{ node.employeeReplacement.substitutionBasisRu }}
+                    <div color="#DADADA">
+                      до {{ node.employeeReplacement.endDate }}
+                    </div>
+                  </div>
+                </template>
               </div>
+              <v-btn icon @click="deleteEmployee(node, positionChild)">
+                <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+              </v-btn>
             </v-list-item>
+
             <template v-if="node.roleId">
               <v-list-item
                 :key="node.roleId"
@@ -76,6 +96,7 @@
 </template>
 <script>
 import {
+  DELETE_EMPLOYEE,
   DELETE_ROLE_FROM_TREE,
   SET_TEMP_POSITION,
 } from "../../store/mutation-types";
@@ -84,7 +105,7 @@ export default {
   name: "treemap",
   data() {
     return {
-      treeConfig: { nodeWidth: 400, nodeHeight: 80, levelHeight: 200 },
+      treeConfig: { nodeWidth: 400, nodeHeight: 80, levelHeight: 100 },
     };
   },
   computed: {
@@ -98,7 +119,6 @@ export default {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            console.log(jQuery(".tree-container"));
             window
               .$(".tree-container")
               .draggable({ cancel: ".node-container" });

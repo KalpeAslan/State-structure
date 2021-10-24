@@ -24,4 +24,6 @@ export const kz: IDict = {
   comments: "Коментарий",
   save: "Сохранить",
   tempAppoint: "Временно назначить на должность",
+  apply: "Apply",
+  returnForRevision: "Return for revision",
 };

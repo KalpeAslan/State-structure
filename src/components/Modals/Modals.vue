@@ -8,6 +8,10 @@
       v-else-if="selectedModalName === 'delete-goverment'"
       @close-modal="closeModal"
     />
+    <return-for-revesion
+      v-else-if="selectedModalName === 'return-for-revesion'"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -22,6 +26,7 @@ export default {
   components: {
     EditGoverment: () => import("../HeaderModals/EditGoverment.vue"),
     DeleteGoverment: () => import("../HeaderModals/DeleteGoverment.vue"),
+    ReturnForRevesion: () => import("../HeaderModals/ReturnForRevesion.vue"),
   },
   methods: {
     closeModal() {

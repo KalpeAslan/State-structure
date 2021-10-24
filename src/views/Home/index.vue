@@ -3,12 +3,13 @@
     <NavSidebar />
     <VueTree />
     <ContentSidebar> <router-view /> </ContentSidebar>
-    <Footer />
+    <Footer v-if="isShowFooter" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
 import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
 
@@ -24,6 +25,22 @@ export default Vue.extend({
     if (this.$route.path === "/home") {
       this.$router.push({ name: "home.constructor" });
     }
+  },
+  computed: {
+    ...mapGetters(["GET_USER_TYPE", "gaState"]),
+    isShowFooter(): boolean {
+      const gaState: number = this.gaState;
+      switch (this.GET_USER_TYPE) {
+        case "dispatcher":
+          return [1, 4, 8].includes(gaState);
+        case "departmentBoss":
+          return 2 === gaState;
+        case "departmentHead":
+          return 5 === gaState;
+        case "admin":
+          return false;
+      }
+    },
   },
 });
 </script>

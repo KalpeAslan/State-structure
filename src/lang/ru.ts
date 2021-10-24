@@ -25,4 +25,6 @@ export const ru: IDict = {
   comments: "Коментарий",
   save: "Сохранить",
   tempAppoint: "Временно назначить на должность",
+  apply: "Согласовать",
+  returnForRevision: "Вернуть на доработку",
 };
