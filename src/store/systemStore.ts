@@ -6,7 +6,7 @@ import { i18n } from "@/plugins/i18n";
 const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
-    userType: "departmentBoss",
+    userType: "dispatcher",
     currentLanguage: "ru",
   },
   mutations: {

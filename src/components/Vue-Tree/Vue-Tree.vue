@@ -118,11 +118,11 @@ export default {
       deep: true,
       handler(val) {
         if (val) {
-          setTimeout(() => {
-            window
-              .$(".tree-container")
-              .draggable({ cancel: ".node-container" });
-          }, 1000);
+          // setTimeout(() => {
+          //   window
+          //     .$(".tree-container")
+          //     .draggable({ cancel: ".node-container" });
+          // }, 1000);
         }
       },
     },

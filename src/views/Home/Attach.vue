@@ -1,7 +1,8 @@
 <template>
-  <div style="nav-constructor">
+  <div class="nav-constructor">
     <v-navigation-drawer
       width="353"
+      height="50%"
       permanent
       class="pt-5 px-5 nav-constructor_item"
     >
@@ -40,6 +41,7 @@
     <v-navigation-drawer
       width="353"
       permanent
+      height="50%"
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="header d-flex justify-space-between">
@@ -114,8 +116,5 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .nav-constructor {
   height: 100%;
-  .nav-constructor_item {
-    height: 50%;
-  }
 }
 </style>

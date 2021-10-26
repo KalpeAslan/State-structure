@@ -140,7 +140,7 @@ export interface IEmployee {
 
 export interface ISubdivisonReq {
   governmentAgencyId: number | null; //Long
-  superiorSubdivisionId: number | null; //Long
+  superiorSubdivisionId?: number | null; //Long
   nameRu: string | null; //String
   nameKz: string | null; //String
   nameEng: string | null; //String

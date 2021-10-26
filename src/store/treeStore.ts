@@ -2,7 +2,13 @@ import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import { tree } from "./dump";
 import Vue from "vue";
-import { IEmployeeReq, IPosition, IStateTreeStore, ITree } from "./interfaces";
+import {
+  IEmployeeReq,
+  IPosition,
+  IStateTreeStore,
+  ISubdivisonReq,
+  ITree,
+} from "./interfaces";
 import {
   SET_TREE,
   UPDATE_TREE,
@@ -223,10 +229,15 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
       if (
-        dragEnteredNode.key === dragTargetNode.key ||
-        isChildOfNode(dragEnteredNode, dragTargetNode.key)
-      )
-        return;
+        !["position", "employee", "role"].includes(dragTargetNode.entityType)
+      ) {
+        // if (
+        //   dragEnteredNode.key === dragTargetNode.key ||
+        //   isChildOfNode(dragEnteredNode, dragTargetNode.key)
+        // ) {
+        //   return;
+        // }
+      }
 
       context.state.isUpdated = true;
       if (
@@ -234,21 +245,60 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragTargetNode.entityType === "subdivision"
       ) {
         deleteNodeFromTree(context.state.tree, dragTargetNode.key);
-        treeService.connectSubdivisionWithGovermentAgency(
-          dragTargetNode.key,
-          dragEnteredNode.key
-        );
+
+        const subdivisionReq: ISubdivisonReq = {
+          id: dragTargetNode.id,
+          governmentAgencyId: dragTargetNode.governmentAgencyId,
+          nameEng: dragTargetNode.nameEng,
+          nameEngShort: dragTargetNode.nameEngShort,
+          nameKz: dragTargetNode.nameKz,
+          nameKzShort: dragTargetNode.nameKzShort,
+          nameRu: dragTargetNode.nameRu,
+          nameRuShort: dragTargetNode.nameRuShort,
+          status: 1,
+          superiorSubdivisionId: null,
+        };
+        treeService.changeSubdivision(subdivisionReq);
         return context.state.tree.children.push(dragTargetNode);
       }
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "position"
       ) {
-        treeService.connectPositionWithGovermentAgency(
-          dragTargetNode.key,
-          dragEnteredNode.key
+        const {
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          roleId,
+          status,
+        } = dragTargetNode;
+        treeService.changePosition({
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          subdivisions: null,
+          role: roleId,
+          status: status.id,
+        });
+
+        deletePositionParentByPositionId(
+          context.state.tree,
+          dragTargetNode.key
         );
-        context.state.tree.children.push(dragTargetNode);
+        context.state.tree.children.push({ ...dragTargetNode });
+
+        dragTargetNode = JSON.parse(JSON.stringify(dragTargetNode));
+        dragTargetNode.key = Math.round(Math.random() * 545155);
       }
 
       //Привязка сотрудника к должности
@@ -270,10 +320,25 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 сотрудник",
             type: "danger",
           });
-        treeService.connectEmployeeWithPosition(
-          dragTargetNode.key,
-          dragEnteredNode.key
-        );
+
+        const {
+          id,
+          user,
+          positionId,
+          governmentAgency,
+          recruitmentDate,
+          positionRemovalDate,
+          status,
+        } = dragTargetNode;
+        treeService.homeService.changeEmployee({
+          id,
+          user: user.id,
+          positions: positionId,
+          governmentAgency,
+          recruitmentDate,
+          positionRemovalDate,
+          status: status.id,
+        });
         dragEnteredNode.employees.push(
           context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
         );
@@ -287,11 +352,20 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        context.dispatch(CHANGE_SUBDIVISION, {
-          subdivision: dragTargetNode,
-          isDelete: false,
-          parentId: dragEnteredNode.id,
-        });
+        const subdivisionReq = {
+          id: dragTargetNode.id,
+          governmentAgencyId: dragTargetNode.governmentAgencyId,
+          nameEng: dragTargetNode.nameEng,
+          nameEngShort: dragTargetNode.nameEngShort,
+          nameKz: dragTargetNode.nameKz,
+          nameKzShort: dragTargetNode.nameKzShort,
+          nameRu: dragTargetNode.nameRu,
+          nameRuShort: dragTargetNode.nameRuShort,
+          superiorSubdivisionId: dragEnteredNode.id,
+          status: 1,
+        };
+        treeService.changeSubdivision(subdivisionReq);
+
         deleteNodeFromTree(context.state.tree, dragTargetNode.key);
         return insertNodeIntoTree(
           context.state.tree,
@@ -310,21 +384,77 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 роль",
             type: "danger",
           });
+
+        const {
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          subdivisionId,
+          status,
+        } = dragEnteredNode;
+        treeService.changePosition({
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          subdivisions: subdivisionId,
+          role: dragTargetNode.roleId,
+          status: status.id,
+        });
         return (dragEnteredNode.roleId = dragTargetNode.roleId);
-        // return context.dispatch(INSERT_POSITION_TO_NODE, {
-        //   selectedNode: dragEnteredNode,
-        //   position: dragTargetNode,
-        // });
       }
       // Привязка должности к отделу
       if (
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "position"
       ) {
-        treeService.connectPositionWithSubdivision(
-          dragTargetNode.key,
-          dragEnteredNode.key
-        );
+        //         positionsTableid //Long
+        //  governmentAgency //Long, government agency id
+        //  nameRu //String
+        //  nameKz //String
+        //  nameEng //String
+        //  nameRuShort //String
+        //  nameKzShort //String
+        //  nameEngShort //String
+        //  subdivisions //Long, subdivision id
+        //  role //Long, role id
+        //  status //Long, status id
+        const {
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          subdivisionId,
+          roleId,
+          status,
+        } = dragTargetNode;
+        treeService.changePosition({
+          positionsTableid,
+          governmentAgency,
+          nameRu,
+          nameEng,
+          nameKz,
+          nameKzShort,
+          nameRuShort,
+          nameEngShort,
+          subdivisions: subdivisionId,
+          role: roleId,
+          status: status.id,
+        });
+
         deletePositionParentByPositionId(
           context.state.tree,
           dragTargetNode.key
@@ -369,7 +499,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
       }
     },
     [DELETE_EMPLOYEE](context, { selectedNode, positionChild }) {
-      console.log(positionChild);
       const {
         id,
         user,
@@ -390,7 +519,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         governmentAgency,
         recruitmentDate,
         positionRemovalDate,
-        status: status.id,
+        status: 8,
       });
     },
     ["DELETE_DRAG_TREE"](ctx) {

@@ -7,7 +7,7 @@
     color="white"
     max-height="56px"
   >
-    <div class="header-content_left">
+    <div v-if="selectedGovOrg" class="header-content_left">
       <v-btn
         @click="
           $router.push({
@@ -20,12 +20,12 @@
         <div
           style="display: flex; flex-direction: column; align-items: self-start"
         >
-          Наименование ГО
+          {{ selectedGovOrg | translate }}
           <div class="text-caption" style="display: block">123456789</div>
         </div>
         <v-icon size="18"> mdi-chevron-down </v-icon>
       </v-btn>
-      <Badge>Создан диспетчером</Badge>
+      <Badge :state="selectedGovState">Создан диспетчером</Badge>
     </div>
     <v-spacer></v-spacer>
     <div>
@@ -182,7 +182,7 @@ export default Vue.extend({
   },
   computed: {
     selectedGovOrg() {
-      return this.$store.state.homeStore.selectedGoverment;
+      return this.$store.getters.GET_SELECTED_GA;
     },
     currentLanguage() {
       switch (this.$store.getters.GET_CURRENT_LANGUAGE) {
@@ -193,6 +193,9 @@ export default Vue.extend({
         case "en":
           return "Eng";
       }
+    },
+    selectedGovState(): number {
+      return this.selectedGovOrg.status.code.code;
     },
   },
   methods: {

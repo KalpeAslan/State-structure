@@ -35,6 +35,8 @@
           <div
             :draggable="unlock && isCreatedByDispatcher"
             @dragstart.stop="dragStart($event, node.data)"
+            @mousedown.stop
+            @mousemove.stop
             @dragend.stop="dragEnd"
             class="node-container"
           >
@@ -162,6 +164,7 @@ export default {
       return {
         transform: `scale(1) translate(${this.initTransformX}px, ${this.initTransformY}px)`,
         transformOrigin: "center",
+        top: "200px",
       };
     },
     _dataset() {
@@ -187,6 +190,7 @@ export default {
     init() {
       this.draw();
       this.initTransform();
+      this.enableDrag();
     },
     addSubdivison(node) {
       this.showAddSubdivison = true;
@@ -232,13 +236,9 @@ export default {
       const containerHeight = this.$refs.container.offsetHeight;
       if (this.isVertical) {
         this.initTransformX = Math.floor(containerWidth / 2);
-        this.initTransformY = Math.floor(
-          this.config.nodeHeight - DEFAULT_HEIGHT_DECREMENT
-        );
+        this.initTransformY = Math.floor(this.config.nodeHeight - 200);
       } else {
-        this.initTransformX = Math.floor(
-          this.config.nodeWidth - DEFAULT_HEIGHT_DECREMENT
-        );
+        this.initTransformX = Math.floor(this.config.nodeWidth - 200);
         this.initTransformY = Math.floor(containerHeight / 2);
       }
     },
@@ -366,11 +366,7 @@ export default {
       return [tree.descendants(), tree.links()];
     },
     enableDrag() {
-      console.log(this.$refs.svg);
-      console.log(this.$refs.container);
-      console.log(this.$store.getters.GET_DRAG_TREE);
       if (this.$store.getters.GET_DRAG_TREE) {
-        console.log("block");
         return;
       }
 
@@ -381,7 +377,7 @@ export default {
       let isDrag = false;
       let mouseDownTransform = "";
       path.onmousedown = (event) => {
-        mouseDownTransform = path.style.transform;
+        mouseDownTransform = this.$refs.svg.style.transform;
         startX = event.clientX;
         startY = event.clientY;
         isDrag = true;
@@ -412,7 +408,8 @@ export default {
             transformStr
           );
         }
-        path.style.transform = transformStr;
+
+        this.$refs.svg.style.transform = transformStr;
         this.$refs.domContainer.style.transform = transformStr;
       };
 
@@ -421,6 +418,28 @@ export default {
         startY = 0;
         isDrag = false;
       };
+    },
+    enableMoveTree() {
+      const container = this.$refs.container;
+      const domContainer = this.$refs.domContainer;
+      const svg = this.$refs.svg;
+      const mouseMove = (e) => {
+        //offsetY
+        //offsetX
+
+        const scale = domContainer.style.transform.split(" ")[0];
+        const transform = `${scale} translate(${domContainer.offsetX + 1}px, -${
+          domContainer.offsetY + 1
+        }px)`;
+        domContainer.style.transform = transform;
+        svg.style.transform = transform;
+      };
+      container.addEventListener("mousedown", () => {
+        container.addEventListener("mousemove", mouseMove);
+      });
+      container.addEventListener("mouseup", (e) => {
+        container.removeEventListener("mousemove", mouseMove);
+      });
     },
     formatDimension(dimension) {
       if (typeof dimension === "number") return `${dimension}px`;

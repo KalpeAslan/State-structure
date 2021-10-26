@@ -145,9 +145,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     async [SET_ROLES](context) {
-      await homeService.getRoles().then((_roles) => {
-        context.commit(SET_ROLES, roles);
-      });
+      // await homeService.getRoles().then((roles) => {
+      //   context.commit(SET_ROLES, roles);
+      // });
+      context.commit(SET_ROLES, roles);
     },
     [SET_EMPLOYIES](ctx, employies: IEmployee[]) {
       ctx.commit(SET_EMPLOYIES, employies);
