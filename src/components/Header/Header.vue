@@ -7,7 +7,7 @@
     color="white"
     max-height="56px"
   >
-    <div v-if="selectedGovOrg" class="header-content_left">
+    <div class="header-content_left">
       <v-btn
         @click="
           $router.push({
@@ -18,14 +18,23 @@
         elevation="0"
       >
         <div
+          v-if="selectedGovOrg"
           style="display: flex; flex-direction: column; align-items: self-start"
         >
           {{ selectedGovOrg | translate }}
           <div class="text-caption" style="display: block">123456789</div>
         </div>
+        <div
+          v-else
+          style="display: flex; flex-direction: column; align-items: self-start"
+        >
+          Выберите ГО
+        </div>
         <v-icon size="18"> mdi-chevron-down </v-icon>
       </v-btn>
-      <Badge :state="selectedGovState">Создан диспетчером</Badge>
+      <Badge v-if="selectedGovOrg" :state="selectedGovState"
+        >Создан диспетчером</Badge
+      >
     </div>
     <v-spacer></v-spacer>
     <div>
