@@ -1,4 +1,6 @@
-deploy-job:
+stages:
+  - deploy
+deploy:
   stage: deploy
   script:
     - echo "Hello $GITLAB_USER_NAME!"
