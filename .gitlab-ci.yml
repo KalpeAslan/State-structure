@@ -3,4 +3,5 @@ stages:
 deploy:
   stage: deploy
   script:
-    - echo "Hello $GITLAB_USER_NAME!"
+    - docker build -t state-structure-front .
+    - docker run -d -p 4200:8080 state-structure-front
