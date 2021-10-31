@@ -1,11 +1,6 @@
-image: gitlab/dind
-
 stages:
   - deploy
-
-services:
-  - docker:dind
-  
+    
 deploy:
   stage: deploy
   script:
