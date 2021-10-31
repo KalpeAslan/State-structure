@@ -1,5 +1,8 @@
 stages:
   - deploy
+
+services:
+  - docker:dind
   
 deploy:
   stage: deploy
