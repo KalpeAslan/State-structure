@@ -1,9 +1,17 @@
-image: 20.04.2
+image: docker:latest
 
+services:
+  - name: docker:dind
+  entrypoint: ["env", "-u", "DOCKER_HOST"]
+  command: ["dockerd-entrypoint.sh"]
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  
 stages:
   - deploy
 deploy:
-  image: docker:latest
   stage: deploy
   script:
     - docker build -t state-structure-front .
