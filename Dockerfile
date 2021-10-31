@@ -1,4 +1,4 @@
-FROM node:14-alpine as build-stage
+FROM node:14
 
 RUN mkdir -p /front/app
 WORKDIR /front/app
