@@ -5,6 +5,6 @@ stages:
 deploy:
   stage: deploy
   script:
-    - sudo ls
+    - ls
     - docker build -t state-structure-front .
     - docker run -d -p 4200:8080 state-structure-front
