@@ -1,7 +1,10 @@
+image: 20.04.2
+
 stages:
   - deploy
 deploy:
+  image: docker:latest
   stage: deploy
   script:
-    - sudo docker build -t state-structure-front .
-    - sudo docker run -d -p 4200:8080 state-structure-front
+    - docker build -t state-structure-front .
+    - docker run -d -p 4200:8080 state-structure-front
