@@ -6,9 +6,13 @@
 }
 
 @mixin bg($url, $size, $position: center, $repeat: no-repeat) {
-  background: url($url);
+  background: url($url) $position / #{$size}px $repeat;
 }
 
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
 @mixin notification($class, $bg: #414649, $color: white) {
   .#{$class} {
     font-family: Roboto, sans-serif;

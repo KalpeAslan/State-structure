@@ -115,9 +115,9 @@ export default Vue.extend({
       return this.$refs.form as VForm;
     },
     listOfGA(): IGoverment[] {
+      this.selectedTab = "all";
       const listOfGA =
         this.selectedTab === "all" ? governmentAgencies : this.listOfGAForApply;
-      console.log(this.selectedTab);
       return !this.inputSearch
         ? listOfGA
         : listOfGA.filter((govAgency) =>

@@ -5,7 +5,7 @@ interface ITranslate {
 }
 
 import store from "@/store";
-
+console.log(store);
 export const translate = function (translate: ITranslate) {
   switch (store.getters.GET_CURRENT_LANGUAGE) {
     case "ru":

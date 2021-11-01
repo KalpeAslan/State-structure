@@ -12,6 +12,10 @@
       v-else-if="selectedModalName === 'return-for-revesion'"
       @close-modal="closeModal"
     />
+    <nca-layer-modal
+      v-else-if="selectedModalName === 'nca-layer-modal'"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -27,6 +31,7 @@ export default {
     EditGoverment: () => import("../HeaderModals/EditGoverment.vue"),
     DeleteGoverment: () => import("../HeaderModals/DeleteGoverment.vue"),
     ReturnForRevesion: () => import("../HeaderModals/ReturnForRevesion.vue"),
+    NcaLayerModal: () => import("../HeaderModals/NcaLayerModal.vue"),
   },
   methods: {
     closeModal() {

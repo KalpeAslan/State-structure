@@ -128,9 +128,6 @@ export default {
     },
   },
   methods: {
-    drag(e) {
-      console.log(e);
-    },
     unlock(node) {
       return this.$store.getters.GET_UNLOCK && node.entityType !== "position";
     },

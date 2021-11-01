@@ -46,7 +46,6 @@ $color: white;
   border-radius: 4px !important;
   bottom: 16px !important;
   right: 16px !important;
-
   .vue-notification-wrapper {
     .vue-notification {
       border-left: 5px solid $bg;
@@ -55,18 +54,24 @@ $color: white;
       font-weight: 500;
       font-size: 14px;
       line-height: 16px;
-      .notification-title {
-        background: $bg;
-      }
 
       .notification-content {
-        background: $bg;
+        font-weight: normal;
+        font-size: 14px;
+        line-height: 16px;
       }
 
       &.success {
+        background: $bg !important;
+        border-color: $bg !important;
+        display: flex;
+        align-items: center;
         &::before {
           display: inline-block;
+          margin-right: 15px;
           content: "";
+          @include bg("./assets/icons/mark.svg", 18);
+          @include size(18px, 14px);
         }
       }
     }

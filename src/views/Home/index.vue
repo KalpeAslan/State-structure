@@ -12,20 +12,12 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
 import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
+import { SET_WEBSOCKET_STATE } from "@/store/mutation-types";
+import { jsPDF } from "jspdf";
 
 export default Vue.extend({
   name: "Home",
-  components: {
-    ContentSidebar,
-    VueTree,
-    NavSidebar: () => import("../../components/NavSidebar/NavSidebar.vue"),
-    Footer: () => import("../../components/Footer/Footer.vue"),
-  },
-  created() {
-    if (this.$route.path === "/home") {
-      this.$router.push({ name: "home.constructor" });
-    }
-  },
+
   computed: {
     ...mapGetters(["GET_USER_TYPE", "gaState"]),
     isShowFooter(): boolean {
@@ -41,6 +33,26 @@ export default Vue.extend({
           return false;
       }
     },
+  },
+  created() {
+    if (this.$route.path === "/home") {
+      this.$router.push({ name: "home.constructor" });
+    }
+    if (this.GET_USER_TYPE === "departmentHead") {
+      this.$store.dispatch(SET_WEBSOCKET_STATE, true);
+    }
+  },
+  mounted() {
+    // const doc = new jsPDF();
+    // doc.text("Hello world!", 10, 10);
+    // doc.save("a4.pdf");
+  },
+
+  components: {
+    ContentSidebar,
+    VueTree,
+    NavSidebar: () => import("../../components/NavSidebar/NavSidebar.vue"),
+    Footer: () => import("../../components/Footer/Footer.vue"),
   },
 });
 </script>

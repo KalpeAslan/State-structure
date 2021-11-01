@@ -203,7 +203,7 @@ export default Vue.extend({
     },
     addPosition() {
       const _position = { ...position };
-      _position.id = Math.round(Math.random() * 1515021);
+      _position.positionsTableid = Math.round(Math.random() * 1515021);
       this.$store.dispatch(ADD_POSITION, _position);
     },
     deletePostition(position) {

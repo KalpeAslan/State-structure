@@ -48,13 +48,14 @@ export default {
     return {
       valid: true,
       subdivision: {
-        governmentAgencyId: this.$store.getters.GET_SELECTED_GA.id,
+        governmentAgencyId:
+          this.$store.getters.GET_SELECTED_GA.governmentAgencyTableid,
         superiorSubdivisionId: null,
         nameRu: null,
         nameKz: null,
         nameEng: null,
         nameRuShort: "test nameRuShort",
-        id: Math.round(Math.random() * 45457),
+        subdivisionsTableid: Math.round(Math.random() * 45457),
         nameKzShort: "test nameKzShort",
         nameEngShort: "test nameEngShort",
       },

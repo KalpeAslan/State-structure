@@ -1,13 +1,15 @@
-import { IStateSystemStore, language } from "./interfaces";
+import { IStateSystemStore, language, webSocketState } from "./interfaces";
 import { SET_LANGUAGE, SET_USER_TYPE } from "./mutation-types";
 import { Module } from "vuex";
 import { i18n } from "@/plugins/i18n";
+import Vue from "vue";
 
 const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
-    userType: "dispatcher",
+    userType: "departmentHead",
     currentLanguage: "ru",
+    webSocketState: null,
   },
   mutations: {
     [SET_USER_TYPE](context, userType) {

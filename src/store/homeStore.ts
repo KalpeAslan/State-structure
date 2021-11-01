@@ -21,6 +21,8 @@ import {
   SEND_TO_APPLY,
   SEND_TO_REJECT,
   SET_GA_STATE,
+  SET_WEBSOCKET_STATE,
+  SET_MODAL_NAME,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -34,6 +36,7 @@ import {
   IStateHomeStore,
 } from "./interfaces";
 import { positions, roles } from "./dump";
+import { ncaLayerService } from "@/services/ncaLayerService";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
@@ -45,6 +48,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     employies: [],
     subdivisionUnderGovernmentAgency: false,
     gaState: null,
+    isWebSocketOpen: false,
   },
   mutations: {
     [SET_USER_TYPE](context) {},
@@ -90,6 +94,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SET_GA_STATE](ctx, state: number) {
       ctx.gaState = state;
     },
+    [SET_WEBSOCKET_STATE](ctx, state: boolean) {
+      ctx.isWebSocketOpen = state;
+    },
   },
   actions: {
     [SET_POSITIONS](context) {
@@ -101,7 +108,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     async [DELETE_POSITION](context, position: IPosition) {
       treeService.changePosition({
-        id: position.id,
+        id: position.positionsTableid,
         governmentAgency: position.governmentAgencyId,
         nameRu: position.nameRu,
         nameKz: position.nameKz,
@@ -123,10 +130,11 @@ export const homeStore: Module<IStateHomeStore, any> = {
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
       if (
         !context.state.selectedGoverment ||
-        context.state.selectedGoverment.id !== goverment.id
+        context.state.selectedGoverment.governmentAgencyTableid !==
+          goverment.governmentAgencyTableid
       ) {
         context.state.gaState = goverment.status.code.code;
-        context.dispatch(SET_TREE, goverment.id);
+        context.dispatch(SET_TREE, goverment.governmentAgencyTableid);
         context.commit(SELECT_GOVERMENT, goverment);
         context.commit(SET_GA_STATE, goverment.status.code.code);
       }
@@ -183,8 +191,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
           ctx.state.gaState = 3;
           break;
         case "departmentHead":
-          goverment.status = 6;
-          ctx.state.gaState = 6;
+          ncaLayerService.sign();
+          // goverment.status = 6;
+          // ctx.state.gaState = 6;
           break;
       }
       homeService.changeGovermentAgency(goverment);
@@ -197,9 +206,18 @@ export const homeStore: Module<IStateHomeStore, any> = {
           homeService.changeGovermentAgency(goverment);
           break;
         case "departmentHead":
-          alert("departmentHead");
           goverment.status = 7;
           break;
+      }
+    },
+    async [SET_WEBSOCKET_STATE](ctx, state: boolean) {
+      if (state) {
+        await ncaLayerService.init().then((res) => {
+          ctx.commit(SET_WEBSOCKET_STATE, res);
+        });
+      } else {
+        ctx.dispatch(SET_MODAL_NAME, "nca-layer-modal");
+        ctx.commit(SET_WEBSOCKET_STATE, false);
       }
     },
   },
@@ -241,6 +259,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     gaState(state) {
       return state.gaState;
+    },
+    isWebSocketOpen(state): boolean {
+      return state.isWebSocketOpen;
     },
   },
 };

@@ -90,20 +90,6 @@ export class HomeService {
 
             type: "position",
           },
-          {
-            name: "Должность 3",
-            id: 4,
-            children: [],
-
-            type: "position",
-          },
-          {
-            name: "Должность 4",
-            id: 5,
-            children: [],
-
-            type: "position",
-          },
         ]);
       }, 500);
     });

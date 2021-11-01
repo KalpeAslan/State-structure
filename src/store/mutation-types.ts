@@ -14,6 +14,7 @@ export const RELOAD_TREE = "RELOAD_TREE";
 export const SET_LANGUAGE = "SET_LANGUAGE";
 //SystemStore
 export const SET_USER_TYPE = "SET_USER_TYPE";
+export const SET_WEBSOCKET_STATE = "SET_WEBSOCKET_STATE";
 //HomeStpre
 export const SET_POSITIONS = "SET_POSITIONS";
 export const ADD_POSITION = "ADD_POSITION";

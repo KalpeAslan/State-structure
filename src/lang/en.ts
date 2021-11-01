@@ -26,4 +26,6 @@ export const en: IDict = {
   tempAppoint: "Temporarily appoint",
   apply: "Apply",
   returnForRevision: "Return for revision",
+  sa: "Send To Approval",
+  sendToApply: "Send To Apply",
 };

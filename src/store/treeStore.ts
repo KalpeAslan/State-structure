@@ -247,7 +247,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         deleteNodeFromTree(context.state.tree, dragTargetNode.key);
 
         const subdivisionReq: ISubdivisonReq = {
-          id: dragTargetNode.id,
+          subdivisionsTableid: dragTargetNode.subdivisionsTableid,
           governmentAgencyId: dragTargetNode.governmentAgencyId,
           nameEng: dragTargetNode.nameEng,
           nameEngShort: dragTargetNode.nameEngShort,
@@ -322,7 +322,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
           });
 
         const {
-          id,
+          employeesTableid,
           user,
           positionId,
           governmentAgency,
@@ -331,7 +331,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
           status,
         } = dragTargetNode;
         treeService.homeService.changeEmployee({
-          id,
+          employeesTableid,
           user: user.id,
           positions: positionId,
           governmentAgency,
@@ -352,8 +352,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        const subdivisionReq = {
-          id: dragTargetNode.id,
+        const subdivisionReq: ISubdivisonReq = {
+          subdivisionsTableid: dragTargetNode.subdivisionsTableid,
           governmentAgencyId: dragTargetNode.governmentAgencyId,
           nameEng: dragTargetNode.nameEng,
           nameEngShort: dragTargetNode.nameEngShort,
@@ -361,7 +361,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
           nameKzShort: dragTargetNode.nameKzShort,
           nameRu: dragTargetNode.nameRu,
           nameRuShort: dragTargetNode.nameRuShort,
-          superiorSubdivisionId: dragEnteredNode.id,
+          superiorSubdivisionId: dragEnteredNode.subdivisionsTableid,
           status: 1,
         };
         treeService.changeSubdivision(subdivisionReq);
@@ -500,7 +500,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [DELETE_EMPLOYEE](context, { selectedNode, positionChild }) {
       const {
-        id,
+        employeesTableid,
         user,
         positionId,
         governmentAgency,
@@ -513,7 +513,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         (position) => position.key !== key
       ); //Long //Long, user id //Long, position id //Long, government agency id //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Long, status id
       treeService.homeService.changeEmployee({
-        id,
+        employeesTableid,
         user: user.id,
         positions: positionId,
         governmentAgency,
@@ -532,7 +532,10 @@ export const treeStore: Module<IStateTreeStore, any> = {
         subdivisionForm.subdivisionUnderGovernmentAgency = false;
       }
 
-      subdivisionForm.superiorSubdivisionId = ctx.state.plusSelectedNode.id;
+      subdivisionForm.superiorSubdivisionId =
+        ctx.state.plusSelectedNode.entityType === "subdividion"
+          ? ctx.state.plusSelectedNode.subdivisionsTableid
+          : ctx.state.plusSelectedNode.governmentAgencyTableid;
       treeService.homeService.postNewSudivision(subdivisionForm);
 
       subdivision.children = [];
@@ -548,7 +551,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parentId }) {
       const subdivisionReq = {
-        id: subdivision.id,
+        id: subdivision.subdivisionsTableid,
         governmentAgencyId: subdivision.governmentAgencyId,
         nameEng: subdivision.nameEng,
         nameEngShort: subdivision.nameEngShort,
@@ -556,13 +559,18 @@ export const treeStore: Module<IStateTreeStore, any> = {
         nameKzShort: subdivision.nameKzShort,
         nameRu: subdivision.nameRu,
         nameRuShort: subdivision.nameRuShort,
-        superiorSubdivisionId: parentId.id,
+        superiorSubdivisionId: parentId.subdivisionsTableid,
         status: isDelete ? 8 : 1,
       };
       treeService.changeSubdivision(subdivisionReq);
     },
     [RELOAD_TREE](ctx) {
-      ctx.commit(SET_TREE, ctx.state.plusSelectedNode.id);
+      ctx.commit(
+        SET_TREE,
+        ctx.state.plusSelectedNode.entityType === "subdividion"
+          ? ctx.state.plusSelectedNode.subdivisionsTableid
+          : ctx.state.plusSelectedNode.governmentAgencyTableid
+      );
     },
     async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
       setTempEmployeeToPosition(

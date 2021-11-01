@@ -24,4 +24,6 @@ export interface IDict {
   position: string;
   apply: string;
   returnForRevision: string;
+  sa: string;
+  sendToApply: string;
 }

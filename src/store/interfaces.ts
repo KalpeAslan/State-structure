@@ -14,6 +14,9 @@ export interface ITree {
   _key?: string;
   key?: number | string;
   id: number;
+  subdivisionsTableid?: number;
+  governmentAgencyTableid?: number;
+  positionsTableid?: number;
   hidden?: boolean;
   employees?: IEmployee[];
   bin?: string | number;
@@ -52,12 +55,13 @@ export interface IStateHomeStore {
   employies: IEmployee[];
   subdivisionUnderGovernmentAgency: boolean;
   gaState: number;
+  isWebSocketOpen: boolean;
 }
 
 export interface IPosition {
   nameRu: string;
   key?: number | string;
-  id: number | string;
+  positionsTableid: number | string;
   hidden?: boolean;
   employees: IEmployee[];
   employeeReplacement?: IEmployeeReq;
@@ -82,7 +86,7 @@ export interface IPosition {
 }
 
 export interface IGoverment {
-  id: number;
+  governmentAgencyTableid: number;
   bin: string;
   nameEng: string;
   key?: number | string;
@@ -116,7 +120,7 @@ export interface IGovermentReq {
   id?: number;
 }
 export interface IEmployee {
-  id: number;
+  employeesTableid: number;
   governmentAgencyId: null | number;
   subdivisionId: number;
   key?: number | string;
@@ -148,7 +152,7 @@ export interface ISubdivisonReq {
   nameKzShort: string | null; //String
   nameEngShort: string | null; //String
   subdivisionUnderGovernmentAgency?: boolean;
-  id?: number;
+  subdivisionsTableid?: number;
   status?: number;
 }
 export interface IEmployeeReq {
@@ -161,7 +165,7 @@ export interface IEmployeeReq {
 }
 
 export interface IEmployeeChange {
-  id; //Long
+  employeesTableid; //Long
   user; //Long, user id
   positions; //Long, position id
   governmentAgency; //Long, government agency id
@@ -174,14 +178,14 @@ export interface IPositionReq {
   superiorPositionId: number; //Long
   roleId: number; //Long
   governmentAgency: number; //Long
-  subdivisionId: number; //Long
+  // subdivisionId: number; //Long
   nameRu: string; //String
   nameKz: string; //String
   nameEng: string; //String
   nameRuShort: string; //String
   nameKzShort: string; //String
   nameEngShort: string; //String
-  id?: number | string;
+  positionsTableid?: number | string;
   subdivisions?: number;
   role?: number;
   status?: number;
@@ -197,7 +201,10 @@ export type userTypes =
   | "departmentBoss"
   | "departmentHead"
   | "admin";
+
+export type webSocketState = "open" | "message" | "close" | "error" | null;
 export interface IStateSystemStore {
   currentLanguage: language;
   userType: userTypes;
+  webSocketState: webSocketState;
 }

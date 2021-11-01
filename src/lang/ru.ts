@@ -27,4 +27,6 @@ export const ru: IDict = {
   tempAppoint: "Временно назначить на должность",
   apply: "Согласовать",
   returnForRevision: "Вернуть на доработку",
+  sa: "На утверждение",
+  sendToApply: "На согласование",
 };

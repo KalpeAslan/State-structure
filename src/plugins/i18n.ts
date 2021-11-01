@@ -2,6 +2,7 @@ import { en } from "../lang/en";
 import { ru } from "../lang/ru";
 import VueI18n from "vue-i18n";
 import Vue from "vue";
+import { kz } from "@/lang/kz";
 
 Vue.use(VueI18n);
 
@@ -13,6 +14,9 @@ export const i18n = new VueI18n({
     },
     en: {
       ...en,
+    },
+    kz: {
+      ...kz,
     },
   },
 });

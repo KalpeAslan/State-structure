@@ -26,4 +26,6 @@ export const kz: IDict = {
   tempAppoint: "Лауазымға уақытша тағайындау",
   apply: "Келісу",
   returnForRevision: "Пысықтауға қайтару",
+  sa: "На утверждение",
+  sendToApply: "На согласование",
 };
