@@ -1,8 +1,14 @@
+image: gitlab/dind
+
+services:
+  - docker:dind
+
 stages:
   - deploy
-image: front
+    
 deploy:
   stage: deploy
   script:
-    - sudo docker build --name front .
-    - sudo docker run -d -p 8080:8080 front
+    - ls
+    - docker build -t state-structure-front .
+    - docker run -d -p 4200:8080 state-structure-front
