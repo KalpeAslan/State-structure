@@ -5,7 +5,7 @@ export class HttpService {
   http: AxiosInstance;
   constructor() {
     this.http = axios.create({
-      baseURL: "http://45.147.177.151:8081",
+      baseURL: "http://95.179.167.161:8081",
     });
   }
 
