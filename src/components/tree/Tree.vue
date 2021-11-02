@@ -155,7 +155,10 @@ export default {
   },
   computed: {
     isCreatedByDispatcher() {
-      return this.$store.getters.GET_SELECTED_GA.status.code.code === 1;
+      return (
+        this.$store.getters.GET_SELECTED_GA.status === null ||
+        this.$store.getters.GET_SELECTED_GA.status === 1
+      );
     },
     dragTree() {
       return this.$store.getters.GET_DRAG_TREE;

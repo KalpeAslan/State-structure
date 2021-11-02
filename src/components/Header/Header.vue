@@ -204,7 +204,7 @@ export default Vue.extend({
       }
     },
     selectedGovState(): number {
-      return this.selectedGovOrg.status.code.code;
+      return this.selectedGovOrg.status ? this.selectedGovOrg.status : 1;
     },
   },
   methods: {

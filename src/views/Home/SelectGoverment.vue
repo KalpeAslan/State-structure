@@ -68,12 +68,13 @@
                 font-size: 14px;
                 line-height: 16px;
                 color: #000000;
-                max-width: 170px;
+                max-width: 150px;
+                width: 150px;
               "
             >
               {{ govOrg | translate }}
             </span>
-            <Badge :state="govOrg.status.code.code" />
+            <Badge :state="computeStatus(govOrg)" />
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -82,7 +83,6 @@
 </template>
 
 <script lang="ts">
-import { governmentAgencies } from "@/store/dump";
 import { IGoverment } from "@/store/interfaces";
 import {
   SELECT_GOVERMENT,
@@ -109,14 +109,23 @@ export default Vue.extend({
     selectGov(govOrg: IGoverment) {
       this.$store.dispatch(SELECT_GOVERMENT, govOrg);
     },
+    computeStatus(govOrg: IGoverment) {
+      if (govOrg.status === null) return 1;
+      return govOrg.status;
+    },
   },
   computed: {
+    governmentAgencies() {
+      return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
+    },
     form() {
       return this.$refs.form as VForm;
     },
     listOfGA(): IGoverment[] {
       const listOfGA =
-        this.selectedTab === 0 ? governmentAgencies : this.listOfGAForApply;
+        this.selectedTab === 0
+          ? this.governmentAgencies
+          : this.listOfGAForApply;
       return !this.inputSearch
         ? listOfGA
         : listOfGA.filter((govAgency) =>
@@ -132,9 +141,9 @@ export default Vue.extend({
     },
     listOfGAForApply(): IGoverment[] {
       const codeForApply = this.userType === "departmentBoss" ? 2 : 5;
-      return governmentAgencies.filter(
-        (govAgency) => govAgency.status.code.code === codeForApply
-      );
+      return this.governmentAgencies.filter((govAgency) => {
+        return govAgency.status === codeForApply;
+      });
     },
   },
   created() {

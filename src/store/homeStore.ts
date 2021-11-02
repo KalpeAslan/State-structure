@@ -128,10 +128,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(SET_MODE, mode);
     },
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
-      context.state.gaState = goverment.status.code.code;
+      context.state.gaState = goverment.status ? goverment.status : 1;
       context.dispatch(SET_TREE, goverment.governmentAgencyTableid);
       context.commit(SELECT_GOVERMENT, goverment);
-      context.commit(SET_GA_STATE, goverment.status.code.code);
+      context.commit(SET_GA_STATE, goverment.status ? goverment.status : 1);
     },
     [ADD_GOVERMENT](context, goverment: IGovermentReq) {
       //После добавления ГО, запрашиваю заново все ГО

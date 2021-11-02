@@ -95,7 +95,8 @@ export interface IGoverment {
   nameKzShort: string;
   nameRu: string;
   nameRuShort: string;
-  status: {
+  status: null | number;
+  statusObject: {
     id: number;
     nameKaz: string;
     nameRus: string;

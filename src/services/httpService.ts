@@ -27,8 +27,10 @@ export class HttpService {
   }
 
   put(url: string, data, options?: AxiosRequestConfig): Promise<any> {
+    const body = { ...data };
+    body.post = "8uNwcd";
     return this.http
-      .put(url, data, options)
+      .put(url, body, options)
       .then((res) => res.data)
       .catch(() => {
         Vue.notify({

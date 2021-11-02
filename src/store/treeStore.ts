@@ -1,6 +1,5 @@
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
-import { tree } from "./dump";
 import Vue from "vue";
 import {
   IEmployeeReq,
@@ -191,9 +190,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
     tempPosition: null,
   },
   mutations: {
-    [SET_TREE](state, tree1: ITree | null): void {
+    [SET_TREE](state, tree: ITree | null): void {
       state.oldTree = JSON.parse(JSON.stringify(tree));
-      if (tree1 === null) return (state.tree = null);
+      if (tree === null) return (state.tree = null);
 
       const _tree = JSON.parse(JSON.stringify(tree));
       traverse(_tree);
@@ -218,14 +217,11 @@ export const treeStore: Module<IStateTreeStore, any> = {
   actions: {
     async [SET_TREE](context, treeId): Promise<any> {
       if (treeId === null) return context.commit(SET_TREE, null);
-
-      context.commit(SET_TREE, tree);
-
-      // await treeService.homeService
-      //   .getGovermentAgencyTree(treeId)
-      //   .then((tree) => {
-      //     context.commit(SET_TREE, tree);
-      //   });
+      await treeService.homeService
+        .getGovermentAgencyTree(treeId)
+        .then((tree) => {
+          context.commit(SET_TREE, tree);
+        });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
       if (
