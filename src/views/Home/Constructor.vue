@@ -150,9 +150,8 @@ import {
 } from "../../store/mutation-types";
 import Vue from "vue";
 import { position } from "@/store/dump";
-
 export default Vue.extend({
-  data() {
+  data(): any {
     return {
       dotButtonItems: [
         {
@@ -165,13 +164,10 @@ export default Vue.extend({
     };
   },
   mixins: [treeMixin],
-  watch: {
-    positionsInput(val) {},
-  },
   components: {
     SidebarTree: SidebarTree,
     AddGoverment: () =>
-      import("../../components/HeaderModals/AddGoverment.vue"),
+      import("../../components/HeaderModals/AddGoverment.vue") as any,
   },
   computed: {
     tree() {

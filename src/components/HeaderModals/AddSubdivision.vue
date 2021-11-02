@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     modalDialog: {
-      set(val) {
+      set() {
         this.$emit("close-modal");
       },
       get() {

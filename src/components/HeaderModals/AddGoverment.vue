@@ -13,15 +13,20 @@
               lazy-validation
               v-model="valid"
             >
-              <div v-for="input in govermentForm" :key="input.name">
-                <div class="label">{{ input.label }}</div>
+              <div v-for="inputName in formAsArray" :key="inputName">
+                <div class="label">{{ formLabels[inputName] }}</div>
                 <v-text-field
-                  :rules="[(v) => !!v || 'Заполните это поле!']"
+                  @input="$v.form[inputName].$reset()"
+                  :error-messages="
+                    inputName === 'iin'
+                      ? iinErrors
+                      : computeNamesError(inputName)
+                  "
                   outlined
+                  :hide-details="!$v.form.iin.$error"
                   class="mb-3"
-                  hide-details
                   required
-                  v-model="goverment[input.name]"
+                  v-model="form[inputName]"
                 >
                 </v-text-field>
               </div>
@@ -36,68 +41,112 @@
   </v-row>
 </template>
 <script lang="ts">
-import { IGovermentReq } from "@/store/interfaces";
 import { ADD_GOVERMENT } from "@/store/mutation-types";
-import {modalMixin} from '../../mixins/modalMixin'
+import { modalMixin } from "../../mixins/modalMixin";
+import { required, maxLength, minLength } from "vuelidate/lib/validators";
+import Component from "vue-class-component";
 import Vue from "vue";
-export default Vue.extend({
+import { IGovermentReq } from "@/store/interfaces";
+const validations = {
+  form: {
+    iin: {
+      required,
+      maxLength: maxLength(12),
+      minLength: minLength(12),
+    },
+    nameRu: {
+      required,
+    },
+    nameKz: {
+      required,
+    },
+    nameEng: {
+      required,
+    },
+  },
+};
+
+@Component({
+  name: "add-goverment-modal",
+  mixins: [modalMixin("modalDialog")],
   props: {
     modalDialog: {
-      type: Boolean,
       default: false,
+      type: Boolean,
     },
   },
-  mixins:[modalMixin('modalDialog')],
-  data() {
-    return {
-      valid: true,
-      goverment: {
-        bin: null,
-        nameRu: null,
-        nameKz: null,
-        nameEng: null,
-        nameRuShort: null,
-        nameKzShort: null,
-        nameEngShort: null,
-      } as IGovermentReq,
-      govermentForm: [
-        {
-          name: "bin",
-          label: "БИН",
-        },
-        {
-          name: "nameRu",
-          label: "Наименование на русском",
-        },
-        {
-          name: "nameKz",
-          label: "Наименование на казахском",
-        },
-        {
-          name: "nameEng",
-          label: "Наименование на английском",
-        },
-      ],
-    };
-  },
-  methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
-    reset() {
-      this.$refs.form.reset();
-    },
-    submit() {
-      if (this.govermentForm.every((f) => this.goverment[f.name])) {
-        this.$emit('close-modal')
-        this.goverment.nameEngShort = "Test ValueEng"
-        this.goverment.nameRuShort = "Test ValueRu"
-        this.goverment.nameKzShort = "Test ValueKz"
-        this.$store.dispatch(ADD_GOVERMENT, this.goverment);
-      }
-    },
-  },
-});
+  validations: validations,
+})
+export default class AddGoverment extends Vue {
+  //data
+  valid: boolean = true;
+  goverment: IGovermentReq = {
+    iin: null,
+    nameRu: null,
+    nameKz: null,
+    nameEng: null,
+    nameRuShort: null,
+    nameKzShort: null,
+    nameEngShort: null,
+  };
+
+  form = {
+    iin: null,
+    nameRu: null,
+    nameKz: null,
+    nameEng: null,
+  };
+  formLabels = {
+    iin: "БИН",
+    nameRu: "Наименование на русском",
+    nameKz: "Наименование на казахском",
+    nameEng: "Наименование на английском",
+  };
+  formAsArray: string[] = Object.keys(this.form);
+
+  //computed
+  get iinErrors(): string[] {
+    const errors: string[] = [];
+    if (!this.$v.form.iin.$dirty) return errors;
+    if (!this.$v.form.iin.required) {
+      errors.push("Поле обязательно для заполнения");
+    }
+    if (!this.$v.form.iin.maxLength || !this.$v.form.iin.minLength)
+      errors.push("Длина ИИН должна быть 12 символов");
+    return errors;
+  }
+
+  //methods
+  validate(): void {
+    this.$refs.form.validate();
+  }
+  reset(): void {
+    this.$refs.form.reset();
+  }
+  submit(): void {
+    this.$v.form.$touch();
+    if (!this.$v.$error) {
+      this.$emit("close-modal");
+      this.goverment = { ...this.goverment, ...this.form };
+      console.log(this.goverment);
+      this.goverment.nameEngShort = "Test ValueEng";
+      this.goverment.nameRuShort = "Test ValueRu";
+      this.goverment.nameKzShort = "Test ValueKz";
+      this.$store.dispatch(ADD_GOVERMENT, this.goverment);
+    }
+  }
+  computeNamesError(nameLang: string): string[] {
+    const errors = [];
+    const field = this.$v.form[nameLang];
+    if (!field.$dirty) return errors;
+    !field.required && errors.push("Заполните это поле!");
+    return errors;
+  }
+
+  $refs!: {
+    form: HTMLFormElement;
+  };
+}
 </script>
 
 <style scoped>
@@ -107,11 +156,3 @@ export default Vue.extend({
   color: #000000;
 }
 </style>
-
-function modalMixin(): import("vue").VueConstructor<Vue>|import("vue").ComponentOptions<Vue, import("vue/types/options").DefaultData<Vue>, import("vue/types/options").DefaultMethods<Vue>, import("vue/types/options").DefaultComputed, import("vue/types/options").PropsDefinition<...>, import("vue/types/options").DefaultProps> {
-  throw new Error("Function not implemented.");
-}
-
-function modalMixin(props: any): import("vue").VueConstructor<Vue>|import("vue").ComponentOptions<Vue, import("vue/types/options").DefaultData<Vue>, import("vue/types/options").DefaultMethods<Vue>, import("vue/types/options").DefaultComputed, import("vue/types/options").PropsDefinition<...>, import("vue/types/options").DefaultProps> {
-  throw new Error("Function not implemented.");
-}

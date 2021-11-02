@@ -10,6 +10,7 @@
   "dependencies": {
     "@ssthouse/vue-tree-chart": "^0.5.4",
     "@types/websocket": "^1.0.4",
+    "@vuelidate/validators": "^2.0.0-alpha.25",
     "axios": "^0.23.0",
     "circular-json": "^0.5.9",
     "core-js": "^3.6.5",
@@ -29,11 +30,14 @@
     "vue-router": "^3.2.0",
     "vue2-perfect-scrollbar": "^1.5.0",
     "vuedraggable": "^2.24.3",
+    "vuelidate": "^0.7.6",
+    "vuelidate-property-decorators": "^1.0.28",
     "vuetify": "^2.4.0",
     "vuex": "^3.4.0",
     "xml2json-light": "^1.0.6"
   },
   "devDependencies": {
+    "@types/vuelidate": "^0.7.15",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",

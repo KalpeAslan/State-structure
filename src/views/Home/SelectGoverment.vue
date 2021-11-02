@@ -155,7 +155,7 @@ export default Vue.extend({
   components: {
     Badge: () => import("../../components/Badge/Badge.vue"),
     AddGoverment: () =>
-      import("../../components/HeaderModals/AddGoverment.vue"),
+      import("../../components/HeaderModals/AddGoverment.vue") as any,
   },
 });
 </script>

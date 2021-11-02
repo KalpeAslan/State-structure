@@ -35,6 +35,7 @@
       <Badge v-if="selectedGovOrg" :state="selectedGovState"
         >Создан диспетчером</Badge
       >
+      <v-select :items="roles" v-model="selectedRole" />
     </div>
     <v-spacer></v-spacer>
     <div>
@@ -117,7 +118,11 @@
 
 <script lang="ts">
 import { language } from "@/store/interfaces";
-import { SET_LANGUAGE, SET_MODAL_NAME } from "@/store/mutation-types";
+import {
+  SET_LANGUAGE,
+  SET_MODAL_NAME,
+  SET_USER_TYPE,
+} from "@/store/mutation-types";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -155,7 +160,7 @@ export default Vue.extend({
       editForm: [
         {
           title: "БИН",
-          name: "bin",
+          name: "iin",
         },
         {
           title: "Наименование на русском",
@@ -184,6 +189,24 @@ export default Vue.extend({
           title: "Англ",
         },
       ],
+      roles: [
+        {
+          text: "dispatcher",
+          value: "dispatcher",
+        },
+        {
+          text: "departmentBoss",
+          value: "departmentBoss",
+        },
+        {
+          text: "departmentHead",
+          value: "departmentHead",
+        },
+        {
+          text: "admin",
+          value: "admin",
+        },
+      ],
     };
   },
   components: {
@@ -205,6 +228,14 @@ export default Vue.extend({
     },
     selectedGovState(): number {
       return this.selectedGovOrg.status ? this.selectedGovOrg.status : 1;
+    },
+    selectedRole: {
+      get() {
+        return this.$store.getters.GET_USER_TYPE;
+      },
+      set(value) {
+        this.$store.dispatch(SET_USER_TYPE, value);
+      },
     },
   },
   methods: {

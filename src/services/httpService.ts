@@ -14,6 +14,15 @@ export class HttpService {
   }
 
   post(url: string, data, options?: AxiosRequestConfig): Promise<any> {
+    if (options) {
+      options.params.code = "8uNwcd";
+    } else {
+      options = {
+        params: {
+          code: "8uNwcd",
+        },
+      };
+    }
     return this.http
       .post(url, data, options)
       .then((res) => res.data)
@@ -27,10 +36,9 @@ export class HttpService {
   }
 
   put(url: string, data, options?: AxiosRequestConfig): Promise<any> {
-    const body = { ...data };
-    body.post = "8uNwcd";
+    options.params.code = "8uNwcd";
     return this.http
-      .put(url, body, options)
+      .put(url, data, options)
       .then((res) => res.data)
       .catch(() => {
         Vue.notify({

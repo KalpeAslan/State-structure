@@ -1,11 +1,11 @@
-export interface Data {
+export interface _Data {
   name: string;
   title: string;
   children: any;
 }
 
 export function generateOrgChartData(depth: number) {
-  const data: Data = {
+  const data: _Data = {
     name: "Lao Lao",
     title: "general manager",
     children: [

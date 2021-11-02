@@ -49,7 +49,7 @@ export default Vue.extend({
       valid: true,
       govermentForm: [
         {
-          name: "bin",
+          name: "iin",
           label: "БИН",
         },
         {

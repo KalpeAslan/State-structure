@@ -2,7 +2,7 @@ import { IEmployee, IGoverment, IPosition } from "./interfaces";
 import { ITree } from "@/store/interfaces";
 export const tree: ITree = {
   id: 1,
-  bin: "123456789012",
+  iin: "123456789012",
   nameRu: "Название ГО",
   nameKz: "nameKz",
   nameEng: "nameEng",
@@ -308,7 +308,7 @@ export const roles = [
 export const governmentAgencies: IGoverment[] = [
   {
     governmentAgencyTableid: 1,
-    bin: "string",
+    iin: "string",
     nameEng: "string",
     nameEngShort: "string",
     nameKz: "string",
@@ -330,7 +330,7 @@ export const governmentAgencies: IGoverment[] = [
   },
   {
     governmentAgencyTableid: 1,
-    bin: "string",
+    iin: "string",
     nameEng: "string",
     nameEngShort: "string",
     nameKz: "string",
@@ -352,7 +352,7 @@ export const governmentAgencies: IGoverment[] = [
   },
   {
     governmentAgencyTableid: 1,
-    bin: "string",
+    iin: "string",
     nameEng: "string",
     nameEngShort: "string",
     nameKz: "string",

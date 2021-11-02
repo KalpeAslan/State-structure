@@ -1,4 +1,9 @@
-import { IStateSystemStore, language, webSocketState } from "./interfaces";
+import {
+  IStateSystemStore,
+  language,
+  userTypes,
+  webSocketState,
+} from "./interfaces";
 import { SET_LANGUAGE, SET_USER_TYPE } from "./mutation-types";
 import { Module } from "vuex";
 import { i18n } from "@/plugins/i18n";
@@ -6,13 +11,13 @@ import { i18n } from "@/plugins/i18n";
 const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
-    userType: "departmentHead",
+    userType: "dispatcher",
     currentLanguage: "ru",
     webSocketState: null,
   },
   mutations: {
     [SET_USER_TYPE](context, userType) {
-      context.userType = "departmentBoss";
+      context.userType = userType;
     },
     [SET_LANGUAGE](ctx, language: language) {
       ctx.currentLanguage = language;
@@ -22,6 +27,9 @@ export const systemStore: Module<IStateSystemStore, any> = {
     [SET_LANGUAGE](ctx, language: language) {
       i18n.locale = language;
       ctx.commit(SET_LANGUAGE, language);
+    },
+    [SET_USER_TYPE](ctx, userType: userTypes) {
+      ctx.commit(SET_USER_TYPE, userType);
     },
   },
   getters: {

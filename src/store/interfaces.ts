@@ -19,7 +19,7 @@ export interface ITree {
   positionsTableid?: number;
   hidden?: boolean;
   employees?: IEmployee[];
-  bin?: string | number;
+  iin?: string | number;
   entityType: string;
   positions?: Array<IPosition>;
   governmentAgencyId?: null | number;
@@ -87,7 +87,7 @@ export interface IPosition {
 
 export interface IGoverment {
   governmentAgencyTableid: number;
-  bin: string;
+  iin: string;
   nameEng: string;
   key?: number | string;
   nameEngShort: string;
@@ -110,7 +110,7 @@ export interface IGoverment {
 }
 
 export interface IGovermentReq {
-  bin: string | number;
+  iin: string | number;
   nameRu: string;
   nameKz: string;
   nameEng: string;
@@ -208,4 +208,29 @@ export interface IStateSystemStore {
   currentLanguage: language;
   userType: userTypes;
   webSocketState: webSocketState;
+}
+export interface Params {
+  [key: string]: any;
+  type: string;
+}
+export interface ValidationParams {
+  readonly name: string;
+  readonly params: Params;
+  readonly path: string[];
+}
+export interface Validation {
+  $model: any;
+  // const validationGetters
+  readonly $invalid: boolean;
+  readonly $dirty: boolean;
+  readonly $anyDirty: boolean;
+  readonly $error: boolean;
+  readonly $anyError: boolean;
+  readonly $pending: boolean;
+  readonly $params: { [attr: string]: any };
+
+  // const validationMethods
+  $touch(): void;
+  $reset(): void;
+  $flattenParams(): ValidationParams[];
 }
