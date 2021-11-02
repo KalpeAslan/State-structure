@@ -384,6 +384,14 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 роль",
             type: "danger",
           });
+        if (dragEnteredNode.employees.length === 1) {
+          const top: number = +document
+            .querySelector(`.node-slot__${dragEnteredNode.key}`)
+            ["style"].top.replace("px", "");
+          document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
+            "style"
+          ].top = top + +50 + "px";
+        }
 
         const {
           positionsTableid,

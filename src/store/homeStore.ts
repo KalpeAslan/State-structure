@@ -128,16 +128,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(SET_MODE, mode);
     },
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
-      if (
-        !context.state.selectedGoverment ||
-        context.state.selectedGoverment.governmentAgencyTableid !==
-          goverment.governmentAgencyTableid
-      ) {
-        context.state.gaState = goverment.status.code.code;
-        context.dispatch(SET_TREE, goverment.governmentAgencyTableid);
-        context.commit(SELECT_GOVERMENT, goverment);
-        context.commit(SET_GA_STATE, goverment.status.code.code);
-      }
+      context.state.gaState = goverment.status.code.code;
+      context.dispatch(SET_TREE, goverment.governmentAgencyTableid);
+      context.commit(SELECT_GOVERMENT, goverment);
+      context.commit(SET_GA_STATE, goverment.status.code.code);
     },
     [ADD_GOVERMENT](context, goverment: IGovermentReq) {
       //После добавления ГО, запрашиваю заново все ГО

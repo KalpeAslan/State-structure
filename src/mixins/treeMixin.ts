@@ -31,6 +31,7 @@ export default Vue.extend({
       }
     },
     onDrop($event: DragEvent, node: ITree) {
+      console.log(node);
       this.$store.dispatch(UPDATE_TREE, {
         dragEnteredNode: node,
         dragTargetNode: this.$store.getters.GET_DRAG_TREE,

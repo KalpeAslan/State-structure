@@ -1,47 +1,50 @@
 <template>
   <div>
-    <div
-      v-for="node in nodes"
-      :key="node.id"
-      :style="{ 'margin-left': `${depth * 20}px` }"
-      class="node-container"
-    >
-      <div draggable @dragstart="dragStart($event, node)" @dragend="dragEnd">
-        <v-btn
-          v-if="node.children && node.children.length"
-          icon
-          @click="nodeClicked(node)"
-        >
-          <v-icon>
-            {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
-          </v-icon>
-        </v-btn>
-        <div class="node">
-          <span
-            :style="{
-              marginLeft: node.children && 36,
-            }"
-            >{{ node | translate }}</span
+    <template v-for="node in nodes">
+      <div
+        :key="node.key"
+        :style="{ 'margin-left': `${depth * 20}px` }"
+        class="node-container"
+        dropzone
+        @dragover.prevent
+        @dragenter.prevent
+        @drop="onDrop($event, node)"
+      >
+        <div draggable @dragstart="dragStart($event, node)" @dragend="dragEnd">
+          <v-btn
+            v-if="node.children && node.children.length"
+            icon
+            @click="nodeClicked(node)"
           >
-          <div class="node-buttons">
-            <v-btn icon @click="insertToNode(node)">
-              <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
-            </v-btn>
-            <v-btn icon class="remove-button" @click="deleteNode(node)">
-              <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-            </v-btn>
+            <v-icon>
+              {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
+            </v-icon>
+          </v-btn>
+          <div class="node">
+            <span
+              :style="{
+                marginLeft: node.children && 36,
+              }"
+              >{{ node | translate }}</span
+            >
+            <div class="node-buttons">
+              <v-btn icon @click="insertToNode(node)">
+                <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
+              </v-btn>
+              <v-btn icon class="remove-button" @click="deleteNode(node)">
+                <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+              </v-btn>
+            </div>
           </div>
+          <SidebarTree
+            v-if="isExpanded(node) && node.children"
+            :nodes="node.children"
+            :depth="depth + 1"
+            @onClick="(node) => $emit('onClick', node)"
+          />
         </div>
-        <SidebarTree
-          v-if="isExpanded(node) && node.children"
-          :nodes="node.children"
-          :depth="depth + 1"
-          dropzone
-          @drop="onDrop($event, node)"
-          @onClick="(node) => $emit('onClick', node)"
-        />
       </div>
-    </div>
+    </template>
   </div>
 </template>
 

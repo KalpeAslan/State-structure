@@ -64,10 +64,10 @@
                     </div>
                   </div>
                 </template>
+                <v-btn icon @click="deleteEmployee(node, positionChild)">
+                  <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
+                </v-btn>
               </div>
-              <v-btn icon @click="deleteEmployee(node, positionChild)">
-                <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
-              </v-btn>
             </v-list-item>
 
             <template v-if="node.roleId">
@@ -105,7 +105,7 @@ export default {
   name: "treemap",
   data() {
     return {
-      treeConfig: { nodeWidth: 400, nodeHeight: 80, levelHeight: 100 },
+      treeConfig: { nodeWidth: 250, nodeHeight: 80, levelHeight: 100 },
     };
   },
   computed: {

@@ -102,7 +102,7 @@ export default Vue.extend({
       modalDialog: false as boolean,
       loading: false,
       inputSearch: null,
-      selectedTab: "all",
+      selectedTab: 0,
     };
   },
   methods: {
@@ -115,9 +115,8 @@ export default Vue.extend({
       return this.$refs.form as VForm;
     },
     listOfGA(): IGoverment[] {
-      this.selectedTab = "all";
       const listOfGA =
-        this.selectedTab === "all" ? governmentAgencies : this.listOfGAForApply;
+        this.selectedTab === 0 ? governmentAgencies : this.listOfGAForApply;
       return !this.inputSearch
         ? listOfGA
         : listOfGA.filter((govAgency) =>

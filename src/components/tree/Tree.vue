@@ -14,7 +14,7 @@
       <template v-for="(node, index) of nodeDataList">
         <div
           v-if="node.data.entityType !== 'employee' && !node.hidden"
-          class="node-slot"
+          :class="['node-slot', `node-slot__${node.data.key}`]"
           :key="node.data.key"
           :index="index"
           :style="{
