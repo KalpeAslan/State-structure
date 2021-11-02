@@ -315,7 +315,8 @@ export const governmentAgencies: IGoverment[] = [
     nameKzShort: "string",
     nameRu: "testValue front",
     nameRuShort: "string",
-    status: {
+    status: null,
+    statusObject: {
       id: 1,
       nameKaz: "kaz_Черновик",
       nameRus: "Черновик",
@@ -336,7 +337,8 @@ export const governmentAgencies: IGoverment[] = [
     nameKzShort: "string",
     nameRu: "Test value front",
     nameRuShort: "string",
-    status: {
+    status: 1,
+    statusObject: {
       id: 1,
       nameKaz: "kaz_Черновик",
       nameRus: "Черновик",
@@ -357,7 +359,8 @@ export const governmentAgencies: IGoverment[] = [
     nameKzShort: "string",
     nameRu: "Value front",
     nameRuShort: "string",
-    status: {
+    status: 1,
+    statusObject: {
       id: 1,
       nameKaz: "kaz_Черновик",
       nameRus: "Черновик",
