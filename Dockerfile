@@ -4,9 +4,10 @@ RUN mkdir -p /front/app
 WORKDIR /front/app
 COPY . /front/app
 
-RUN sudo npm install
-
 RUN npm --v && ls
+
+RUN npm install
+
 
 RUN npm run build
 
