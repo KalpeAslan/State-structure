@@ -16,6 +16,10 @@
       v-else-if="selectedModalName === 'nca-layer-modal'"
       @close-modal="closeModal"
     />
+    <add-position
+      v-else-if="selectedModalName === 'add-position-modal'"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -32,6 +36,7 @@ export default {
     DeleteGoverment: () => import("../HeaderModals/DeleteGoverment.vue"),
     ReturnForRevesion: () => import("../HeaderModals/ReturnForRevesion.vue"),
     NcaLayerModal: () => import("../HeaderModals/NcaLayerModal.vue"),
+    AddPosition: () => import("../HeaderModals/AddPosition.vue"),
   },
   methods: {
     closeModal() {

@@ -22,18 +22,20 @@
       <v-text-field
         outlined
         v-model="inputEmployies"
-        label="Поиск"
+        :label="$t('search')"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
       <v-list-item
         draggable
-        @dragstart="dragStart($event, employe)"
+        v-for="employee in employes"
+        :key="employee.key"
+        @dragstart="dragStart($event, employee)"
         @dragend="dragEnd"
-        v-for="employe in employes"
-        :key="employe.value"
       >
         <v-list-item-content>
-          <span style="font-size: 14px"> {{ employe.user.name }}</span>
+          <span style="font-size: 14px">
+            {{ employee.statusObject | translate }}</span
+          >
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>
@@ -59,7 +61,7 @@
       </div>
       <v-text-field
         outlined
-        label="Поиск"
+        :label="$t('search')"
         v-model="inputRoles"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
@@ -72,7 +74,7 @@
       >
         <v-list-item-content>
           <span style="font-size: 14px">
-            {{ role.roleId }}
+            {{ role | translate }}
           </span>
         </v-list-item-content>
       </v-list-item>
@@ -83,7 +85,6 @@
 
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
-import { employees } from "@/store/dump";
 import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
 import Vue from "vue";
 
@@ -95,7 +96,7 @@ export default Vue.extend({
     };
   },
   created() {
-    this.$store.dispatch(SET_EMPLOYIES, employees);
+    this.$store.dispatch(SET_EMPLOYIES);
     this.$store.dispatch(SET_ROLES);
   },
   computed: {

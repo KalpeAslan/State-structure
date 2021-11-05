@@ -31,13 +31,13 @@
             class="text-caption"
             style="font-style: normal; font-weight: normal; line-height: 16px"
           >
-            Добавить
+            {{ $t("add") }}
           </div>
         </v-btn>
       </div>
       <v-text-field
         outlined
-        label="Поиск"
+        :label="$t('search')"
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
       <SidebarTree :nodes="[tree]"></SidebarTree>
@@ -75,13 +75,13 @@
             class="text-caption"
             style="font-style: normal; font-weight: normal; line-height: 16px"
           >
-            Добавить
+            {{ $t("add") }}
           </div>
         </v-btn>
       </div>
       <v-text-field
         outlined
-        label="Поиск"
+        :label="$t('search')"
         hide-details
         v-model="positionsInput"
         prepend-inner-icon="mdi-magnify"
@@ -146,10 +146,11 @@ import {
   ADD_POSITION,
   DELETE_POSITION,
   INSERT_NODE_TO_TREE,
+  SET_MODAL_NAME,
   SET_POSITIONS,
 } from "../../store/mutation-types";
 import Vue from "vue";
-import { position } from "@/store/dump";
+import { IPositionNew } from "@/store/interface";
 export default Vue.extend({
   data(): any {
     return {
@@ -198,9 +199,7 @@ export default Vue.extend({
       });
     },
     addPosition() {
-      const _position = { ...position };
-      _position.positionsTableid = Math.round(Math.random() * 1515021);
-      this.$store.dispatch(ADD_POSITION, _position);
+      this.$store.dispatch(SET_MODAL_NAME, "add-position-modal");
     },
     deletePostition(position) {
       this.$store.dispatch(DELETE_POSITION, position);

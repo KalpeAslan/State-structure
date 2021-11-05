@@ -117,6 +117,7 @@
 </template>
 
 <script lang="ts">
+import { homeService } from "@/services/homeService";
 import { language } from "@/store/interfaces";
 import {
   SET_LANGUAGE,
@@ -227,7 +228,7 @@ export default Vue.extend({
       }
     },
     selectedGovState(): number {
-      return this.selectedGovOrg.status ? this.selectedGovOrg.status : 1;
+      return this.selectedGovOrg.status ? this.selectedGovOrg.status : 315;
     },
     selectedRole: {
       get() {
@@ -264,6 +265,9 @@ export default Vue.extend({
     clickHeaderButton(button) {
       if (["edit-goverment", "delete-goverment"].includes(button.name)) {
         this.$store.dispatch(SET_MODAL_NAME, button.name);
+      }
+      if (button.name === "exportPdf") {
+        homeService.getDocument(this.$store.getters.GET_GA_ID);
       }
     },
   },

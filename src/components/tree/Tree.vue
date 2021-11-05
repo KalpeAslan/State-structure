@@ -155,6 +155,7 @@ export default {
   },
   computed: {
     isCreatedByDispatcher() {
+      return true;
       return (
         this.$store.getters.GET_SELECTED_GA.status === null ||
         this.$store.getters.GET_SELECTED_GA.status === 1

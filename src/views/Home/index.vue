@@ -24,11 +24,12 @@ export default Vue.extend({
       const gaState: number = this.gaState;
       switch (this.GET_USER_TYPE) {
         case "dispatcher":
-          return [1, 4, 8].includes(gaState);
+          return [315, 318, 322].includes(gaState);
         case "departmentBoss":
-          return 2 === gaState;
+          return 316 === gaState;
         case "departmentHead":
-          return 5 === gaState;
+          console.log(gaState);
+          return 317 === gaState;
         case "admin":
           return false;
       }

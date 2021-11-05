@@ -77,7 +77,7 @@
               >
                 <div class="position-node_child">
                   <span class="d-flex align-center" style="font-size: 12px">
-                    {{ node.roleId }}
+                    {{ node.roleObject | translate }}
                   </span>
                   <v-btn icon @click="deleteRole(node)">
                     <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
@@ -116,15 +116,7 @@ export default {
   watch: {
     tree: {
       deep: true,
-      handler(val) {
-        if (val) {
-          // setTimeout(() => {
-          //   window
-          //     .$(".tree-container")
-          //     .draggable({ cancel: ".node-container" });
-          // }, 1000);
-        }
-      },
+      handler(val) {},
     },
   },
   methods: {

@@ -1,3 +1,4 @@
+import { IEmployeeGet } from "./interface";
 export interface IStateTreeStore {
   tree: null | ITree;
   oldTree: null | ITree;
@@ -43,6 +44,7 @@ export interface IRole {
   key: number | string;
   nameKaz: string;
   nameRus: string;
+  entityType?: string;
   removed: boolean;
 }
 
@@ -52,7 +54,7 @@ export interface IStateHomeStore {
   goverments: IGoverment[];
   selectedGoverment: IGoverment | null;
   roles: IRole[];
-  employies: IEmployee[];
+  employies: IEmployeeGet[];
   subdivisionUnderGovernmentAgency: boolean;
   gaState: number;
   isWebSocketOpen: boolean;
@@ -61,14 +63,14 @@ export interface IStateHomeStore {
 export interface IPosition {
   nameRu: string;
   key?: number | string;
-  positionsTableid: number | string;
+  id: number | string;
   hidden?: boolean;
   employees: IEmployee[];
   employeeReplacement?: IEmployeeReq;
   superiorPosition: null | number;
   subdivisionId: null | number;
   roleId: null | number;
-  governmentAgencyId: null | number;
+  ddepartmentIinId: null | number;
   superiorSubdivisionId?: number;
   statusId: number;
   nameKz?: string;
@@ -86,15 +88,15 @@ export interface IPosition {
 }
 
 export interface IGoverment {
-  governmentAgencyTableid: number;
+  id: number;
   iin: string;
   nameEng: string;
   key?: number | string;
   nameEngShort: string;
-  nameKz: string;
-  nameKzShort: string;
-  nameRu: string;
-  nameRuShort: string;
+  nameKaz: string;
+  nameKazShort: string;
+  nameRus: string;
+  nameRusShort: string;
   status: null | number;
   statusObject: {
     id: number;
@@ -111,11 +113,11 @@ export interface IGoverment {
 
 export interface IGovermentReq {
   iin: string | number;
-  nameRu: string;
-  nameKz: string;
+  nameRus: string;
+  nameKaz: string;
   nameEng: string;
-  nameRuShort: string;
-  nameKzShort: string;
+  nameRusShort: string;
+  nameKazShort: string;
   nameEngShort: string;
   status?: number;
   id?: number;
@@ -208,6 +210,7 @@ export interface IStateSystemStore {
   currentLanguage: language;
   userType: userTypes;
   webSocketState: webSocketState;
+  isLoggined: boolean;
 }
 export interface Params {
   [key: string]: any;

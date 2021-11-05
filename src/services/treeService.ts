@@ -1,7 +1,7 @@
-import { IPositionReq, ISubdivisonReq } from "./../store/interfaces";
+import { IEmployeeNew } from "./../store/interface";
 import { HomeService, homeService } from "./homeService";
 import { HttpService } from "./httpService";
-import store from "@/store";
+import { IPositionChange, ISubdivisonChange } from "@/store/interface";
 
 class TreeService {
   constructor(
@@ -10,12 +10,16 @@ class TreeService {
   ) {}
 
   //IPositionReq
-  changePosition(position) {
+  changePosition(position: IPositionChange) {
     return this.httpService.post("/api/v1/change/position", position);
   }
 
-  changeSubdivision(subdivision: ISubdivisonReq) {
+  changeSubdivision(subdivision: ISubdivisonChange) {
     return this.httpService.post("/api/v1/change/subdivision", subdivision);
+  }
+
+  newEmployee(employee: IEmployeeNew) {
+    return this.httpService.post("/api/v1/new/employee", employee);
   }
 }
 

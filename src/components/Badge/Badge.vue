@@ -5,15 +5,13 @@
 </template>
 
 <script lang="ts">
+import { TStatuses } from "@/store/interface";
 import Vue from "vue";
 export default Vue.extend({
   props: {
     state: {
       type: Number,
-      default: 1,
-      validator: (prop: number): boolean => {
-        return [...Array(8).keys()].map((i) => i + 1).includes(prop);
-      },
+      default: 315,
     },
   },
   data: () => ({
@@ -22,28 +20,28 @@ export default Vue.extend({
   computed: {
     stateText(): string {
       switch (this.state) {
-        case 1:
+        case 315:
           this.className = "created";
           return "Создан диспетчером";
-        case 2:
+        case 316:
           this.className = "onApproval";
           return "На согласовании";
-        case 3:
+        case 317:
           this.className = "aproved";
           return "Согласован";
-        case 4:
+        case 318:
           this.className = "notAproved";
           return "Не согласован";
-        case 5:
+        case 319:
           this.className = "onClaim";
           return "На Утверждении";
-        case 6:
+        case 320:
           this.className = "claimed";
           return "Утвержден";
-        case 7:
+        case 321:
           this.className = "notClaimed";
           return "Не утвержден";
-        case 8:
+        case 312:
           return "Удален";
         default:
           return "Создан диспетчером";

@@ -1,3 +1,4 @@
+import store from "./index.ts";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import Vue from "vue";
@@ -25,7 +26,10 @@ import {
   CHANGE_SUBDIVISION,
   SET_TEMP_POSITION,
   SET_EMPLOYEE_REPLACEMENT,
+  CHANGE_POSITION,
+  SET_TREE_SAFE,
 } from "./mutation-types";
+import { IEmployeeNew, IPositionChange, ISubdivisonChange } from "./interface";
 
 function insertNodeIntoTree(node, nodeKey: string | number, newNode: ITree) {
   if (node.key == nodeKey) {
@@ -79,26 +83,30 @@ function getNodeById(node: ITree, key): ITree {
 }
 
 function traverse(tree: ITree | any) {
-  if (!(tree.subdivisions || tree.positions || tree.employees)) {
+  if (!("subdivisions" in tree || "positions" in tree || "employees" in tree)) {
     return;
   }
 
   tree.key = Math.round(Math.random() * 4451454121454);
   if (tree.entityType === "position") {
-    tree.employeeReplacement = tree.employeeReplacement
-      ? tree.employeeReplacement
-      : null;
+    tree.employeeReplacement = tree.employeeReplacement || null;
+    tree.roleObject = tree.roleObject || null;
     return;
   }
-  const children = JSON.parse(
-    JSON.stringify(
-      tree.subdivisions
-        ? tree.subdivisions
-        : tree.positions
-        ? tree.positions
-        : tree.employees
-    )
-  );
+
+  let children = [];
+
+  if (tree.subdivisions || tree.positions || tree.employees) {
+    children = JSON.parse(
+      JSON.stringify(
+        tree.subdivisions
+          ? tree.subdivisions
+          : tree.positions
+          ? tree.positions
+          : tree.employees
+      )
+    );
+  }
   if (tree.subdivisions) {
     delete tree.subdivisions;
   } else if (tree.employees) {
@@ -149,6 +157,9 @@ function getParentId(_tree: ITree, childKey) {
   let parentId;
 
   function _getParentId(tree) {
+    if (!tree.children) {
+      console.log(tree);
+    }
     if (tree.children) {
       const isFindParent = tree.children.some((node) => node.key === childKey);
       if (isFindParent) {
@@ -198,6 +209,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
       traverse(_tree);
       state.tree = _tree;
     },
+    [SET_TREE_SAFE](state, tree: ITree): void {
+      state.tree = tree;
+    },
     [SET_UNLOCK](state, unlock: boolean) {
       state.unlock = unlock;
     },
@@ -241,52 +255,22 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragTargetNode.entityType === "subdivision"
       ) {
         deleteNodeFromTree(context.state.tree, dragTargetNode.key);
-
-        const subdivisionReq: ISubdivisonReq = {
-          subdivisionsTableid: dragTargetNode.subdivisionsTableid,
-          governmentAgencyId: dragTargetNode.governmentAgencyId,
-          nameEng: dragTargetNode.nameEng,
-          nameEngShort: dragTargetNode.nameEngShort,
-          nameKz: dragTargetNode.nameKz,
-          nameKzShort: dragTargetNode.nameKzShort,
-          nameRu: dragTargetNode.nameRu,
-          nameRuShort: dragTargetNode.nameRuShort,
-          status: 1,
-          superiorSubdivisionId: null,
-        };
-        treeService.changeSubdivision(subdivisionReq);
+        context.dispatch(CHANGE_SUBDIVISION, {
+          subdivision: dragTargetNode,
+          isDelete: false,
+          parent: dragEnteredNode,
+        });
         return context.state.tree.children.push(dragTargetNode);
       }
       if (
         dragEnteredNode.entityType === "governmentAgency" &&
         dragTargetNode.entityType === "position"
       ) {
-        const {
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          roleId,
-          status,
-        } = dragTargetNode;
-        treeService.changePosition({
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          subdivisions: null,
-          role: roleId,
-          status: status.id,
+        context.dispatch(CHANGE_POSITION, {
+          position: dragTargetNode,
+          isDelete: false,
+          parent: dragEnteredNode,
         });
-
         deletePositionParentByPositionId(
           context.state.tree,
           dragTargetNode.key
@@ -316,25 +300,22 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 сотрудник",
             type: "danger",
           });
-
-        const {
-          employeesTableid,
-          user,
-          positionId,
-          governmentAgency,
-          recruitmentDate,
-          positionRemovalDate,
-          status,
-        } = dragTargetNode;
-        treeService.homeService.changeEmployee({
-          employeesTableid,
-          user: user.id,
-          positions: positionId,
-          governmentAgency,
-          recruitmentDate,
-          positionRemovalDate,
-          status: status.id,
-        });
+        const employeeNewForm: IEmployeeNew = {
+          user: dragTargetNode.user,
+          position: dragEnteredNode.id,
+          ddepartmentIinId: context.getters.GET_GA_ID,
+          recruitmentDate: dragTargetNode.recruitmentDate,
+          positionRemovalDate: dragTargetNode.positionRemovalDate,
+        };
+        treeService.newEmployee(employeeNewForm);
+        if (dragEnteredNode.employees.length === 1) {
+          const top: number = +document
+            .querySelector(`.node-slot__${dragEnteredNode.key}`)
+            ["style"].top.replace("px", "");
+          document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
+            "style"
+          ].top = top + +50 + "px";
+        }
         dragEnteredNode.employees.push(
           context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
         );
@@ -348,26 +329,24 @@ export const treeStore: Module<IStateTreeStore, any> = {
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "subdivision"
       ) {
-        const subdivisionReq: ISubdivisonReq = {
-          subdivisionsTableid: dragTargetNode.subdivisionsTableid,
-          governmentAgencyId: dragTargetNode.governmentAgencyId,
-          nameEng: dragTargetNode.nameEng,
-          nameEngShort: dragTargetNode.nameEngShort,
-          nameKz: dragTargetNode.nameKz,
-          nameKzShort: dragTargetNode.nameKzShort,
-          nameRu: dragTargetNode.nameRu,
-          nameRuShort: dragTargetNode.nameRuShort,
-          superiorSubdivisionId: dragEnteredNode.subdivisionsTableid,
-          status: 1,
-        };
-        treeService.changeSubdivision(subdivisionReq);
-
-        deleteNodeFromTree(context.state.tree, dragTargetNode.key);
-        return insertNodeIntoTree(
-          context.state.tree,
-          dragEnteredNode.key,
-          dragTargetNode
+        const subdivision: ISubdivisonChange = JSON.parse(
+          JSON.stringify(dragTargetNode)
         );
+        subdivision.department = dragEnteredNode.id;
+        context
+          .dispatch(CHANGE_SUBDIVISION, {
+            subdivision,
+            isDelete: false,
+            parent: dragEnteredNode,
+          })
+          .then(() => {
+            deleteNodeFromTree(context.state.tree, dragTargetNode.key);
+            insertNodeIntoTree(
+              context.state.tree,
+              dragEnteredNode.key,
+              dragTargetNode
+            );
+          });
       }
 
       if (
@@ -380,83 +359,26 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 роль",
             type: "danger",
           });
-        if (dragEnteredNode.employees.length === 1) {
-          const top: number = +document
-            .querySelector(`.node-slot__${dragEnteredNode.key}`)
-            ["style"].top.replace("px", "");
-          document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
-            "style"
-          ].top = top + +50 + "px";
-        }
 
-        const {
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          subdivisionId,
-          status,
-        } = dragEnteredNode;
-        treeService.changePosition({
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          subdivisions: subdivisionId,
-          role: dragTargetNode.roleId,
-          status: status.id,
+        dragEnteredNode.roleId = dragTargetNode.id;
+        dragEnteredNode.roleObject = dragTargetNode;
+        context.dispatch(CHANGE_POSITION, {
+          position: dragEnteredNode,
+          isDelete: false,
+          parent: getParentId(context.state.tree, dragEnteredNode.key),
         });
-        return (dragEnteredNode.roleId = dragTargetNode.roleId);
+        dragEnteredNode.roleId = dragTargetNode.id;
+        context.commit(SET_TREE_SAFE, context.getters.tree);
       }
       // Привязка должности к отделу
       if (
         dragEnteredNode.entityType === "subdivision" &&
         dragTargetNode.entityType === "position"
       ) {
-        //         positionsTableid //Long
-        //  governmentAgency //Long, government agency id
-        //  nameRu //String
-        //  nameKz //String
-        //  nameEng //String
-        //  nameRuShort //String
-        //  nameKzShort //String
-        //  nameEngShort //String
-        //  subdivisions //Long, subdivision id
-        //  role //Long, role id
-        //  status //Long, status id
-        const {
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          subdivisionId,
-          roleId,
-          status,
-        } = dragTargetNode;
-        treeService.changePosition({
-          positionsTableid,
-          governmentAgency,
-          nameRu,
-          nameEng,
-          nameKz,
-          nameKzShort,
-          nameRuShort,
-          nameEngShort,
-          subdivisions: subdivisionId,
-          role: roleId,
-          status: status.id,
+        context.dispatch(CHANGE_POSITION, {
+          position: dragTargetNode,
+          isDelete: false,
+          parent: dragEnteredNode,
         });
 
         deletePositionParentByPositionId(
@@ -475,12 +397,12 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
       insertNodeIntoTree(context.state.tree, selectedNode.key, newNode);
     },
-    [DELETE_NODE](context, { selectedNode, parentId }) {
+    [DELETE_NODE](context, { selectedNode, parent }) {
       if (selectedNode.entityType === "subdivision") {
         context.dispatch(CHANGE_SUBDIVISION, {
           subdivision: selectedNode,
           isDelete: true,
-          parentId,
+          parent,
         });
       }
       deleteNodeFromTree(context.state.tree, selectedNode.key);
@@ -510,7 +432,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
         governmentAgency,
         recruitmentDate,
         positionRemovalDate,
-        status,
         key,
       } = positionChild;
       selectedNode.employees = selectedNode.employees.filter(
@@ -529,44 +450,99 @@ export const treeStore: Module<IStateTreeStore, any> = {
     ["DELETE_DRAG_TREE"](ctx) {
       ctx.commit("DELETE_DRAG_TREE");
     },
-    [ADD_SUBDIVISION](ctx, subdivision) {
+    async [ADD_SUBDIVISION](ctx, subdivision) {
       ctx.state.isUpdated = true;
       const subdivisionForm = { ...subdivision };
-      if (ctx.state.plusSelectedNode.entityType === "governmentAgency") {
-        subdivisionForm.subdivisionUnderGovernmentAgency = false;
+      if (ctx.state.plusSelectedNode.entityType === "subdividion") {
+        subdivisionForm.department = ctx.state.plusSelectedNode.id;
+      } else {
+        delete subdivisionForm.department;
+        subdivisionForm.governmentAgencyId = ctx.state.plusSelectedNode.id;
       }
-
-      subdivisionForm.superiorSubdivisionId =
-        ctx.state.plusSelectedNode.entityType === "subdividion"
-          ? ctx.state.plusSelectedNode.subdivisionsTableid
-          : ctx.state.plusSelectedNode.governmentAgencyTableid;
-      treeService.homeService.postNewSudivision(subdivisionForm);
-
-      subdivision.children = [];
-      subdivision.key = Math.round(Math.random() * 566565);
-      subdivision.entityType = "subdivision";
-      getNodeById(ctx.state.tree, ctx.state.plusSelectedNode.key).children.push(
-        subdivision
-      );
-      // this.commit(SET_PLUS_SELECTED_NODE, null);
+      subdivisionForm.bin = ctx.getters.GET_SELECTED_GA.id;
+      await treeService.homeService
+        .postNewSudivision(subdivisionForm)
+        .then((id) => {
+          console.log(id);
+          subdivision.id = id;
+          subdivision.children = [];
+          subdivision.key = Math.round(Math.random() * 566565);
+          subdivision.entityType = "subdivision";
+          getNodeById(
+            ctx.state.tree,
+            ctx.state.plusSelectedNode.key
+          ).children.push(subdivision);
+        });
     },
     [DELETE_ROLE_FROM_TREE](ctx, selectedNode) {
       selectedNode.roleId = null;
+      ctx.dispatch(CHANGE_POSITION, {
+        position: selectedNode,
+        isDelete: false,
+        parent: getParentId(ctx.getters.tree, selectedNode.key),
+      });
     },
-    [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parentId }) {
-      const subdivisionReq = {
-        id: subdivision.subdivisionsTableid,
-        governmentAgencyId: subdivision.governmentAgencyId,
-        nameEng: subdivision.nameEng,
-        nameEngShort: subdivision.nameEngShort,
-        nameKz: subdivision.nameKz,
-        nameKzShort: subdivision.nameKzShort,
-        nameRu: subdivision.nameRu,
-        nameRuShort: subdivision.nameRuShort,
-        superiorSubdivisionId: parentId.subdivisionsTableid,
-        status: isDelete ? 8 : 1,
+    async [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parent }) {
+      const {
+        nameRu,
+        nameRus,
+        nameKz,
+        nameKaz,
+        nameEng,
+        nameRuShort,
+        nameRusShort,
+        nameKzShort,
+        nameKazShort,
+        nameEngShort,
+      } = subdivision;
+      const subdivisionChange: ISubdivisonChange = {
+        id: +subdivision.id,
+        bin: ctx.getters.GET_GA_ID,
+        nameEng,
+        nameEngShort,
+        nameRus: nameRu || nameRus,
+        nameKaz: nameKz || nameKaz,
+        nameRusShort: nameRuShort || nameRusShort,
+        nameKazShort: nameKzShort || nameKazShort,
+        status: isDelete ? 322 : 315,
       };
-      treeService.changeSubdivision(subdivisionReq);
+      if (parent.entityType === "subdivision") {
+        subdivisionChange.department = +parent.id;
+      }
+      await treeService.changeSubdivision(subdivisionChange);
+    },
+    async [CHANGE_POSITION](ctx, { position, isDelete, parent }) {
+      const {
+        nameRu,
+        nameKz,
+        nameEng,
+        nameRuShort,
+        nameKzShort,
+        nameEngShort,
+        id,
+        roleId,
+      } = position;
+      const positionChange: IPositionChange = {
+        nameRu,
+        nameKz,
+        nameRuShort,
+        nameKzShort,
+        nameEng,
+        nameEngShort,
+        status: isDelete ? 322 : 315,
+        id,
+        ddepartmentIinId: ctx.getters.GET_GA_ID,
+      };
+      if (roleId || roleId === null) {
+        positionChange.role = roleId;
+      }
+      if (parent.entityType === "subdivision") {
+        positionChange.departmentId = parent.id;
+        console.log(parent);
+      } else if (parent.entityType === "govermentAgency") {
+        positionChange.governmentAgencyId = parent.id;
+      }
+      return await treeService.changePosition(positionChange);
     },
     [RELOAD_TREE](ctx) {
       ctx.commit(

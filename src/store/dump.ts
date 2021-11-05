@@ -1,5 +1,6 @@
 import { IEmployee, IGoverment, IPosition } from "./interfaces";
 import { ITree } from "@/store/interfaces";
+import { IEmployeeGet } from "./interface";
 export const tree: ITree = {
   id: 1,
   iin: "123456789012",
@@ -186,7 +187,7 @@ export const tree: ITree = {
 export const positions: IPosition[] = [
   {
     children: [],
-    positionsTableid: 59599,
+    id: 59599,
     superiorPosition: null,
     roleId: null,
     governmentAgencyId: null,
@@ -208,11 +209,11 @@ export const positions: IPosition[] = [
 ];
 
 export const position: IPosition = {
-  positionsTableid: 59848715,
+  id: 59848715,
   superiorPosition: null,
   roleId: null,
-  governmentAgencyId: null,
-  subdivisionId: null,
+  ddepartmentIinId: 47,
+  departament: null,
   nameRu: "Должность Ntcn",
   nameKz: "nameKz",
   nameEng: "nameEng",
@@ -229,49 +230,23 @@ export const position: IPosition = {
   hidden: false,
 };
 
-export const employees: IEmployee[] = [
+export const employeesGet: IEmployeeGet[] = [
   {
-    employeesTableid: 4,
-    governmentAgencyId: null,
-    subdivisionId: null,
-    userId: null,
-    key: Math.round(Math.random() * 545456446),
-    user: {
-      id: 1,
-      name: "Maksim 97",
+    employeesTableid: 1,
+    user: 2,
+    positions: 1,
+    governmentAgency: 58,
+    subdivisions: 1,
+    recruitmentDate: "2021-10-22T15:55:13.470+00:00",
+    positionRemovalDate: "2021-10-22T15:55:13.470+00:00",
+    status: 314,
+    statusObject: {
+      id: 314,
+      nameKaz: "name_kaz",
+      nameRus: "name_rus",
+      value: null,
+      code: null,
     },
-    positionId: null,
-    recruitmentDate: 1634127372091,
-    positionRemovalDate: null,
-    supervisorId: null,
-    statusId: null,
-    status: {
-      id: 1,
-      name: "OK",
-    },
-    entityType: "employee",
-  },
-  {
-    employeesTableid: 4,
-    governmentAgencyId: null,
-    subdivisionId: null,
-    userId: null,
-    key: Math.round(Math.random() * 545456446),
-
-    user: {
-      id: 1,
-      name: "Maksim 97",
-    },
-    positionId: null,
-    recruitmentDate: 1634127372091,
-    positionRemovalDate: null,
-    supervisorId: null,
-    statusId: null,
-    status: {
-      id: 1,
-      name: "OK",
-    },
-    entityType: "employee",
   },
 ];
 
@@ -307,14 +282,14 @@ export const roles = [
 
 export const governmentAgencies: IGoverment[] = [
   {
-    governmentAgencyTableid: 1,
+    id: 1,
     iin: "string",
     nameEng: "string",
     nameEngShort: "string",
-    nameKz: "string",
-    nameKzShort: "string",
-    nameRu: "testValue front",
-    nameRuShort: "string",
+    nameKaz: "string",
+    nameKazShort: "string",
+    nameRus: "testValue front",
+    nameRusShort: "string",
     status: null,
     statusObject: {
       id: 1,
@@ -329,14 +304,14 @@ export const governmentAgencies: IGoverment[] = [
     },
   },
   {
-    governmentAgencyTableid: 1,
+    id: 1,
     iin: "string",
     nameEng: "string",
     nameEngShort: "string",
-    nameKz: "string",
-    nameKzShort: "string",
-    nameRu: "Test value front",
-    nameRuShort: "string",
+    nameKaz: "string",
+    nameKazShort: "string",
+    nameRus: "Test value front",
+    nameRusShort: "string",
     status: 1,
     statusObject: {
       id: 1,
@@ -351,14 +326,14 @@ export const governmentAgencies: IGoverment[] = [
     },
   },
   {
-    governmentAgencyTableid: 1,
+    id: 1,
     iin: "string",
     nameEng: "string",
     nameEngShort: "string",
-    nameKz: "string",
-    nameKzShort: "string",
-    nameRu: "Value front",
-    nameRuShort: "string",
+    nameKaz: "string",
+    nameKazShort: "string",
+    nameRus: "Value front",
+    nameRusShort: "string",
     status: 1,
     statusObject: {
       id: 1,

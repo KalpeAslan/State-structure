@@ -28,4 +28,6 @@ export const en: IDict = {
   returnForRevision: "Return for revision",
   sa: "Send To Approval",
   sendToApply: "Send To Apply",
+  add: "Add",
+  search: "Search",
 };

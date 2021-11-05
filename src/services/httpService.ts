@@ -3,9 +3,13 @@ import Vue from "vue";
 
 export class HttpService {
   http: AxiosInstance;
+  httpServer: AxiosInstance;
   constructor() {
     this.http = axios.create({
       baseURL: "http://95.179.167.161:8081",
+    });
+    this.httpServer = axios.create({
+      baseURL: "http://87.255.215.174",
     });
   }
 
@@ -47,5 +51,13 @@ export class HttpService {
           type: "danger",
         });
       });
+  }
+
+  postToServer(
+    url: string,
+    body = {},
+    options?: AxiosRequestConfig
+  ): Promise<any> {
+    return this.httpServer.post(url, body, options).then((res) => res.data);
   }
 }

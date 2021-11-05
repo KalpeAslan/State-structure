@@ -1,17 +1,18 @@
 interface ITranslate {
-  nameRu: string;
-  nameKz: string;
+  nameRus?: string;
+  nameKaz?: string;
+  nameRu?: string;
+  nameKz?: string;
   nameEng: string;
 }
 
 import store from "@/store";
-console.log(store);
 export const translate = function (translate: ITranslate) {
   switch (store.getters.GET_CURRENT_LANGUAGE) {
     case "ru":
-      return translate.nameRu;
+      return translate.nameRus ? translate.nameRus : translate.nameRu;
     case "kz":
-      return translate.nameKz;
+      return translate.nameKaz ? translate.nameKaz : translate.nameKz;
     case "en":
       return translate.nameEng;
   }

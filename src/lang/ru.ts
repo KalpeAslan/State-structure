@@ -29,4 +29,6 @@ export const ru: IDict = {
   returnForRevision: "Вернуть на доработку",
   sa: "На утверждение",
   sendToApply: "На согласование",
+  add: "Добавить",
+  search: "поиск",
 };

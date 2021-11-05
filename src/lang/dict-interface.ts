@@ -26,4 +26,6 @@ export interface IDict {
   returnForRevision: string;
   sa: string;
   sendToApply: string;
+  add: string;
+  search: string;
 }

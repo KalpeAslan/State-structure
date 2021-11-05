@@ -50,22 +50,21 @@ export default {
       subdivision: {
         governmentAgencyId:
           this.$store.getters.GET_SELECTED_GA.governmentAgencyTableid,
-        superiorSubdivisionId: null,
-        nameRu: null,
-        nameKz: null,
+        department: null,
+        nameRus: null,
+        nameKaz: null,
         nameEng: null,
-        nameRuShort: "test nameRuShort",
-        subdivisionsTableid: Math.round(Math.random() * 45457),
-        nameKzShort: "test nameKzShort",
+        nameRusShort: "test nameRuShort",
+        nameKazShort: "test nameKzShort",
         nameEngShort: "test nameEngShort",
       },
       subdivisionForm: [
         {
-          name: "nameRu",
+          name: "nameRus",
           label: "Наименование на русском",
         },
         {
-          name: "nameKz",
+          name: "nameKaz",
           label: "Наименование на казахском",
         },
         {

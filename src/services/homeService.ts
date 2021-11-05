@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from "axios";
+import { word, parser } from "@saikksub/the-office";
 import {
   IEmployee,
   IEmployeeChange,
@@ -8,6 +9,7 @@ import {
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 import Vue from "vue";
+import { IPositionNew } from "@/store/interface";
 
 export class HomeService {
   constructor(private httpService: HttpService) {}
@@ -20,6 +22,18 @@ export class HomeService {
 
   getRoles() {
     return this.httpService.get("/api/v1/get/roles");
+  }
+
+  getEmployees(gaId: number): Promise<any> {
+    return this.httpService.get(
+      "/api/v1/get/employees?governmentAgencyId=" + gaId
+    );
+  }
+
+  getPositions(governmentAgencyId: number): Promise<any> {
+    return this.httpService.get(
+      "/api/v1/get/positions?governmentAgencyId=" + governmentAgencyId
+    );
   }
 
   postNewGovermentAgence(data: IGovermentReq) {
@@ -35,16 +49,19 @@ export class HomeService {
   }
 
   postNewSudivision(data: ISubdivisonReq) {
-    return this.httpService.post("/api/v1/new/subdivision", data).then(() => {
-      Vue.notify({
-        group: "alert",
-        text: "Подразделение добавлено",
-        type: "success",
+    return this.httpService
+      .post("/api/v1/new/subdivision", data)
+      .then((data) => {
+        Vue.notify({
+          group: "alert",
+          text: "Подразделение добавлено",
+          type: "success",
+        });
+        return data.id;
       });
-    });
   }
 
-  postNewPosition(data: IPositionReq) {
+  postNewPosition(data: IPositionNew) {
     return this.httpService.post("/api/v1/new/position", data);
   }
 
@@ -67,34 +84,6 @@ export class HomeService {
     return this.httpService.get("/api/v1/get/all/GovernmentAgencies", options);
   }
 
-  getPositions() {
-    return new Promise((res) => {
-      setTimeout(() => {
-        res([
-          {
-            name: "Должность 0",
-            id: 0,
-            type: "position",
-            children: [],
-          },
-          {
-            name: "Должность 1",
-            id: 1,
-            type: "position",
-            children: [],
-          },
-          {
-            name: "Должность 2",
-            id: 3,
-            children: [],
-
-            type: "position",
-          },
-        ]);
-      }, 500);
-    });
-  }
-
   changeGovermentAgency(goverment: IGovermentReq): Promise<any> {
     return this.httpService.post("/api/v1/change/governmentAgency", goverment);
   }
@@ -108,22 +97,27 @@ export class HomeService {
       });
     });
   }
+
+  getDocument(govermentAgencyId: number) {
+    return this.httpService
+      .get("/api/v1/get/document?govermentAgencyId=" + govermentAgencyId)
+      .then((data: string) => {
+        const fileReader: FileReader = new FileReader();
+        const blob = new Blob([data], { type: "text/plain" });
+        fileReader.readAsDataURL(blob);
+        fileReader.onload = () => {
+          const base64: any = fileReader.result;
+          word(base64.substr(23, base64.length)).then((data) => {
+            const { doc, properties } = data;
+            const { core, app } = properties;
+            console.log(core, app);
+
+            const html = parser.createHtml(data);
+            console.log(html);
+          });
+        };
+      });
+  }
 }
 
 export const homeService = new HomeService(new HttpService());
-
-// bin: "123456789999"
-// nameEn: "dsgdf"
-// nameEngShort: "Test Value"
-// nameKz: "dsgdf"
-// nameKzShort: "Test Value"
-// nameRu: "dsgdf"
-// nameRuShort: "Test Value"
-
-// bin //12-digit bumber
-//  nameRu //String
-//  nameKz //String
-//  nameEng //String
-//  nameRuShort //String
-//  nameKzShort //String
-//  nameEngShort //String

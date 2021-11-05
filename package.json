@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@saikksub/the-office": "^0.2.2",
     "@ssthouse/vue-tree-chart": "^0.5.4",
     "@types/websocket": "^1.0.4",
     "@vuelidate/validators": "^2.0.0-alpha.25",

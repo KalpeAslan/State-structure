@@ -27,16 +27,15 @@ import {
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
 import {
-  IEmployee,
-  IEmployeeReq,
   IGoverment,
   IGovermentReq,
   IPosition,
   IRole,
   IStateHomeStore,
 } from "./interfaces";
-import { positions, roles } from "./dump";
+import { employeesGet } from "./dump";
 import { ncaLayerService } from "@/services/ncaLayerService";
+import { IEmployeeGet, IPositionNew } from "./interface";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
@@ -55,10 +54,11 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SET_POSITIONS](context, positions: IPosition[]) {
       context.positions = positions.map((position) => {
         position.key = Math.round(Math.random() * 545145544);
+        position.entityType = "position";
         return position;
       });
     },
-    [ADD_POSITION](context, position: IPosition) {
+    [ADD_POSITION](context, position) {
       context.positions.push(position);
     },
     [DELETE_POSITION](context, position: IPosition) {
@@ -77,11 +77,15 @@ export const homeStore: Module<IStateHomeStore, any> = {
       ctx.goverments = goverments;
     },
     [SET_ROLES](context, roles: IRole[]) {
-      context.roles = roles;
+      context.roles = roles.map((role) => {
+        role.entityType = "role";
+        return role;
+      });
     },
-    [SET_EMPLOYIES](ctx, employies) {
+    [SET_EMPLOYIES](ctx, employies: IEmployeeGet[]) {
       ctx.employies = employies.map((employee) => {
         employee.key = Math.round(Math.random() * 454546515);
+        employee.entityType = "employee";
         return employee;
       });
     },
@@ -99,17 +103,22 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
   },
   actions: {
-    [SET_POSITIONS](context) {
-      context.commit(SET_POSITIONS, positions);
+    async [SET_POSITIONS](context) {
+      return await homeService
+        .getPositions(context.getters.GET_GA_ID)
+        .then((positions) => {
+          context.commit(SET_POSITIONS, positions);
+        });
     },
-    [ADD_POSITION](context, postition: IPosition) {
-      postition.key = Math.round(Math.random() * 465465464154);
-      context.commit(ADD_POSITION, postition);
+    [ADD_POSITION](context, position: IPositionNew) {
+      homeService.postNewPosition(position).then(() => {
+        context.commit(ADD_POSITION, position);
+      });
     },
     async [DELETE_POSITION](context, position: IPosition) {
       treeService.changePosition({
-        id: position.positionsTableid,
-        governmentAgency: position.governmentAgencyId,
+        id: position.id,
+        governmentAgency: context.getters.GET_GA_ID,
         nameRu: position.nameRu,
         nameKz: position.nameKz,
         nameEng: position.nameEng,
@@ -118,7 +127,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
         nameEngShort: position.nameEngShort,
         subdivisions: position.subdivisionId,
         role: position.roleId,
-        status: 8,
+        status: 322,
       });
 
       context.commit(DELETE_POSITION, position);
@@ -128,10 +137,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
       context.commit(SET_MODE, mode);
     },
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
-      context.state.gaState = goverment.status ? goverment.status : 1;
-      context.dispatch(SET_TREE, goverment.governmentAgencyTableid);
       context.commit(SELECT_GOVERMENT, goverment);
-      context.commit(SET_GA_STATE, goverment.status ? goverment.status : 1);
+      context.dispatch(SET_TREE, goverment.id).then(() => {
+        context.commit(SET_GA_STATE, context.getters.tree.status || 315);
+      });
     },
     [ADD_GOVERMENT](context, goverment: IGovermentReq) {
       //После добавления ГО, запрашиваю заново все ГО
@@ -147,13 +156,17 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     async [SET_ROLES](context) {
-      // await homeService.getRoles().then((roles) => {
-      //   context.commit(SET_ROLES, roles);
-      // });
-      context.commit(SET_ROLES, roles);
+      await homeService.getRoles().then((roles) => {
+        context.commit(SET_ROLES, roles);
+      });
     },
-    [SET_EMPLOYIES](ctx, employies: IEmployee[]) {
-      ctx.commit(SET_EMPLOYIES, employies);
+    async [SET_EMPLOYIES](ctx) {
+      await homeService
+        .getEmployees(ctx.getters.GET_GA_ID)
+        .then((employies) => {
+          //TEMP
+          ctx.commit(SET_EMPLOYIES, employeesGet);
+        });
     },
 
     [DELETE_ROLE](ctx, role: IRole) {
@@ -177,20 +190,22 @@ export const homeStore: Module<IStateHomeStore, any> = {
       const goverment: any = { ...ctx.state.selectedGoverment };
       switch (ctx.getters.GET_USER_TYPE) {
         case "dispatcher":
-          goverment.status = 2;
-          ctx.state.gaState = 2;
+          goverment.status = 316;
+          ctx.state.gaState = 316;
           break;
         case "departmentBoss":
-          goverment.status = 3;
-          ctx.state.gaState = 3;
+          goverment.status = 317;
+          ctx.state.gaState = 317;
           break;
         case "departmentHead":
           ncaLayerService.sign();
-          // goverment.status = 6;
-          // ctx.state.gaState = 6;
+          goverment.status = 319;
+          ctx.state.gaState = 319;
           break;
       }
-      homeService.changeGovermentAgency(goverment);
+      const govermentChange = { ...goverment };
+      delete govermentChange.statusObject;
+      homeService.changeGovermentAgency(govermentChange);
     },
     [SEND_TO_REJECT](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
@@ -231,7 +246,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     GET_EMPLOYEE_BY_ID:
       (state) =>
-      (id: number): IEmployee => {
+      (id: number): IEmployeeGet => {
         return state.employies.filter((employee) => employee.key === id)[0];
       },
     GET_ROLE_BY_ID:
@@ -256,6 +271,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     isWebSocketOpen(state): boolean {
       return state.isWebSocketOpen;
+    },
+    GET_GA_ID(state): number {
+      return state.selectedGoverment.id;
     },
   },
 };

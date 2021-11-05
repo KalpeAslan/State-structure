@@ -161,7 +161,6 @@
 
 <script lang="ts">
 import { homeService } from "@/services/homeService";
-import { employees } from "@/store/dump";
 import { IEmployeeReq } from "@/store/interfaces";
 import {
   SET_EMPLOYEE_REPLACEMENT,
@@ -248,7 +247,7 @@ export default Vue.extend({
     },
   },
   beforeCreate() {
-    this.$store.dispatch(SET_EMPLOYIES, employees);
+    this.$store.dispatch(SET_EMPLOYIES);
   },
 });
 </script>

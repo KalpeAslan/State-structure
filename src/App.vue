@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { SET_UNLOCK } from "./store/mutation-types";
+import { CHECK_IS_LOGGINED, SET_UNLOCK } from "./store/mutation-types";
 
 export default Vue.extend({
   name: "App",
@@ -20,11 +20,6 @@ export default Vue.extend({
   components: {
     Header: () => import("../src/components/Header/Header.vue"),
     Modals: () => import("../src/components/Modals/Modals.vue"),
-  },
-  created() {
-    if (this.$route.path === "/") {
-      // this.$router.push({ name: "home.constructor" });
-    }
   },
   watch: {
     $route(to, from) {
@@ -34,6 +29,9 @@ export default Vue.extend({
         this.$store.dispatch(SET_UNLOCK, false);
       }
     },
+  },
+  async beforeCreate() {
+    await this.$store.dispatch(CHECK_IS_LOGGINED);
   },
 });
 </script>

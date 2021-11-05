@@ -54,10 +54,10 @@ const validations = {
       maxLength: maxLength(12),
       minLength: minLength(12),
     },
-    nameRu: {
+    nameRus: {
       required,
     },
-    nameKz: {
+    nameKaz: {
       required,
     },
     nameEng: {
@@ -80,26 +80,17 @@ const validations = {
 export default class AddGoverment extends Vue {
   //data
   valid: boolean = true;
-  goverment: IGovermentReq = {
-    iin: null,
-    nameRu: null,
-    nameKz: null,
-    nameEng: null,
-    nameRuShort: null,
-    nameKzShort: null,
-    nameEngShort: null,
-  };
 
   form = {
     iin: null,
-    nameRu: null,
-    nameKz: null,
+    nameRus: null,
+    nameKaz: null,
     nameEng: null,
   };
   formLabels = {
     iin: "БИН",
-    nameRu: "Наименование на русском",
-    nameKz: "Наименование на казахском",
+    nameRus: "Наименование на русском",
+    nameKaz: "Наименование на казахском",
     nameEng: "Наименование на английском",
   };
   formAsArray: string[] = Object.keys(this.form);
@@ -127,12 +118,13 @@ export default class AddGoverment extends Vue {
     this.$v.form.$touch();
     if (!this.$v.$error) {
       this.$emit("close-modal");
-      this.goverment = { ...this.goverment, ...this.form };
-      console.log(this.goverment);
-      this.goverment.nameEngShort = "Test ValueEng";
-      this.goverment.nameRuShort = "Test ValueRu";
-      this.goverment.nameKzShort = "Test ValueKz";
-      this.$store.dispatch(ADD_GOVERMENT, this.goverment);
+      const goverment: IGovermentReq = {
+        nameEngShort: this.form.nameEng + 7784,
+        nameRusShort: this.form.nameRus + 545,
+        nameKazShort: this.form.nameKaz + 547,
+        ...this.form,
+      };
+      this.$store.dispatch(ADD_GOVERMENT, goverment);
     }
   }
   computeNamesError(nameLang: string): string[] {

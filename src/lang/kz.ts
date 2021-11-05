@@ -28,4 +28,6 @@ export const kz: IDict = {
   returnForRevision: "Пысықтауға қайтару",
   sa: "На утверждение",
   sendToApply: "На согласование",
+  add: "Қосу",
+  search: "Іздеу",
 };
