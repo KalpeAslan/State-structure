@@ -1,4 +1,3 @@
-import { position } from "./../store/dump";
 import { IDict } from "./dict-interface";
 
 export const ru: IDict = {
