@@ -1,14 +1,7 @@
-import store from "./index.ts";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import Vue from "vue";
-import {
-  IEmployeeReq,
-  IPosition,
-  IStateTreeStore,
-  ISubdivisonReq,
-  ITree,
-} from "./interfaces";
+import { IEmployeeReq, IPosition, IStateTreeStore, ITree } from "./interfaces";
 import {
   SET_TREE,
   UPDATE_TREE,

@@ -117,15 +117,16 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     async [DELETE_POSITION](context, position: IPosition) {
       treeService.changePosition({
-        id: position.id,
-        governmentAgency: context.getters.GET_GA_ID,
+        id: +position.id,
+        governmentAgencyId: context.getters.GET_GA_ID,
+        ddepartmentIinId: context.getters.GET_GA_ID,
         nameRu: position.nameRu,
         nameKz: position.nameKz,
         nameEng: position.nameEng,
         nameRuShort: position.nameRuShort,
         nameKzShort: position.nameKzShort,
         nameEngShort: position.nameEngShort,
-        subdivisions: position.subdivisionId,
+        departmentId: position.subdivisionId,
         role: position.roleId,
         status: 322,
       });
