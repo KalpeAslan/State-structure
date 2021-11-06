@@ -1,3 +1,4 @@
+import { position } from "./dump";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import Vue from "vue";
@@ -102,11 +103,21 @@ function traverse(tree: ITree | any) {
   }
   if (tree.subdivisions) {
     delete tree.subdivisions;
-  } else if (tree.employees) {
+  }
+  if (tree.employees) {
     delete tree.employees;
   }
+  if (tree.positions) {
+    tree.positions.forEach((position) => {
+      const isIncludesPosition = children.some(
+        (child) => child.id === position.id
+      );
+      if (!isIncludesPosition) children.push(position);
+    });
+  }
+
   tree.hidden = false;
-  tree.children = children;
+  tree.children = children.filter((child) => child.statusId !== 322);
   if (children.length) {
     children.map((child) => traverse(child));
   } else {
@@ -129,30 +140,12 @@ function deletePositionParentByPositionId(tree: any, positionId) {
   }
 }
 
-function isChildOfNode(_node: ITree, childKey: number): boolean {
-  let res: boolean = false;
-  function _isChildOfNode(node) {
-    if (node.key === childKey) {
-      res = true;
-      return;
-    }
-    if (node.children) {
-      node.children.map((child) => _isChildOfNode(child));
-    } else {
-      _isChildOfNode(node.children);
-    }
-  }
-  _isChildOfNode(_node);
-  return res;
-}
+const isChildOfNode = (node: ITree, childKey: number): boolean =>
+  node.children.some((child) => child.key === childKey);
 
 function getParentId(_tree: ITree, childKey) {
   let parentId;
-
   function _getParentId(tree) {
-    if (!tree.children) {
-      console.log(tree);
-    }
     if (tree.children) {
       const isFindParent = tree.children.some((node) => node.key === childKey);
       if (isFindParent) {
@@ -161,10 +154,13 @@ function getParentId(_tree: ITree, childKey) {
       }
       tree.children.map((node) => _getParentId(node));
     } else {
-      _getParentId(tree.children);
+      if (tree.children) {
+        _getParentId(tree.children);
+      }
     }
   }
   _getParentId(_tree);
+  console.log(parentId);
   return parentId;
 }
 
@@ -200,6 +196,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
 
       const _tree = JSON.parse(JSON.stringify(tree));
       traverse(_tree);
+      console.log(_tree);
       state.tree = _tree;
     },
     [SET_TREE_SAFE](state, tree: ITree): void {
@@ -231,15 +228,19 @@ export const treeStore: Module<IStateTreeStore, any> = {
         });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
+      if (dragEnteredNode.key === dragTargetNode.key) return;
+
+      //Если в должность кидают неправильные типы
       if (
-        !["position", "employee", "role"].includes(dragTargetNode.entityType)
-      ) {
-        // if (
-        //   dragEnteredNode.key === dragTargetNode.key ||
-        //   isChildOfNode(dragEnteredNode, dragTargetNode.key)
-        // ) {
-        //   return;
-        // }
+        dragEnteredNode.entityType === "position" &&
+        !["employee", "role"].includes(dragTargetNode.entityType)
+      )
+        return;
+      if (isChildOfNode(dragEnteredNode, dragTargetNode.key)) {
+        alert("child");
+        console.log(dragEnteredNode);
+        console.log(dragTargetNode);
+        return;
       }
 
       context.state.isUpdated = true;
@@ -358,7 +359,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         context.dispatch(CHANGE_POSITION, {
           position: dragEnteredNode,
           isDelete: false,
-          parent: getParentId(context.state.tree, dragEnteredNode.key),
+          parent: getParentId(context.getters.tree, dragEnteredNode.key),
         });
         dragEnteredNode.roleId = dragTargetNode.id;
         context.commit(SET_TREE_SAFE, context.getters.tree);
@@ -390,15 +391,23 @@ export const treeStore: Module<IStateTreeStore, any> = {
     [INSERT_NODE_TO_TREE](context, { selectedNode, newNode }) {
       insertNodeIntoTree(context.state.tree, selectedNode.key, newNode);
     },
-    [DELETE_NODE](context, { selectedNode, parent }) {
-      if (selectedNode.entityType === "subdivision") {
-        context.dispatch(CHANGE_SUBDIVISION, {
-          subdivision: selectedNode,
-          isDelete: true,
-          parent,
-        });
+    async [DELETE_NODE](context, selectedNode: ITree) {
+      let mutationType: string;
+      const form: any = {
+        isDelete: true,
+        parent: getParentId(context.getters.tree, selectedNode.key),
+      };
+      switch (selectedNode.entityType) {
+        case "subdivision":
+          form.subdivision = selectedNode;
+          mutationType = CHANGE_SUBDIVISION;
+        case "position":
+          form.position = selectedNode;
+          mutationType = CHANGE_POSITION;
       }
-      deleteNodeFromTree(context.state.tree, selectedNode.key);
+      context.dispatch(mutationType, form).then(() => {
+        deleteNodeFromTree(context.state.tree, selectedNode.key);
+      });
     },
     [SET_UNLOCK](context, unlock: boolean) {
       context.commit(SET_UNLOCK, unlock);
@@ -456,7 +465,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
       await treeService.homeService
         .postNewSudivision(subdivisionForm)
         .then((id) => {
-          console.log(id);
           subdivision.id = id;
           subdivision.children = [];
           subdivision.key = Math.round(Math.random() * 566565);
@@ -530,8 +538,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         positionChange.role = roleId;
       }
       if (parent.entityType === "subdivision") {
-        positionChange.departmentId = parent.id;
-        console.log(parent);
+        positionChange.departmentId = +parent.id;
       } else if (parent.entityType === "govermentAgency") {
         positionChange.governmentAgencyId = parent.id;
       }

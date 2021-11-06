@@ -151,6 +151,7 @@ import {
 } from "../../store/mutation-types";
 import Vue from "vue";
 import { IPositionNew } from "@/store/interface";
+import { mapGetters } from "vuex";
 export default Vue.extend({
   data(): any {
     return {

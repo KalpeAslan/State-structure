@@ -33,7 +33,7 @@
           @drop="onDrop($event, node.data)"
         >
           <div
-            :draggable="unlock && isCreatedByDispatcher"
+            :draggable="unlock && isCanDispatcherEdit"
             @dragstart.stop="dragStart($event, node.data)"
             @mousedown.stop
             @mousemove.stop
@@ -82,6 +82,7 @@ import * as d3 from "d3";
 import { uuid } from "./base/utils";
 import treeMixin from "../../mixins/treeMixin";
 import { SET_PLUS_SELECTED_NODE } from "@/store/mutation-types";
+import { mapGetters } from "vuex";
 
 const MATCH_TRANSLATE_REGEX = /translate\((-?\d+)px, ?(-?\d+)px\)/i;
 
@@ -154,15 +155,19 @@ export default {
     };
   },
   computed: {
-    isCreatedByDispatcher() {
-      return true;
-      return (
-        this.$store.getters.GET_SELECTED_GA.status === null ||
-        this.$store.getters.GET_SELECTED_GA.status === 1
-      );
+    ...mapGetters({
+      GET_UNLOCK: "GET_UNLOCK",
+      dragTree: "GET_DRAG_TREE",
+      tree: "tree",
+      userType: "GET_USER_TYPE",
+    }),
+    unlock() {
+      return !this.GET_UNLOCK;
     },
-    dragTree() {
-      return this.$store.getters.GET_DRAG_TREE;
+    isCanDispatcherEdit() {
+      if(this.userType !== 'dispatcher') return false
+      const status = this.tree.status;
+      return [null, 315, 318].includes(status);
     },
     initialTransformStyle() {
       return {
@@ -177,9 +182,7 @@ export default {
     showNodeButton() {
       return this.hoverNode;
     },
-    unlock() {
-      return !this.$store.getters.GET_UNLOCK;
-    },
+
     treeContainerHeight() {
       return this.$store.getters.GET_DEPTH * 300;
     },
@@ -189,7 +192,14 @@ export default {
   },
   methods: {
     isShowNodeButtons(nodeEntityType) {
-      return nodeEntityType !== "position" ? this.isCreatedByDispatcher : true;
+      switch (this.userType) {
+        case "dispatcher":
+          return this.isCanDispatcherEdit;
+        case "departmentBoss":
+          return nodeEntityType === "position";
+        default:
+          false;
+      }
     },
     init() {
       this.draw();
@@ -370,7 +380,7 @@ export default {
       return [tree.descendants(), tree.links()];
     },
     enableDrag() {
-      if (this.$store.getters.GET_DRAG_TREE) {
+      if (this.dragTree) {
         return;
       }
 

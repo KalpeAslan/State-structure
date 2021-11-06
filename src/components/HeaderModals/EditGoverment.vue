@@ -53,11 +53,11 @@ export default Vue.extend({
           label: "БИН",
         },
         {
-          name: "nameRu",
+          name: "nameRus",
           label: "Наименование на русском",
         },
         {
-          name: "nameKz",
+          name: "nameKaz",
           label: "Наименование на казахском",
         },
         {
@@ -69,7 +69,8 @@ export default Vue.extend({
   },
   computed: {
     goverment(): IGovermentReq {
-      return this.$store.getters.GET_SELECTED_GA;
+      const goverment = this.$store.getters.GET_SELECTED_GA;
+      return { ...goverment };
     },
   },
   methods: {
@@ -79,16 +80,14 @@ export default Vue.extend({
     reset() {
       this.$refs.form.reset();
     },
-    editGovermentAgency() {
-      console.log(this.goverment);
-    },
     submit() {
       if (this.govermentForm.every((f) => this.goverment[f.name])) {
         this.$emit("close-modal");
-        this.goverment.nameEngShort = "Test ValueEng";
-        this.goverment.nameRuShort = "Test ValueRu";
-        this.goverment.nameKzShort = "Test ValueKz";
-        this.$store.dispatch(EDIT_GOVERMENT, { ...this.goverment });
+        const goverment = { ...this.goverment };
+        goverment.status = this.$store.getters.tree.status;
+        delete goverment.statusObject;
+        goverment.iin = +goverment.iin;
+        this.$store.dispatch(EDIT_GOVERMENT, goverment);
       }
     },
   },

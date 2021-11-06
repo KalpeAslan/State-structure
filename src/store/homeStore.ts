@@ -90,7 +90,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     [SET_ALL_GOVERMENT_AGENCIES](ctx, allGovermentAgencies: IGoverment[]) {
-      ctx.goverments = allGovermentAgencies;
+      ctx.goverments = allGovermentAgencies.filter((ga) => ga.status !== 322);
     },
     [SET_SUBDIVISION_UNDER_GA](ctx, subdivisionUnderGaState: boolean) {
       ctx.subdivisionUnderGovernmentAgency = subdivisionUnderGaState;
@@ -104,15 +104,19 @@ export const homeStore: Module<IStateHomeStore, any> = {
   },
   actions: {
     async [SET_POSITIONS](context) {
-      return await homeService
-        .getPositions(context.getters.GET_GA_ID)
-        .then((positions) => {
-          context.commit(SET_POSITIONS, positions);
-        });
+      if (context.getters.GET_GA_ID) {
+        return await homeService
+          .getPositions(context.getters.GET_GA_ID)
+          .then((positions) => {
+            context.commit(SET_POSITIONS, positions);
+          });
+      } else {
+        context.commit(SET_POSITIONS, []);
+      }
     },
-    [ADD_POSITION](context, position: IPositionNew) {
-      homeService.postNewPosition(position).then(() => {
-        context.commit(ADD_POSITION, position);
+    async [ADD_POSITION](context, position: IPositionNew) {
+      await homeService.postNewPosition(position).then(() => {
+        context.dispatch(SET_POSITIONS);
       });
     },
     async [DELETE_POSITION](context, position: IPosition) {
@@ -151,7 +155,8 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     async [DELETE_GOVERMENT](context) {
       const goverment: any = { ...context.state.selectedGoverment };
-      goverment.status = goverment.status.code.code;
+      goverment.status = 322;
+      delete goverment.statusObject;
       await homeService.changeGovermentAgency(goverment).then(() => {
         context.dispatch(SET_TREE, null);
       });
@@ -162,12 +167,13 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     async [SET_EMPLOYIES](ctx) {
-      await homeService
-        .getEmployees(ctx.getters.GET_GA_ID)
-        .then((employies) => {
-          //TEMP
-          ctx.commit(SET_EMPLOYIES, employeesGet);
-        });
+      if (ctx.getters.GET_GA_ID)
+        await homeService
+          .getEmployees(ctx.getters.GET_GA_ID)
+          .then((employies) => {
+            //TEMP
+            ctx.commit(SET_EMPLOYIES, employeesGet);
+          });
     },
 
     [DELETE_ROLE](ctx, role: IRole) {
@@ -182,7 +188,6 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     async [EDIT_GOVERMENT](ctx, goverment: IGovermentReq | any) {
-      goverment.status = goverment.status.id;
       await homeService.changeGovermentAgency(goverment).then(() => {
         ctx.dispatch(RELOAD_TREE);
       });
@@ -273,8 +278,8 @@ export const homeStore: Module<IStateHomeStore, any> = {
     isWebSocketOpen(state): boolean {
       return state.isWebSocketOpen;
     },
-    GET_GA_ID(state): number {
-      return state.selectedGoverment.id;
+    GET_GA_ID(state): number | null {
+      return state.selectedGoverment ? state.selectedGoverment.id : null;
     },
   },
 };
