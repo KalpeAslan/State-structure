@@ -1,4 +1,3 @@
-import { position } from "./dump";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import Vue from "vue";
