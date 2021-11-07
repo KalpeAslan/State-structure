@@ -13,42 +13,32 @@ import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
 import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
 import { SET_WEBSOCKET_STATE } from "@/store/mutation-types";
-import { jsPDF } from "jspdf";
 
 export default Vue.extend({
   name: "Home",
 
   computed: {
-    ...mapGetters(["GET_USER_TYPE", "gaState"]),
-    isShowFooter(): boolean {
-      const gaState: number = this.gaState;
-      switch (this.GET_USER_TYPE) {
-        case "dispatcher":
-          return [315, 318, 322].includes(gaState);
-        case "departmentBoss":
-          return 316 === gaState;
-        case "departmentHead":
-          console.log(gaState);
-          return 317 === gaState;
-        case "admin":
-          return false;
-      }
-    },
+    ...mapGetters(["GET_USER_TYPE", "gaState", "isShowFooter"]),
   },
   created() {
     if (this.$route.path === "/home") {
       this.$router.push({ name: "home.constructor" });
     }
-    if (this.GET_USER_TYPE === "departmentHead") {
-      this.$store.dispatch(SET_WEBSOCKET_STATE, true);
-    }
   },
-  mounted() {
-    // const doc = new jsPDF();
-    // doc.text("Hello world!", 10, 10);
-    // doc.save("a4.pdf");
+  methods: {
+    setWebSocket(): void {
+      console.log(this.GET_USER_TYPE === "departmentHead");
+      if (
+        this.GET_USER_TYPE === "departmentHead" &&
+        [317, 319].includes(this.gaState)
+      ) {
+        this.$store.dispatch(SET_WEBSOCKET_STATE, "open");
+      }
+    },
   },
-
+  updated() {
+    this.setWebSocket();
+  },
   components: {
     ContentSidebar,
     VueTree,

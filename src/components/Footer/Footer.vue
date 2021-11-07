@@ -22,7 +22,7 @@
         >{{ $t(computeButtonText(false)) }}</v-btn
       >
       <v-btn
-        :disabled="(userType === 'departmentHead' && isWebSocketOpen) || false"
+        :disabled="(userType === 'departmentHead' && !isWebSocketOpen) || false"
         class="success"
         @click="sendToApple"
         >{{ $t(computeButtonText()) }}</v-btn

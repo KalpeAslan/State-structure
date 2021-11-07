@@ -30,4 +30,7 @@ export const kz: IDict = {
   sendToApply: "На согласование",
   add: "Қосу",
   search: "Іздеу",
+  sendToRevesion: "Пысықтауға қайтару",
+  indicateTheReason: "Себебеін келтіріңіз",
+  fillTheField: "Өрісті толтырыңыз!",
 };

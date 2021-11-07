@@ -126,7 +126,6 @@ export default Vue.extend({
         this.selectedTab === 0
           ? this.governmentAgencies
           : this.listOfGAForApply;
-      console.log(listOfGA);
       return !this.inputSearch
         ? listOfGA
         : listOfGA.filter((govAgency) =>

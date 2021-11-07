@@ -30,4 +30,7 @@ export const ru: IDict = {
   sendToApply: "На согласование",
   add: "Добавить",
   search: "поиск",
+  sendToRevesion: "Вернуть на доработку",
+  indicateTheReason: "Укажите причину",
+  fillTheField: "Заполните поле!",
 };

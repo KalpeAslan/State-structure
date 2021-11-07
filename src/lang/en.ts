@@ -30,4 +30,7 @@ export const en: IDict = {
   sendToApply: "Send To Apply",
   add: "Add",
   search: "Search",
+  sendToRevesion: "Send to the revesion",
+  indicateTheReason: "Indicate the reason",
+  fillTheField: "Fill the field!",
 };

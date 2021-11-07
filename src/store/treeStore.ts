@@ -84,7 +84,6 @@ function traverse(tree: ITree | any) {
   tree.key = Math.round(Math.random() * 4451454121454);
   if (tree.entityType === "position") {
     tree.employeeReplacement = tree.employeeReplacement || null;
-    tree.roleObject = tree.roleObject || null;
     return;
   }
 
@@ -160,7 +159,6 @@ function getParentId(_tree: ITree, childKey) {
     }
   }
   _getParentId(_tree);
-  console.log(parentId);
   return parentId;
 }
 
@@ -200,6 +198,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
       state.tree = _tree;
     },
     [SET_TREE_SAFE](state, tree: ITree): void {
+      //Перезаписывает дерево
       state.tree = tree;
     },
     [SET_UNLOCK](state, unlock: boolean) {
@@ -236,10 +235,10 @@ export const treeStore: Module<IStateTreeStore, any> = {
         !["employee", "role"].includes(dragTargetNode.entityType)
       )
         return;
-      if (isChildOfNode(dragEnteredNode, dragTargetNode.key)) {
-        alert("child");
-        console.log(dragEnteredNode);
-        console.log(dragTargetNode);
+      if (
+        "children" in dragEnteredNode &&
+        isChildOfNode(dragEnteredNode, dragTargetNode.key)
+      ) {
         return;
       }
 
@@ -354,15 +353,21 @@ export const treeStore: Module<IStateTreeStore, any> = {
             type: "danger",
           });
 
-        dragEnteredNode.roleId = dragTargetNode.id;
-        dragEnteredNode.roleObject = dragTargetNode;
-        context.dispatch(CHANGE_POSITION, {
-          position: dragEnteredNode,
-          isDelete: false,
-          parent: getParentId(context.getters.tree, dragEnteredNode.key),
-        });
-        dragEnteredNode.roleId = dragTargetNode.id;
-        context.commit(SET_TREE_SAFE, context.getters.tree);
+        // dragEnteredNode.roleId = dragTargetNode.id;
+        // dragEnteredNode.roleObject = dragTargetNode;
+        const role = { ...dragTargetNode };
+        role.key = Math.round(Math.random() * 45477754878);
+        Vue.set(dragEnteredNode, "roleObject", role);
+        Vue.set(dragEnteredNode, "roleId", role.id);
+        context
+          .dispatch(CHANGE_POSITION, {
+            position: dragEnteredNode,
+            isDelete: false,
+            parent: getParentId(context.getters.tree, dragEnteredNode.key),
+          })
+          .then(() => {
+            context.dispatch(RELOAD_TREE);
+          });
       }
       // Привязка должности к отделу
       if (
@@ -545,12 +550,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
       return await treeService.changePosition(positionChange);
     },
     [RELOAD_TREE](ctx) {
-      ctx.commit(
-        SET_TREE,
-        ctx.state.plusSelectedNode.entityType === "subdividion"
-          ? ctx.state.plusSelectedNode.subdivisionsTableid
-          : ctx.state.plusSelectedNode.governmentAgencyTableid
-      );
+      ctx.dispatch(SET_TREE, ctx.getters.tree.id);
     },
     async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
       setTempEmployeeToPosition(

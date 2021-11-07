@@ -1,9 +1,23 @@
 // Home Store
+
+//ncaLayer
 export interface ISignXml {
   module: string;
   method: "signXml";
   args: string[];
 }
+
+export type TWebSocketState =
+  | null
+  | "open"
+  | "onOpen"
+  | "opened"
+  | "signed"
+  | "close"
+  | "closed"
+  | "error";
+
+//Entities
 interface IBaseNames {
   nameRus: string; //String
   nameKaz: string; //String

@@ -9,67 +9,68 @@ class NcaLayerService {
   private webSocketUrl: string = "wss://127.0.0.1:13579/";
   private webSocket: WebSocket;
   async init(): Promise<any> {
-    await this.create();
+    return await this.create();
+  }
+
+  close() {
+    this.webSocket.close();
   }
 
   constructor(private httpSerivce: HttpService) {
     this.httpSerivce = httpSerivce;
   }
 
-  create(): Promise<any> {
+  private create(): Promise<any> {
     return new Promise((resolve: any) => {
       this.webSocket = new WebSocket(this.webSocketUrl);
       this.webSocket.onmessage = this.onMessage.bind(this);
       this.webSocket.onclose = this.onClose.bind(this);
       this.webSocket.onerror = this.onError.bind(this);
-      this.webSocket.onopen = () => {
-        this.onOpen();
-        resolve(true);
+      this.webSocket.onopen = (e) => {
+        this.onOpen(e);
+        resolve("opened");
       };
     });
   }
 
-  onOpen() {
-    // store.dispatch(SET_WEBSOCKET_STATE, "open");
+  private onOpen(event) {
+    console.log(event);
+    store.dispatch(SET_WEBSOCKET_STATE, "opened");
   }
 
-  onMessage(event) {
-    console.log(event);
+  private onMessage(event) {
     const result = JSON.parse(event.data);
+    console.log(event.data);
     if (result.responseObject) {
-      console.log(result.responseObject);
       const blob = new Blob([result.responseObject], { type: "text/xml" });
       const xmlFile = new File([blob], "test.xml", { type: "text/xml" });
-      console.log(xmlFile);
       const formData = new FormData();
       formData.append("xmlFile", xmlFile);
       this.verifyXmlDocument(result.responseObject);
-      // this.verifyXmlDocument(formData);
+      store.dispatch(SET_WEBSOCKET_STATE, "signed");
     }
-    // store.dispatch(SET_WEBSOCKET_STATE, "message");
   }
 
-  onClose(event) {
+  private onClose(event) {
     console.log(event);
-    // store.dispatch(SET_WEBSOCKET_STATE, "close");
+    store.dispatch(SET_WEBSOCKET_STATE, "close");
   }
 
-  onError(event) {
+  private onError(event) {
     console.log(event);
-    // store.dispatch(SET_WEBSOCKET_STATE, "error");
+    store.dispatch(SET_WEBSOCKET_STATE, "error");
   }
 
   sign() {
     const storageName = "PKCS12";
     const xmlToSign = `<?xml version="1.0" encoding="UTF-8" ?><root><Test>testValue</Test><Test1>23</Test1></root>`;
     const keyType = "SIGNATURE";
-    console.log(xmlToSign);
     const signXml: ISignXml = {
       module: "kz.gov.pki.knca.commonUtils",
       method: "signXml",
       args: [storageName, keyType, xmlToSign, "", ""],
     };
-    this.webSocket.send(JSON.stringify(signXml));
+    return this.webSocket.send(JSON.stringify(signXml));
   }
 
   get getXmlDocument(): string {
@@ -88,7 +89,7 @@ class NcaLayerService {
     return xmlDocument;
   }
 
-  verifyXmlDocument(xmlDocument: string) {
+  verifyXmlDocument(xmlDocument: string): Promise<any> {
     return this.httpSerivce.post("/api/v1/get/verifiy-document", xmlDocument, {
       headers: {
         "Content-Type": "multipart/form-data",

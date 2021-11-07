@@ -3,7 +3,9 @@
     <v-dialog v-model="modalDialogMixin" width="420px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Редактировать ГО</span>
+          <span class="text-h5">
+            {{ $t("sendToRevesion") }}
+          </span>
         </v-card-title>
         <v-card-text>
           <template>
@@ -13,14 +15,16 @@
               lazy-validation
               v-model="valid"
             >
-              <div class="label" style="color: black">Укажите причину</div>
+              <div class="label" style="color: black">
+                {{ $t("indicateTheReason") }}
+              </div>
               <v-textarea
                 solo
                 name="input-7-4"
                 v-model="comment"
                 :hide-details="!isError"
                 height="160"
-                error-messages="Заполните это поле"
+                :error-messages="$t('fillTheField')"
               ></v-textarea>
 
               <v-btn
@@ -29,7 +33,7 @@
                 color="primary"
                 @click="validate"
               >
-                Сохранить
+                {{ $t("save") }}
               </v-btn>
             </v-form>
           </template>

@@ -26,6 +26,7 @@ import {
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
+import Vue from "vue";
 import {
   IGoverment,
   IGovermentReq,
@@ -35,7 +36,7 @@ import {
 } from "./interfaces";
 import { employeesGet } from "./dump";
 import { ncaLayerService } from "@/services/ncaLayerService";
-import { IEmployeeGet, IPositionNew } from "./interface";
+import { IEmployeeGet, IPositionNew, TWebSocketState } from "./interface";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
@@ -48,6 +49,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     subdivisionUnderGovernmentAgency: false,
     gaState: null,
     isWebSocketOpen: false,
+    webSocketState: null,
   },
   mutations: {
     [SET_USER_TYPE](context) {},
@@ -98,8 +100,8 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SET_GA_STATE](ctx, state: number) {
       ctx.gaState = state;
     },
-    [SET_WEBSOCKET_STATE](ctx, state: boolean) {
-      ctx.isWebSocketOpen = state;
+    [SET_WEBSOCKET_STATE](ctx, state: TWebSocketState) {
+      ctx.webSocketState = state;
     },
   },
   actions: {
@@ -194,45 +196,69 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     [SEND_TO_APPLY](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
+      let status: number;
       switch (ctx.getters.GET_USER_TYPE) {
         case "dispatcher":
           goverment.status = 316;
-          ctx.state.gaState = 316;
+          status = 316;
           break;
         case "departmentBoss":
           goverment.status = 317;
-          ctx.state.gaState = 317;
+          status = 317;
           break;
         case "departmentHead":
-          ncaLayerService.sign();
+          if (ctx.getters.isWebSocketOpen) {
+            ncaLayerService.sign();
+          }
           goverment.status = 319;
-          ctx.state.gaState = 319;
+          status = 319;
           break;
       }
       const govermentChange = { ...goverment };
       delete govermentChange.statusObject;
-      homeService.changeGovermentAgency(govermentChange);
+      // homeService.changeGovermentAgency(govermentChange).then(() => {
+      //   ctx.state.gaState = status;
+      // });
     },
     [SEND_TO_REJECT](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
+      let status: number;
       switch (ctx.getters.GET_USER_TYPE) {
         case "departmentBoss":
-          goverment.status = 4;
-          homeService.changeGovermentAgency(goverment);
+          goverment.status = 318;
+          status = 318;
           break;
         case "departmentHead":
-          goverment.status = 7;
+          goverment.status = 321;
+          status = 321;
           break;
       }
+      homeService.changeGovermentAgency(goverment).then(() => {
+        ctx.state.gaState = status;
+      });
     },
-    async [SET_WEBSOCKET_STATE](ctx, state: boolean) {
-      if (state) {
-        await ncaLayerService.init().then((res) => {
-          ctx.commit(SET_WEBSOCKET_STATE, res);
-        });
-      } else {
-        ctx.dispatch(SET_MODAL_NAME, "nca-layer-modal");
-        ctx.commit(SET_WEBSOCKET_STATE, false);
+    async [SET_WEBSOCKET_STATE](ctx, state: TWebSocketState) {
+      switch (state) {
+        case "open":
+          if (ctx.getters.webSocketState !== "opened")
+            await ncaLayerService.init().then((res) => {
+              ctx.commit(SET_WEBSOCKET_STATE, res);
+            });
+          break;
+        case "close":
+          ncaLayerService.close();
+          break;
+        case "error":
+          ctx.dispatch(SET_MODAL_NAME, "nca-layer-modal");
+          break;
+        case "signed":
+          Vue.notify({
+            group: "alert",
+            text: "Документ подписан",
+            type: "success",
+          });
+          ctx.commit(SET_WEBSOCKET_STATE, "opened");
+          break;
       }
     },
   },
@@ -276,10 +302,22 @@ export const homeStore: Module<IStateHomeStore, any> = {
       return state.gaState;
     },
     isWebSocketOpen(state): boolean {
-      return state.isWebSocketOpen;
+      return state.webSocketState === "opened";
     },
     GET_GA_ID(state): number | null {
       return state.selectedGoverment ? state.selectedGoverment.id : null;
+    },
+    isShowFooter(state, getters, rootState, rootGetters): boolean {
+      switch (rootGetters.GET_USER_TYPE) {
+        case "dispatcher":
+          return [315, 318, 322].includes(state.gaState);
+        case "departmentBoss":
+          return [316, 321].includes(state.gaState);
+        case "departmentHead":
+          return [317, 319].includes(state.gaState);
+        case "admin":
+          return false;
+      }
     },
   },
 };

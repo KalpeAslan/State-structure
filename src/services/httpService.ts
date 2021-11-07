@@ -18,7 +18,7 @@ export class HttpService {
   }
 
   post(url: string, data, options?: AxiosRequestConfig): Promise<any> {
-    if (options) {
+    if (options && "params" in options) {
       options.params.code = "8uNwcd";
     } else {
       options = {

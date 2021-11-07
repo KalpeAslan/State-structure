@@ -28,4 +28,7 @@ export interface IDict {
   sendToApply: string;
   add: string;
   search: string;
+  sendToRevesion: string;
+  indicateTheReason: string;
+  fillTheField: string;
 }
