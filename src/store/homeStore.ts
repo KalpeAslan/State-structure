@@ -216,9 +216,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
       }
       const govermentChange = { ...goverment };
       delete govermentChange.statusObject;
-      // homeService.changeGovermentAgency(govermentChange).then(() => {
-      //   ctx.state.gaState = status;
-      // });
+      homeService.changeGovermentAgency(govermentChange).then(() => {
+        ctx.state.gaState = status;
+      });
     },
     [SEND_TO_REJECT](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
