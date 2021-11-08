@@ -50,12 +50,15 @@ export default Vue.extend({
     }),
   },
   methods: {
-    save() {
-      console.log(this.$store.getters.GET_IS_UPDATED);
-    },
     handleButton(type: string) {
       if (type === "returnForRevision") {
         return this.$store.dispatch(SET_MODAL_NAME, "return-for-revesion");
+      } else if (type === "save") {
+        return this.$notify({
+          group: "alert",
+          text: "Успешно сохранено",
+          type: "success",
+        });
       }
       this.$store.dispatch(SEND_TO_REJECT);
     },

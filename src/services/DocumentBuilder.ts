@@ -17,12 +17,14 @@ export class DocumentBuilder {
         const positionsParentDepartament = gaStructureRaw.departmentDto.filter(
           (departament) => departament.id === position.departmentId
         )[0];
-        tableRoads.push(tr(positionsParentDepartament.nameRus));
-        tableRoads.push(td(position.nameRus));
-        if (positionsParentDepartament.employees)
-          positionsParentDepartament.employees.forEach((employee) =>
-            tableRoads.push(employee["nameRus"])
-          );
+        if (positionsParentDepartament) {
+          tableRoads.push(tr(positionsParentDepartament.nameRus));
+          tableRoads.push(td(position.nameRus));
+          if (positionsParentDepartament.employees)
+            positionsParentDepartament.employees.forEach((employee) =>
+              tableRoads.push(employee["nameRus"])
+            );
+        }
       });
     };
     const documentAsPdf = `
@@ -40,21 +42,16 @@ export class DocumentBuilder {
           `;
     const source: HTMLDivElement = document.createElement("div");
     source.innerHTML += documentAsPdf;
-    var doc = new jsPDF();
-    var elementHandler = {
-      "#ignorePDF": function (element, renderer) {
-        return true;
-      },
-    };
+    var doc = new jsPDF("p", "pt", "letter");
+    doc.setFontSize(5);
     console.log(source);
-    doc.fromHTML(source, 15, 15, {
-      width: 180,
-      elementHandlers: elementHandler,
+    doc.html(source, {
+      callback: function (doc) {
+        doc.save("myPdf.pdf");
+      },
+      x: 2,
+      y: 2,
     });
-
-    doc.output("dataurlnewwindow");
-    doc.save("test.pdf");
-    return "";
   }
 }
 

@@ -235,6 +235,7 @@ export default {
     justify-content: center;
     align-content: center;
     margin: 8px 0;
+    max-width: 160px;
     padding: 6px 8px;
   }
 }

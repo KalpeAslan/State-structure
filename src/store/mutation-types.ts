@@ -1,3 +1,8 @@
+//GlobalStore
+
+export const SET_MODAL_NAME = "SET_MODAL_NAME";
+export const SET_LOADING = "SET_LOADING";
+
 //TreeStore
 export const SET_TREE = "SET_TREE";
 export const SET_TREE_SAFE = "SET_TREE_SAFE";
@@ -42,7 +47,3 @@ export const SET_SUBDIVISION_UNDER_GA = "SET_SUBDIVISION_UNDER_GA";
 export const SEND_TO_APPLY = "SEND_TO_APPLY";
 export const SEND_TO_REJECT = "SEND_TO_REJECT";
 export const SET_GA_STATE = "SET_GA_STATE";
-
-//GlobalStore
-
-export const SET_MODAL_NAME = "SET_MODAL_NAME";

@@ -1,5 +1,7 @@
+import { SET_LOADING } from "./../store/mutation-types";
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import Vue from "vue";
+import store from "@/store";
 
 export class HttpService {
   http: AxiosInstance;
@@ -27,15 +29,13 @@ export class HttpService {
         },
       };
     }
+    store.dispatch(SET_LOADING, true);
     return this.http
       .post(url, data, options)
       .then((res) => res.data)
-      .catch(() => {
-        Vue.notify({
-          group: "alert",
-          text: "Что то пошло не так, попробуйте позже",
-          type: "danger",
-        });
+      .catch(() => {})
+      .finally(() => {
+        store.dispatch(SET_LOADING, false);
       });
   }
 

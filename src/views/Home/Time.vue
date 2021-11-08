@@ -27,7 +27,7 @@
         <div class="position_desc">
           <span class="position_desc_type"> {{ $t("employee") }} </span>
           <span v-if="selectedTempPositionEmployee">
-            {{ selectedTempPositionEmployee }}
+            {{ selectedTempPositionEmployee.user.username }}
           </span>
         </div>
         <v-form ref="form">
@@ -138,12 +138,13 @@
             <v-textarea
               solo
               name="input-7-4"
+              v-model="newEmployeeForm.substitutionBasisRu"
               outlined
-              label="Комментарии"
+              :label="$t('comments')"
             ></v-textarea>
           </div>
           <v-btn color="primary" @click="validate" style="width: 100%">
-            Сохранить
+            {{ $t("save") }}
           </v-btn>
         </v-form>
       </template>
@@ -161,13 +162,17 @@
 
 <script lang="ts">
 import { homeService } from "@/services/homeService";
+import { IEmployeeReplacementNew } from "@/store/interface";
 import { IEmployeeReq } from "@/store/interfaces";
 import {
   SET_EMPLOYEE_REPLACEMENT,
   SET_EMPLOYIES,
   SET_TEMP_POSITION,
+  SET_USERS,
 } from "@/store/mutation-types";
+import moment from "moment";
 import Vue from "vue";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
   data() {
@@ -187,30 +192,31 @@ export default Vue.extend({
         (v) => !!v || "Поле временного сотрудника обязательно",
       ],
       newEmployeeForm: {
-        replacementEmployeeId: null, //Long, employee that temporarly holds office
-        substituteEmployeeId: null, //Long, employee that temporarly left this position
         startDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
         endDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
         substitutionBasisRu: null, //String
-        substitutionBasisKz: null, //String
-      } as IEmployeeReq,
+      },
       selectedEmployee: null,
     };
   },
 
   computed: {
-    selectedTempPosition() {
-      return this.$store.getters.tempPosition;
-    },
+    ...mapGetters({
+      users: "users",
+      selectedTempPosition: "tempPosition",
+    }),
     selectedTempPositionEmployee() {
       const tempPosition = this.selectedTempPosition;
-      return tempPosition.employees && tempPosition.employees[0].user.name;
+      return tempPosition.employees && tempPosition.employees[0];
     },
     employies() {
       return this.$store.getters.GET_EMPLOYIES
-        ? this.$store.getters.GET_EMPLOYIES.map((employee) => {
+        ? this.$store.getters.GET_EMPLOYIES.filter(
+            (employee) => employee.id !== this.selectedTempPositionEmployee.id
+          ).map((employee) => {
             return {
-              text: employee.user.name,
+              text: this.users.filter((user) => user.id === employee.user)[0]
+                .username,
               value: employee.id,
             };
           })
@@ -224,15 +230,18 @@ export default Vue.extend({
     validate() {
       this.$refs.form.validate();
       if (this.newEmployeeForm.startDate && this.newEmployeeForm.endDate) {
-        this.newEmployeeForm.replacementEmployeeId =
-          this.selectedTempPosition.employees[0].id;
-        this.newEmployeeForm.substituteEmployeeId = this.selectedEmployee;
-        this.newEmployeeForm.substitutionBasisKz = "Test Name Kz";
-        this.newEmployeeForm.substitutionBasisRu = "Test Name Ru";
+        const { startDate, endDate, substitutionBasisRu } =
+          this.newEmployeeForm;
+        const newEmployeeForm: IEmployeeReplacementNew = {
+          startDate: moment(startDate).format("YYYY-MM-DD[T]HH:mm:ss"),
+          endDate: moment(endDate).format("YYYY-MM-DD[T]HH:mm:ss"),
+          substitutionBasisRu,
+          replacementEmployee: 1,
+          substituteEmployee: this.selectedTempPosition.id,
+          substitutionBasisKz: this.newEmployeeForm.substitutionBasisRu,
+        };
         this.$store
-          .dispatch(SET_EMPLOYEE_REPLACEMENT, {
-            ...this.newEmployeeForm,
-          })
+          .dispatch(SET_EMPLOYEE_REPLACEMENT, newEmployeeForm)
           .then(() => {
             this.$refs.form.reset();
             this.$store.dispatch(SET_TEMP_POSITION, null);
@@ -248,6 +257,7 @@ export default Vue.extend({
   },
   beforeCreate() {
     this.$store.dispatch(SET_EMPLOYIES);
+    this.$store.dispatch(SET_USERS);
   },
 });
 </script>

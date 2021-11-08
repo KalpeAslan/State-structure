@@ -211,6 +211,16 @@ export const homeStore: Module<IStateHomeStore, any> = {
         ctx.dispatch(RELOAD_TREE);
       });
     },
+    [SET_GA_STATE](ctx, status: number) {
+      ctx.commit(SET_GA_STATE, status);
+      ctx.commit(
+        SET_ALL_GOVERMENT_AGENCIES,
+        ctx.getters.GET_ALL_GOVERMENT_AGENCIES.map((govAgency) => {
+          if (ctx.getters.GET_GA_ID === govAgency.id) govAgency.status = status;
+          return govAgency;
+        })
+      );
+    },
     [SEND_TO_APPLY](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
       let status: number;
@@ -233,9 +243,14 @@ export const homeStore: Module<IStateHomeStore, any> = {
       }
       const govermentChange = { ...goverment };
       delete govermentChange.statusObject;
-      homeService.changeGovermentAgency(govermentChange).then(() => {
-        ctx.state.gaState = status;
-      });
+      homeService
+        .changeGovermentAgency(govermentChange)
+        .then(() => {
+          ctx.dispatch(SET_GA_STATE, status);
+        })
+        .catch(() => {
+          ctx.dispatch(SET_GA_STATE, status);
+        });
     },
     [SEND_TO_REJECT](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
@@ -250,9 +265,14 @@ export const homeStore: Module<IStateHomeStore, any> = {
           status = 321;
           break;
       }
-      homeService.changeGovermentAgency(goverment).then(() => {
-        ctx.state.gaState = status;
-      });
+      homeService
+        .changeGovermentAgency(goverment)
+        .then(() => {
+          ctx.dispatch(SET_GA_STATE, status);
+        })
+        .catch(() => {
+          ctx.dispatch(SET_GA_STATE, status);
+        });
     },
     async [SET_WEBSOCKET_STATE](ctx, state: TWebSocketState) {
       switch (state) {
@@ -328,6 +348,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     isShowFooter(state, getters, rootState, rootGetters): boolean {
       switch (rootGetters.GET_USER_TYPE) {
         case "dispatcher":
+          console.log([315, 318, 322].includes(state.gaState));
           return [315, 318, 322].includes(state.gaState);
         case "departmentBoss":
           return [316, 321].includes(state.gaState);
@@ -336,6 +357,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
         case "admin":
           return false;
       }
+    },
+    users(state) {
+      return state.users;
     },
   },
 };

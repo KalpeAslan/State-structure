@@ -359,8 +359,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
           });
 
         // dragEnteredNode.roleId = dragTargetNode.id;
-        // dragEnteredNode.roleObject = dragTargetNode;
-        const role = { ...dragTargetNode };
+        // dragEnteredNode. = dragTargetNode;
+        const role = JSON.parse(JSON.stringify(dragTargetNode));
         role.key = Math.round(Math.random() * 45477754878);
         Vue.set(dragEnteredNode, "roleObject", role);
         Vue.set(dragEnteredNode, "roleId", role.id);
@@ -445,18 +445,20 @@ export const treeStore: Module<IStateTreeStore, any> = {
         recruitmentDate,
         positionRemovalDate,
         key,
+        id,
       } = positionChild;
       selectedNode.employees = selectedNode.employees.filter(
         (position) => position.key !== key
       ); //Long //Long, user id //Long, position id //Long, government agency id //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss" //Long, status id
       treeService.homeService.changeEmployee({
+        id,
         employeesTableid,
         user: user.id,
         positions: positionId,
         governmentAgency,
         recruitmentDate,
         positionRemovalDate,
-        status: 8,
+        status: 322,
       });
     },
     ["DELETE_DRAG_TREE"](ctx) {
@@ -558,12 +560,15 @@ export const treeStore: Module<IStateTreeStore, any> = {
       await ctx.dispatch(SET_TREE, ctx.getters.tree.id);
     },
     async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
-      setTempEmployeeToPosition(
-        ctx.state.tree,
-        ctx.state.tempPosition.key,
-        employee
-      );
-      await treeService.homeService.postNewEmployeeReplacement(employee);
+      await treeService.homeService
+        .postNewEmployeeReplacement(employee)
+        .then(() => {
+          setTempEmployeeToPosition(
+            ctx.state.tree,
+            ctx.state.tempPosition.key,
+            employee
+          );
+        });
     },
     [SET_TEMP_POSITION](context, position: IPosition | null) {
       context.commit(SET_TEMP_POSITION, position);

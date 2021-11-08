@@ -198,6 +198,7 @@ export interface IPositionReq {
 
 export interface IStateGlobalStore {
   selectedModalName: string | null;
+  isLoading: boolean;
 }
 
 export type language = "ru" | "kz" | "en";

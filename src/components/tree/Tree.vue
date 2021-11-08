@@ -22,7 +22,8 @@
               direction === DIRECTION.VERTICAL ? node.x : node.y
             ),
             top: formatDimension(
-              direction === DIRECTION.VERTICAL ? node.y : node.x
+              direction === DIRECTION.VERTICAL ? node.y : node.x,
+              node
             ),
             width: formatDimension(config.nodeWidth),
             height: formatDimension(config.nodeHeight),
@@ -33,7 +34,7 @@
           @drop="onDrop($event, node.data)"
         >
           <div
-            :draggable="unlock && isCanDispatcherEdit"
+            :draggable="isDraggable"
             @dragstart.stop="dragStart($event, node.data)"
             @mousedown.stop
             @mousemove.stop
@@ -160,12 +161,16 @@ export default {
       dragTree: "GET_DRAG_TREE",
       tree: "tree",
       userType: "GET_USER_TYPE",
+      isLoading: "isLoading",
     }),
+    isDraggable() {
+      return this.unlock && this.isCanDispatcherEdit && !this.isLoading;
+    },
     unlock() {
       return !this.GET_UNLOCK;
     },
     isCanDispatcherEdit() {
-      if(this.userType !== 'dispatcher') return false
+      if (this.userType !== "dispatcher") return false;
       const status = this.tree.status;
       return [null, 315, 318].includes(status);
     },
@@ -455,7 +460,15 @@ export default {
         container.removeEventListener("mousemove", mouseMove);
       });
     },
-    formatDimension(dimension) {
+    formatDimension(dimension, node) {
+      if (
+        node &&
+        node.data &&
+        node.data.employees &&
+        node.data.employees.length
+      ) {
+        dimension += 50;
+      }
       if (typeof dimension === "number") return `${dimension}px`;
       if (dimension.indexOf("px") !== -1) {
         return dimension;

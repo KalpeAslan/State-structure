@@ -228,7 +228,7 @@ export default Vue.extend({
       }
     },
     selectedGovState(): number {
-      return this.selectedGovOrg.status ? this.selectedGovOrg.status : 315;
+      return this.$store.getters.gaState;
     },
     selectedRole: {
       get() {
