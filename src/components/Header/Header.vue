@@ -256,7 +256,11 @@ export default Vue.extend({
       this.form.resetValidation();
     },
     showButton(button): boolean {
-      if (!["edit-goverment", "delete-goverment"].includes(button.name))
+      if (
+        !["edit-goverment", "delete-goverment", "exportPdf"].includes(
+          button.name
+        )
+      )
         return true;
       return (
         this.$route.name !== "home.select-goverment" && this.selectedGovOrg

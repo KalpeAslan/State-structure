@@ -9,10 +9,15 @@ import {
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 import Vue from "vue";
-import { IPositionNew } from "@/store/interface";
+import { IGovermentAgencyRaw, IPositionNew } from "@/store/interface";
+import { jsPDF } from "jspdf";
+import { DocumentBuilder, documentBuilder } from "./DocumentBuilder";
 
 export class HomeService {
-  constructor(private httpService: HttpService) {}
+  constructor(
+    private httpService: HttpService,
+    private documentBuilder: DocumentBuilder
+  ) {}
 
   getGovermentAgencyTree(id: number) {
     return this.httpService.get(
@@ -22,6 +27,10 @@ export class HomeService {
 
   getRoles() {
     return this.httpService.get("/api/v1/get/roles");
+  }
+
+  getUsers(): Promise<any> {
+    return this.httpService.get("/api/v1/get/users");
   }
 
   getEmployees(gaId: number): Promise<any> {
@@ -100,24 +109,13 @@ export class HomeService {
 
   getDocument(govermentAgencyId: number) {
     return this.httpService
-      .get("/api/v1/get/document?govermentAgencyId=" + govermentAgencyId)
-      .then((data: string) => {
-        const fileReader: FileReader = new FileReader();
-        const blob = new Blob([data], { type: "text/plain" });
-        fileReader.readAsDataURL(blob);
-        fileReader.onload = () => {
-          const base64: any = fileReader.result;
-          word(base64.substr(23, base64.length)).then((data) => {
-            const { doc, properties } = data;
-            const { core, app } = properties;
-            console.log(core, app);
-
-            const html = parser.createHtml(data);
-            console.log(html);
-          });
-        };
+      .get(
+        "/api/v1/get/governmentAgency?governmentAgencyId=" + govermentAgencyId
+      )
+      .then((data) => {
+        this.documentBuilder.buildDocument(data);
       });
   }
 }
 
-export const homeService = new HomeService(new HttpService());
+export const homeService = new HomeService(new HttpService(), documentBuilder);

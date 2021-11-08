@@ -1,3 +1,4 @@
+import moment from "moment";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
 import Vue from "vue";
@@ -231,7 +232,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
       //Если в должность кидают неправильные типы
       if (
         dragEnteredNode.entityType === "position" &&
-        !["employee", "role"].includes(dragTargetNode.entityType)
+        !["user", "role"].includes(dragTargetNode.entityType)
       )
         return;
       if (
@@ -276,7 +277,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
       //Привязка сотрудника к должности
       if (
         dragEnteredNode.entityType === "position" &&
-        dragTargetNode.entityType === "employee"
+        dragTargetNode.entityType === "user"
       ) {
         //Проверка на существующих сотрудников должности
         // если сотрудник уже есть вывести предупреждение
@@ -286,35 +287,40 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "Добавьте роль к должности!",
             type: "danger",
           });
-        if (dragEnteredNode.employees.length >= 1)
+        if (dragEnteredNode.employees && dragEnteredNode.employees.length >= 1)
           return Vue.notify({
             group: "alert",
             text: "У должности может быть только 1 сотрудник",
             type: "danger",
           });
+        console.log(moment().format("YYYY-MM-DD[T]HH:mm:ss"));
         const employeeNewForm: IEmployeeNew = {
-          user: dragTargetNode.user,
+          user: dragTargetNode.id,
           position: dragEnteredNode.id,
           ddepartmentIinId: context.getters.GET_GA_ID,
-          recruitmentDate: dragTargetNode.recruitmentDate,
-          positionRemovalDate: dragTargetNode.positionRemovalDate,
+          recruitmentDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
+          positionRemovalDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
         };
-        treeService.newEmployee(employeeNewForm);
-        if (dragEnteredNode.employees.length === 1) {
-          const top: number = +document
-            .querySelector(`.node-slot__${dragEnteredNode.key}`)
-            ["style"].top.replace("px", "");
-          document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
-            "style"
-          ].top = top + +50 + "px";
-        }
-        dragEnteredNode.employees.push(
-          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
-        );
-        return context.dispatch(
-          DELETE_EMPLOYEE,
-          context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
-        );
+        treeService.newEmployee(employeeNewForm).then(() => {
+          context.dispatch(RELOAD_TREE).then(() => {
+            if (
+              dragEnteredNode.employees &&
+              dragEnteredNode.employees.length === 1
+            ) {
+              const top: number = +document
+                .querySelector(`.node-slot__${dragEnteredNode.key}`)
+                ["style"].top.replace("px", "");
+              document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
+                "style"
+              ].top = top + +50 + "px";
+            }
+          });
+        });
+
+        // return context.dispatch(
+        //   DELETE_EMPLOYEE,
+        //   context.getters.GET_EMPLOYEE_BY_ID(dragTargetNode.key)
+        // );
       }
 
       if (
@@ -548,8 +554,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
       }
       return await treeService.changePosition(positionChange);
     },
-    [RELOAD_TREE](ctx) {
-      ctx.dispatch(SET_TREE, ctx.getters.tree.id);
+    async [RELOAD_TREE](ctx) {
+      await ctx.dispatch(SET_TREE, ctx.getters.tree.id);
     },
     async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
       setTempEmployeeToPosition(

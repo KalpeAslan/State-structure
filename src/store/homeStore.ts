@@ -23,6 +23,7 @@ import {
   SET_GA_STATE,
   SET_WEBSOCKET_STATE,
   SET_MODAL_NAME,
+  SET_USERS,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -36,7 +37,12 @@ import {
 } from "./interfaces";
 import { employeesGet } from "./dump";
 import { ncaLayerService } from "@/services/ncaLayerService";
-import { IEmployeeGet, IPositionNew, TWebSocketState } from "./interface";
+import {
+  IEmployeeGet,
+  IPositionNew,
+  IUser,
+  TWebSocketState,
+} from "./interface";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
@@ -50,6 +56,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     gaState: null,
     isWebSocketOpen: false,
     webSocketState: null,
+    users: [],
   },
   mutations: {
     [SET_USER_TYPE](context) {},
@@ -102,6 +109,13 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     [SET_WEBSOCKET_STATE](ctx, state: TWebSocketState) {
       ctx.webSocketState = state;
+    },
+    [SET_USERS](ctx, users: IUser[]) {
+      ctx.users = users.map((user) => {
+        user.key = Math.round(Math.random() * 5456454654);
+        user.entityType = "user";
+        return user;
+      });
     },
   },
   actions: {
@@ -173,11 +187,14 @@ export const homeStore: Module<IStateHomeStore, any> = {
         await homeService
           .getEmployees(ctx.getters.GET_GA_ID)
           .then((employies) => {
-            //TEMP
-            ctx.commit(SET_EMPLOYIES, employeesGet);
+            ctx.commit(SET_EMPLOYIES, employies);
           });
     },
-
+    async [SET_USERS](ctx) {
+      await homeService.getUsers().then((users) => {
+        ctx.commit(SET_USERS, users);
+      });
+    },
     [DELETE_ROLE](ctx, role: IRole) {
       ctx.commit(
         SET_ROLES,
@@ -269,10 +286,11 @@ export const homeStore: Module<IStateHomeStore, any> = {
       );
     },
     GET_ATTACH_ITEMS: (state) => (input: string, type: string) => {
-      const items: any[] = type === "roles" ? state.roles : state.employies;
+      const items: any[] = type === "roles" ? state.roles : state.users;
       if (!input) return items;
-      return items.filter((role) => {
-        const item = type === "roles" ? role.roleId.toString() : role.user.name;
+      return items.filter((itemEntity) => {
+        const item =
+          type === "roles" ? itemEntity.roleId.toString() : itemEntity.fullname;
         return item.toLowerCase().includes(input.toLowerCase());
       });
     },

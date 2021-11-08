@@ -36,15 +36,65 @@ interface IBaseNamesShort {
   nameEngShort: string;
 }
 
+interface IStatus {
+  status: number;
+  statusObject: {
+    id: number;
+    nameKaz: string;
+    nameRus: string;
+    value: string | number | null;
+    code: null | number;
+  };
+}
+
 export interface ISubdivisonChange extends IBaseNames {
-  id: number; //Long
   bin: number; //Long, government agency id. Nice naming.
   department?: number; //Long, supe
-  status: number; //Long, status id
+  id: number;
+  status: number;
 }
 
 //Goverment Agencies
 export type TStatuses = 315 | 316 | 317 | 318 | 319 | 320 | 321 | 322;
+
+/**
+ * START
+ * /api/v1/get/governmentAgency
+ */
+
+type TddepartmentIinDto = IBaseNames &
+  IStatus & {
+    id: number;
+    iin: string | number;
+  };
+
+type TBaseEntity = IBaseNames & {
+  status: number;
+  id: number;
+};
+
+type TdepartmentDto = TBaseEntity & {
+  bin: number;
+  department: number;
+  employees: [];
+};
+
+type TpositionsDto = TBaseEntity & {
+  ddepartmentIinId: number;
+  departmentId: number;
+  role: number;
+};
+export interface IGovermentAgencyRaw {
+  ddepartmentIinDto: TddepartmentIinDto;
+  departmentDto: TdepartmentDto[];
+  positionsDto: TpositionsDto[];
+  employeeDto: [];
+  employeeReplacementDto: [];
+}
+
+/**
+ * END
+ */
 
 //Positions
 export interface IPositionNew extends IBaseNamesShort {
@@ -72,19 +122,22 @@ export interface IEmployeeNew extends IEmployeeBase {
   ddepartmentIinId; //Long, government agency id
 }
 
-export interface IEmployeeGet extends IEmployeeBase {
+export interface IEmployeeGet extends IEmployeeBase, IStatus {
   key?: number | string;
   entityType?: "employee";
   employeesTableid: number;
   positions: number | null;
   governmentAgency: number;
   subdivisions: number | null;
-  status: number;
-  statusObject: {
-    id: number;
-    nameKaz: string;
-    nameRus: string;
-    value: string | number | null;
-    code: null | number;
-  };
+}
+
+//User
+
+export interface IUser {
+  id: number;
+  firstname: string;
+  lastname: string;
+  username: string;
+  key?: string | number;
+  entityType?: "user";
 }

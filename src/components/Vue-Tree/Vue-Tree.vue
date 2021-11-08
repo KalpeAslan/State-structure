@@ -48,7 +48,7 @@
                 ]"
               >
                 <div class="d-flex align-center" style="font-size: 12px">
-                  {{ positionChild.user.name }}
+                  {{ positionChild.user.username }}
                 </div>
                 <template v-if="node.employeeReplacement">
                   <div>

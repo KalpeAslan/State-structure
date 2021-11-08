@@ -1,4 +1,4 @@
-import { IEmployeeGet, TWebSocketState } from "./interface";
+import { IEmployeeGet, IUser, TWebSocketState } from "./interface";
 export interface IStateTreeStore {
   tree: null | ITree;
   oldTree: null | ITree;
@@ -59,6 +59,7 @@ export interface IStateHomeStore {
   gaState: number;
   isWebSocketOpen: boolean;
   webSocketState: TWebSocketState;
+  users: IUser[];
 }
 
 export interface IPosition {

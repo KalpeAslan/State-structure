@@ -33,18 +33,30 @@
         @click="modalDialog = true"
       >
         <v-icon size="14"> mdi-plus-thick </v-icon>
-        <div class="text-caption">Добавить</div>
+        <div class="text-caption">{{ $t("add") }}</div>
       </v-btn>
 
       <template v-if="isShowTabs">
         <v-tabs v-model="selectedTab" style="font-size: 12px !important">
           <v-tab value="all" va>Все</v-tab>
           <v-tab v-if="userType === 'departmentBoss'" value="departmentBoss">
-            <v-badge :content="listOfGAForApply.length">
+            <v-badge
+              v-if="listOfGAForApply.length"
+              :content="listOfGAForApply.length"
+            >
               На согласование
             </v-badge>
+            <template v-else> На согласование </template>
           </v-tab>
-          <v-tab v-else value="departmentHead">На утверждении</v-tab>
+          <v-tab v-else value="departmentHead">
+            <v-badge
+              v-if="listOfGAForApply.length"
+              :content="listOfGAForApply.length"
+            >
+              На утверждении
+            </v-badge>
+            <template v-else> На утверждении </template>
+          </v-tab>
         </v-tabs>
         <v-divider style="margin-bottom: 18px" />
       </template>
@@ -140,10 +152,11 @@ export default Vue.extend({
       return ["departmentBoss", "departmentHead"].includes(this.userType);
     },
     listOfGAForApply(): IGoverment[] {
-      const codeForApply = this.userType === "departmentBoss" ? 2 : 5;
-      return this.governmentAgencies.filter((govAgency) => {
-        return govAgency.status === codeForApply;
-      });
+      const codeForApply = this.userType === "departmentBoss" ? 316 : 317;
+      return this.governmentAgencies.filter(
+        (govAgency) =>
+          govAgency.status === codeForApply || govAgency.status === 319
+      );
     },
   },
   created() {

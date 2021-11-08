@@ -27,15 +27,13 @@
       ></v-text-field>
       <v-list-item
         draggable
-        v-for="employee in employes"
-        :key="employee.key"
-        @dragstart="dragStart($event, employee)"
+        v-for="user in users"
+        :key="user.key"
+        @dragstart="dragStart($event, user)"
         @dragend="dragEnd"
       >
         <v-list-item-content>
-          <span style="font-size: 14px">
-            {{ employee.statusObject | translate }}</span
-          >
+          <span style="font-size: 14px"> {{ user.username }}</span>
         </v-list-item-content>
       </v-list-item>
     </v-navigation-drawer>
@@ -85,7 +83,8 @@
 
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
-import { SET_EMPLOYIES, SET_ROLES } from "@/store/mutation-types";
+import { IUser } from "@/store/interface";
+import { SET_ROLES, SET_USERS } from "@/store/mutation-types";
 import Vue from "vue";
 
 export default Vue.extend({
@@ -96,18 +95,15 @@ export default Vue.extend({
     };
   },
   created() {
-    this.$store.dispatch(SET_EMPLOYIES);
+    this.$store.dispatch(SET_USERS);
     this.$store.dispatch(SET_ROLES);
   },
   computed: {
     roles() {
       return this.$store.getters.GET_ATTACH_ITEMS(this.inputRoles, "roles");
     },
-    employes() {
-      return this.$store.getters.GET_ATTACH_ITEMS(
-        this.inputEmployies,
-        "employes"
-      );
+    users(): IUser[] {
+      return this.$store.getters.GET_ATTACH_ITEMS(this.inputEmployies, "users");
     },
   },
   mixins: [treeMixin],
