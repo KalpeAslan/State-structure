@@ -82,7 +82,7 @@
 import * as d3 from "d3";
 import { uuid } from "./base/utils";
 import treeMixin from "../../mixins/treeMixin";
-import { SET_PLUS_SELECTED_NODE } from "@/store/mutation-types";
+import { SET_MODAL_NAME, SET_PLUS_SELECTED_NODE } from "@/store/mutation-types";
 import { mapGetters } from "vuex";
 
 const MATCH_TRANSLATE_REGEX = /translate\((-?\d+)px, ?(-?\d+)px\)/i;
@@ -213,8 +213,8 @@ export default {
     },
     addSubdivison(node) {
       if (!this.isLoading) {
-        this.showAddSubdivison = true;
         this.$store.commit(SET_PLUS_SELECTED_NODE, node);
+        this.$store.dispatch(SET_MODAL_NAME, "add-subdivision-modal");
       }
     },
     computeDirection(node) {
