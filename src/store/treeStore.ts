@@ -22,6 +22,7 @@ import {
   SET_EMPLOYEE_REPLACEMENT,
   CHANGE_POSITION,
   SET_TREE_SAFE,
+  SET_LOADING,
 } from "./mutation-types";
 import { IEmployeeNew, IPositionChange, ISubdivisonChange } from "./interface";
 
@@ -220,10 +221,15 @@ export const treeStore: Module<IStateTreeStore, any> = {
   actions: {
     async [SET_TREE](context, treeId): Promise<any> {
       if (treeId === null) return context.commit(SET_TREE, null);
+      context.commit(SET_LOADING, true);
       await treeService.homeService
         .getGovermentAgencyTree(treeId)
         .then((tree) => {
+          context.commit(SET_LOADING, false);
           context.commit(SET_TREE, tree);
+        })
+        .catch(() => {
+          context.commit(SET_LOADING, false);
         });
     },
     [UPDATE_TREE](context, { dragEnteredNode, dragTargetNode }) {
@@ -407,13 +413,16 @@ export const treeStore: Module<IStateTreeStore, any> = {
         isDelete: true,
         parent: getParentId(context.getters.tree, selectedNode.key),
       };
+      console.log(selectedNode);
       switch (selectedNode.entityType) {
         case "subdivision":
           form.subdivision = selectedNode;
           mutationType = CHANGE_SUBDIVISION;
+          break;
         case "position":
           form.position = selectedNode;
           mutationType = CHANGE_POSITION;
+          break;
       }
       context.dispatch(mutationType, form).then(() => {
         deleteNodeFromTree(context.state.tree, selectedNode.key);
@@ -465,7 +474,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
       ctx.commit("DELETE_DRAG_TREE");
     },
     async [ADD_SUBDIVISION](ctx, subdivision) {
-      ctx.state.isUpdated = true;
       const subdivisionForm = { ...subdivision };
       if (ctx.state.plusSelectedNode.entityType === "subdividion") {
         subdivisionForm.department = ctx.state.plusSelectedNode.id;
@@ -481,10 +489,13 @@ export const treeStore: Module<IStateTreeStore, any> = {
           subdivision.children = [];
           subdivision.key = Math.round(Math.random() * 566565);
           subdivision.entityType = "subdivision";
+          console.log(ctx.state.plusSelectedNode);
+          console.log(ctx.state.tree);
           getNodeById(
             ctx.state.tree,
             ctx.state.plusSelectedNode.key
           ).children.push(subdivision);
+          ctx.state.isUpdated = true;
         });
     },
     [DELETE_ROLE_FROM_TREE](ctx, selectedNode) {

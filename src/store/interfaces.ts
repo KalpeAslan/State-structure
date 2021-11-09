@@ -177,6 +177,7 @@ export interface IEmployeeChange {
   recruitmentDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"
   positionRemovalDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"
   status; //Long, status id
+  id: number;
 }
 
 export interface IPositionReq {

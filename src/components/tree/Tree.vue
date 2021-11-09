@@ -212,8 +212,10 @@ export default {
       this.enableDrag();
     },
     addSubdivison(node) {
-      this.showAddSubdivison = true;
-      this.$store.commit(SET_PLUS_SELECTED_NODE, node);
+      if (!this.isLoading) {
+        this.showAddSubdivison = true;
+        this.$store.commit(SET_PLUS_SELECTED_NODE, node);
+      }
     },
     computeDirection(node) {
       if (node.type === "division") {
