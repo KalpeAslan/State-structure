@@ -43,6 +43,7 @@ import Vue from "vue";
 export default Vue.extend({
   mixins: [modalsMixin],
   data() {
+    //
     return {
       valid: true,
       subdivision: {
