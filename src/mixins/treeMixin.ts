@@ -1,5 +1,9 @@
 import { ITree } from "./../store/interfaces";
-import { SET_DRAG_TREE } from "./../store/mutation-types";
+import {
+  SET_DRAG_TREE,
+  SET_MODAL_NAME,
+  SET_PLUS_SELECTED_NODE,
+} from "./../store/mutation-types";
 import { DELETE_NODE, UPDATE_TREE } from "@/store/mutation-types";
 import Vue from "vue";
 
@@ -33,6 +37,12 @@ export default Vue.extend({
         dragEnteredNode: node,
         dragTargetNode: this.$store.getters.GET_DRAG_TREE,
       });
+    },
+    addSubdivison(node) {
+      if (!this.isLoading) {
+        this.$store.commit(SET_PLUS_SELECTED_NODE, node);
+        this.$store.dispatch(SET_MODAL_NAME, "add-subdivision-modal");
+      }
     },
   },
   computed: {

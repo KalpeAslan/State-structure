@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <NavSidebar />
+    <NavSidebar v-if="isShowNavSidebar" />
     <VueTree />
     <ContentSidebar> <router-view /> </ContentSidebar>
     <Footer v-if="isShowFooter" />
@@ -12,13 +12,17 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
 import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
-import { SET_WEBSOCKET_STATE } from "@/store/mutation-types";
+import { SET_USERS, SET_WEBSOCKET_STATE } from "@/store/mutation-types";
 
 export default Vue.extend({
   name: "Home",
-
   computed: {
-    ...mapGetters(["GET_USER_TYPE", "gaState", "isShowFooter"]),
+    ...mapGetters([
+      "GET_USER_TYPE",
+      "gaState",
+      "isShowFooter",
+      "isShowNavSidebar",
+    ]),
   },
   created() {
     if (this.$route.path === "/home") {

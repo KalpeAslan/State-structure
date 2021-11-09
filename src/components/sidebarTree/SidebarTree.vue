@@ -28,7 +28,7 @@
               >{{ node | translate }}</span
             >
             <div class="node-buttons">
-              <v-btn icon @click="insertToNode(node)">
+              <v-btn icon @click="addSubdivison(node)">
                 <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
               </v-btn>
               <v-btn icon class="remove-button" @click="deleteNode(node)">
@@ -51,7 +51,6 @@
 <script lang="ts">
 import treeMixin from "../../mixins/treeMixin";
 import Vue from "vue";
-import { IPosition, ITree } from "@/store/interfaces";
 export default Vue.extend({
   name: "SidebarTree",
   props: {

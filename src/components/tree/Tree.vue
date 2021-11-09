@@ -1,9 +1,5 @@
 <template>
   <div class="tree-container" ref="container" :style="{}">
-    <AddSubdivison
-      :show="showAddSubdivison"
-      @close-modal="showAddSubdivison = false"
-    />
     <svg class="svg vue-tree" ref="svg" :style="initialTransformStyle"></svg>
 
     <div
@@ -42,7 +38,11 @@
             class="node-container"
           >
             <v-btn
-              v-if="unlock && isShowNodeButtons(node.data.entityType)"
+              v-if="
+                unlock &&
+                isShowNodeButtons(node.data.entityType) &&
+                node.data.entityType !== 'governmentAgency'
+              "
               icon
               absolute
               @click="deleteNode(node.data)"
@@ -98,10 +98,8 @@ const DIRECTION = {
 };
 
 const DEFAULT_NODE_WIDTH = 200;
-const DEFAULT_NODE_HEIGHT = 100;
+const DEFAULT_NODE_HEIGHT = 150;
 const DEFAULT_LEVEL_HEIGHT = 200;
-
-const DEFAULT_HEIGHT_DECREMENT = 200;
 
 function rotatePoint({ x, y }) {
   return {
@@ -211,12 +209,7 @@ export default {
       this.initTransform();
       this.enableDrag();
     },
-    addSubdivison(node) {
-      if (!this.isLoading) {
-        this.$store.commit(SET_PLUS_SELECTED_NODE, node);
-        this.$store.dispatch(SET_MODAL_NAME, "add-subdivision-modal");
-      }
-    },
+
     computeDirection(node) {
       if (node.type === "division") {
         return DIRECTION.HORIZONTAL;
@@ -463,13 +456,9 @@ export default {
       });
     },
     formatDimension(dimension, node) {
-      if (
-        node &&
-        node.data &&
-        node.data.employees &&
-        node.data.employees.length
-      ) {
-        dimension += 50;
+      if (node && node.data && node.data.employees) {
+        console.log(node);
+        dimension += node.data.employeeReplacement ? 100 : 50;
       }
       if (typeof dimension === "number") return `${dimension}px`;
       if (dimension.indexOf("px") !== -1) {
@@ -487,9 +476,6 @@ export default {
         this.initTransform();
       },
     },
-  },
-  components: {
-    AddSubdivison: () => import("../HeaderModals/AddSubdivision.vue"),
   },
 };
 </script>

@@ -16,7 +16,7 @@
               v-model="valid"
             >
               <div v-for="inputName in formAsArray" :key="inputName">
-                <div class="label">{{ formLabels[inputName] }}</div>
+                <div class="label">{{ $t(formLabels[inputName]) }}</div>
                 <v-text-field
                   @input="$v.form[inputName].$reset()"
                   :error-messages="
@@ -90,10 +90,10 @@ export default class AddGoverment extends Vue {
     nameEng: null,
   };
   formLabels = {
-    iin: "БИН",
-    nameRus: "Наименование на русском",
-    nameKaz: "Наименование на казахском",
-    nameEng: "Наименование на английском",
+    iin: "bin",
+    nameRus: "nameInRus",
+    nameKaz: "nameInKaz",
+    nameEng: "nameInEng",
   };
   formAsArray: string[] = Object.keys(this.form);
 

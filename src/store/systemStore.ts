@@ -67,5 +67,8 @@ export const systemStore: Module<IStateSystemStore, any> = {
     isLoggined(state): boolean {
       return state.isLoggined;
     },
+    isDispatcher(state): boolean {
+      return state.userType === 'dispatcher'
+    }
   },
 };

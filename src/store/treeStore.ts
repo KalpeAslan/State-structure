@@ -1,3 +1,4 @@
+import { homeService } from "./../services/homeService";
 import moment from "moment";
 import { treeService } from "@/services/treeService";
 import { Module } from "vuex";
@@ -23,6 +24,8 @@ import {
   CHANGE_POSITION,
   SET_TREE_SAFE,
   SET_LOADING,
+  ADD_EMPLOYEE,
+  SET_TEMP_EMPLOYEE_FOR_REPLACEMENT,
 } from "./mutation-types";
 import { IEmployeeNew, IPositionChange, ISubdivisonChange } from "./interface";
 
@@ -169,6 +172,7 @@ function setTempEmployeeToPosition(
   tempEmployee: IEmployeeReq
 ) {
   if (tree.key === selectedPositionKey) {
+    console.log(tempEmployee);
     tree.employeeReplacement = tempEmployee;
     return;
   } else if (tree.children) {
@@ -187,6 +191,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
     plusSelectedNode: null,
     isUpdated: false,
     tempPosition: null,
+    tempEmployeeForReplacement: null,
   },
   mutations: {
     [SET_TREE](state, tree: ITree | null): void {
@@ -216,6 +221,9 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     [SET_TEMP_POSITION](context, tempPosition) {
       context.tempPosition = tempPosition;
+    },
+    [SET_TEMP_EMPLOYEE_FOR_REPLACEMENT](ctx, employee) {
+      ctx.tempEmployeeForReplacement = employee;
     },
   },
   actions: {
@@ -299,29 +307,26 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 сотрудник",
             type: "danger",
           });
-        console.log(moment().format("YYYY-MM-DD[T]HH:mm:ss"));
-        const employeeNewForm: IEmployeeNew = {
-          user: dragTargetNode.id,
-          position: dragEnteredNode.id,
-          ddepartmentIinId: context.getters.GET_GA_ID,
-          recruitmentDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
-          positionRemovalDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
-        };
-        treeService.newEmployee(employeeNewForm).then(() => {
-          context.dispatch(RELOAD_TREE).then(() => {
-            if (
-              dragEnteredNode.employees &&
-              dragEnteredNode.employees.length === 1
-            ) {
-              const top: number = +document
-                .querySelector(`.node-slot__${dragEnteredNode.key}`)
-                ["style"].top.replace("px", "");
-              document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
-                "style"
-              ].top = top + +50 + "px";
-            }
+        context
+          .dispatch(ADD_EMPLOYEE, {
+            userId: dragTargetNode.id,
+            positionId: dragEnteredNode.id,
+          })
+          .then(() => {
+            context.dispatch(RELOAD_TREE).then(() => {
+              if (
+                dragEnteredNode.employees &&
+                dragEnteredNode.employees.length === 1
+              ) {
+                const top: number = +document
+                  .querySelector(`.node-slot__${dragEnteredNode.key}`)
+                  ["style"].top.replace("px", "");
+                document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
+                  "style"
+                ].top = top + +50 + "px";
+              }
+            });
           });
-        });
 
         // return context.dispatch(
         //   DELETE_EMPLOYEE,
@@ -413,7 +418,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
         isDelete: true,
         parent: getParentId(context.getters.tree, selectedNode.key),
       };
-      console.log(selectedNode);
       switch (selectedNode.entityType) {
         case "subdivision":
           form.subdivision = selectedNode;
@@ -475,24 +479,35 @@ export const treeStore: Module<IStateTreeStore, any> = {
     },
     async [ADD_SUBDIVISION](ctx, subdivision) {
       const subdivisionForm = { ...subdivision };
-      if (ctx.state.plusSelectedNode.entityType === "subdividion") {
-        subdivisionForm.department = ctx.state.plusSelectedNode.id;
+      if (
+        ctx.state.plusSelectedNode &&
+        ctx.state.plusSelectedNode.entityType === "subdivision"
+      ) {
+        subdivisionForm.department = +ctx.state.plusSelectedNode.id;
+        delete subdivisionForm.governmentAgencyId;
       } else {
         delete subdivisionForm.department;
-        subdivisionForm.governmentAgencyId = ctx.state.plusSelectedNode.id;
+        subdivisionForm.governmentAgencyId = +ctx.getters.GET_GA_ID;
       }
       subdivisionForm.bin = ctx.getters.GET_SELECTED_GA.id;
-      await treeService.homeService
+      return await treeService.homeService
         .postNewSudivision(subdivisionForm)
         .then((id) => {
           subdivision.id = id;
           subdivision.children = [];
           subdivision.key = Math.round(Math.random() * 566565);
           subdivision.entityType = "subdivision";
-          getNodeById(
-            ctx.state.tree,
-            ctx.state.plusSelectedNode.key
-          ).children.push(subdivision);
+          if (ctx.state.plusSelectedNode) {
+            getNodeById(
+              ctx.state.tree,
+              ctx.state.plusSelectedNode.key
+            ).children.push(subdivision);
+          } else {
+            getNodeById(ctx.state.tree, ctx.state.tree.key).children.push(
+              subdivision
+            );
+          }
+
           ctx.state.isUpdated = true;
         });
     },
@@ -503,6 +518,16 @@ export const treeStore: Module<IStateTreeStore, any> = {
         isDelete: false,
         parent: getParentId(ctx.getters.tree, selectedNode.key),
       });
+    },
+    async [ADD_EMPLOYEE](ctx, { userId, positionId }) {
+      const employeeNewForm: IEmployeeNew = {
+        user: userId,
+        position: positionId,
+        ddepartmentIinId: ctx.getters.GET_GA_ID,
+        recruitmentDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
+        positionRemovalDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
+      };
+      await treeService.newEmployee(employeeNewForm);
     },
     async [CHANGE_SUBDIVISION](ctx, { subdivision, isDelete, parent }) {
       const {
@@ -568,16 +593,19 @@ export const treeStore: Module<IStateTreeStore, any> = {
     async [RELOAD_TREE](ctx) {
       await ctx.dispatch(SET_TREE, ctx.getters.tree.id);
     },
-    async [SET_EMPLOYEE_REPLACEMENT](ctx, employee: IEmployeeReq) {
-      await treeService.homeService
-        .postNewEmployeeReplacement(employee)
-        .then(() => {
-          setTempEmployeeToPosition(
-            ctx.state.tree,
-            ctx.state.tempPosition.key,
-            employee
-          );
-        });
+    async [SET_EMPLOYEE_REPLACEMENT](ctx, { newEmployeeForm, user }) {
+      await ctx.dispatch(ADD_EMPLOYEE, {
+        user: user.id,
+        positionId: null,
+      });
+      // await treeService.homeService.postNewEmployeeReplacement(newEmployeeForm);
+      const employeeReplacement = { ...newEmployeeForm };
+      employeeReplacement.user = user;
+      setTempEmployeeToPosition(
+        ctx.state.tree,
+        ctx.state.tempPosition.key,
+        employeeReplacement
+      );
     },
     [SET_TEMP_POSITION](context, position: IPosition | null) {
       context.commit(SET_TEMP_POSITION, position);

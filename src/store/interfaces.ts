@@ -7,6 +7,7 @@ export interface IStateTreeStore {
   plusSelectedNode: ITree | null;
   isUpdated: boolean;
   tempPosition: null | IPosition;
+  tempEmployeeForReplacement: any;
 }
 
 export interface ITree {

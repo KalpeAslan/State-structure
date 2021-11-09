@@ -19,9 +19,24 @@
       >
         <div
           v-if="selectedGovOrg"
-          style="display: flex; flex-direction: column; align-items: self-start"
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: self-start;
+            max-width: 120px;
+          "
         >
-          {{ selectedGovOrg | translate }}
+          <span
+            style="
+              max-width: 120px;
+
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            "
+          >
+            {{ selectedGovOrg | translate }}
+          </span>
           <div class="text-caption" style="display: block">123456789</div>
         </div>
         <div
@@ -39,51 +54,53 @@
     </div>
     <v-spacer></v-spacer>
     <div>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
+      <template v-if="isEditable">
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              elevation="0"
+              v-bind="attrs"
+              v-on="on"
+              text
+              style="font-size: 14px; line-height: 16px"
+              class="secondary--text button text-capitalize"
+            >
+              <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
+              {{ $t("history") }}
+              <v-icon size="18"> mdi-chevron-down </v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <router-link
+              v-for="(item, index) in historyItems"
+              :key="index"
+              :to="{
+                name: item.routeName,
+              }"
+              style="text-decoration: none"
+            >
+              <v-list-item>
+                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+              </v-list-item>
+            </router-link>
+          </v-list>
+        </v-menu>
+        <template v-for="button in headerButtons">
           <v-btn
-            elevation="0"
-            v-bind="attrs"
-            v-on="on"
             text
+            :key="button.title"
+            v-if="showButton(button)"
             style="font-size: 14px; line-height: 16px"
-            class="secondary--text button text-capitalize"
+            @click="clickHeaderButton(button)"
+            class="ma-2 secondary--text button text-capitalize"
+            elevation="0"
           >
-            <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
-            {{ $t("history") }}
-            <v-icon size="18"> mdi-chevron-down </v-icon>
+            <v-icon size="16" style="margin-right: 5px">{{
+              button.iconName
+            }}</v-icon>
+            {{ $t(button.title) }}
           </v-btn>
         </template>
-        <v-list>
-          <router-link
-            v-for="(item, index) in historyItems"
-            :key="index"
-            :to="{
-              name: item.routeName,
-            }"
-            style="text-decoration: none"
-          >
-            <v-list-item>
-              <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
-            </v-list-item>
-          </router-link>
-        </v-list>
-      </v-menu>
-      <template v-for="button in headerButtons">
-        <v-btn
-          text
-          :key="button.title"
-          v-if="showButton(button)"
-          style="font-size: 14px; line-height: 16px"
-          @click="clickHeaderButton(button)"
-          class="ma-2 secondary--text button text-capitalize"
-          elevation="0"
-        >
-          <v-icon size="16" style="margin-right: 5px">{{
-            button.iconName
-          }}</v-icon>
-          {{ $t(button.title) }}
-        </v-btn>
       </template>
       <span class="divider"></span>
       <template>
@@ -219,6 +236,7 @@ export default Vue.extend({
       selectedGovOrg: "GET_SELECTED_GA",
       selectedGovState: "gaState",
       userType: "userType",
+      isEditable: "isEditable",
     }),
     currentLanguage() {
       switch (this.$store.getters.GET_CURRENT_LANGUAGE) {

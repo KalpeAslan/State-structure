@@ -20,7 +20,7 @@
       v-else-if="selectedModalName === 'add-position-modal'"
       @close-modal="closeModal"
     />
-    <add-subdivision-modal
+    <add-subdivision
       v-else-if="selectedModalName === 'add-subdivision-modal'"
       @close-modal="closeModal"
     />

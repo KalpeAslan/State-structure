@@ -1,6 +1,6 @@
 <template>
   <div :class="['badge', className]">
-    <span>{{ stateText }}</span>
+    <span>{{ $t(stateText) }}</span>
   </div>
 </template>
 
@@ -22,29 +22,30 @@ export default Vue.extend({
       switch (this.state) {
         case 315:
           this.className = "created";
-          return "Создан диспетчером";
+          return "created";
         case 316:
           this.className = "onApproval";
-          return "На согласовании";
+          return "onApproval";
         case 317:
           this.className = "aproved";
-          return "Согласован";
+          return "aproved";
         case 318:
           this.className = "notAproved";
-          return "Не согласован";
+          return "notAproved";
         case 319:
           this.className = "onClaim";
-          return "На Утверждении";
+          return "onClaim";
         case 320:
           this.className = "claimed";
-          return "Утвержден";
+          return "claimed";
         case 321:
           this.className = "notClaimed";
           return "Не утвержден";
-        case 312:
-          return "Удален";
+        case 322:
+          return "deleted";
         default:
-          return "Создан диспетчером";
+          this.className = "created";
+          return "created";
       }
     },
   },

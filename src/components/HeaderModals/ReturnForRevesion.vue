@@ -22,9 +22,8 @@
                 solo
                 name="input-7-4"
                 v-model="comment"
-                :hide-details="!isError"
+                hide-details
                 height="160"
-                :error-messages="$t('fillTheField')"
               ></v-textarea>
 
               <v-btn
@@ -53,18 +52,12 @@ export default Vue.extend({
   data() {
     return {
       valid: true,
-      isError: false,
       comment: null,
     };
   },
   computed: {
     goverment(): IGovermentReq {
       return this.$store.getters.GET_SELECTED_GA;
-    },
-  },
-  watch: {
-    comment(val) {
-      this.isError = !!val;
     },
   },
   methods: {
@@ -75,7 +68,6 @@ export default Vue.extend({
       this.$refs.form.reset();
     },
     submit() {
-      if (!this.comment) return (this.isError = true);
       this.$emit("close-modal");
       this.$store.dispatch(SEND_TO_REJECT);
     },

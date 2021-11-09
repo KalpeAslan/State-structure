@@ -79,14 +79,14 @@
             <div class="label">
               {{ $t("tempAppointEmployee") }}
             </div>
-            <v-select
+            <v-autocomplete
               outlined
               dense
               :rules="selectTempEmployeeRules"
-              :items="employies"
-              v-model="selectedEmployee"
+              :items="usersForReplace"
+              v-model="selectedUserId"
               label="Выбрать"
-            ></v-select>
+            ></v-autocomplete>
           </div>
           <div>
             <div class="label">
@@ -196,7 +196,7 @@ export default Vue.extend({
         endDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
         substitutionBasisRu: null, //String
       },
-      selectedEmployee: null,
+      selectedUserId: null,
     };
   },
 
@@ -209,18 +209,11 @@ export default Vue.extend({
       const tempPosition = this.selectedTempPosition;
       return tempPosition.employees && tempPosition.employees[0];
     },
-    employies() {
-      return this.$store.getters.GET_EMPLOYIES
-        ? this.$store.getters.GET_EMPLOYIES.filter(
-            (employee) => employee.id !== this.selectedTempPositionEmployee.id
-          ).map((employee) => {
-            return {
-              text: this.users.filter((user) => user.id === employee.user)[0]
-                .username,
-              value: employee.id,
-            };
-          })
-        : [];
+    usersForReplace() {
+      return this.users.map((user) => ({
+        text: user.username,
+        value: user.id,
+      }));
     },
   },
   components: {
@@ -236,12 +229,17 @@ export default Vue.extend({
           startDate: moment(startDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           endDate: moment(endDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           substitutionBasisRu,
-          replacementEmployee: 1,
+          replacementEmployee: null,
           substituteEmployee: this.selectedTempPosition.id,
           substitutionBasisKz: this.newEmployeeForm.substitutionBasisRu,
         };
         this.$store
-          .dispatch(SET_EMPLOYEE_REPLACEMENT, newEmployeeForm)
+          .dispatch(SET_EMPLOYEE_REPLACEMENT, {
+            newEmployeeForm,
+            user: this.users.filter(
+              (user) => user.id === this.selectedUserId
+            )[0],
+          })
           .then(() => {
             this.$refs.form.reset();
             this.$store.dispatch(SET_TEMP_POSITION, null);

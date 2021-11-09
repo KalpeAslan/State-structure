@@ -10,7 +10,6 @@
       class="pt-5 px-5 nav-constructor_item"
     >
       <div class="d-flex align-items-center">
-        <v-icon size="20"> mdi-close </v-icon>
         <div
           class="text-h6 d-inline-block ml-4"
           style="
@@ -25,6 +24,7 @@
         </div>
       </div>
       <v-btn
+        v-if="userType === 'dispatcher'"
         color="primary"
         class="mb-3 mt-4 d-inline-block"
         outlined
@@ -44,18 +44,20 @@
               v-if="listOfGAForApply.length"
               :content="listOfGAForApply.length"
             >
-              На согласование
+              {{ $t("onApproval") }}
             </v-badge>
-            <template v-else> На согласование </template>
+            <template v-else> {{ $t("onApproval") }} </template>
           </v-tab>
           <v-tab v-else value="departmentHead">
             <v-badge
               v-if="listOfGAForApply.length"
               :content="listOfGAForApply.length"
             >
-              На утверждении
+              {{ $t("onClaim") }}
             </v-badge>
-            <template v-else> На утверждении </template>
+            <template v-else>
+              {{ $t("onClaim") }}
+            </template>
           </v-tab>
         </v-tabs>
         <v-divider style="margin-bottom: 18px" />
@@ -140,12 +142,14 @@ export default Vue.extend({
           : this.listOfGAForApply;
       return !this.inputSearch
         ? listOfGA
-        : listOfGA.filter((govAgency) =>
-            govAgency.nameRu.includes(this.inputSearch)
-          );
+        : listOfGA.filter((govAgency) => {
+            const translated = this.$options.filters.translate(govAgency);
+            return translated ? translated.includes(this.inputSearch) : false;
+          });
       // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
     },
     userType() {
+      console.log(this.$store.getters.GET_USER_TYPE);
       return this.$store.getters.GET_USER_TYPE;
     },
     isShowTabs(): boolean {

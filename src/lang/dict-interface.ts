@@ -40,4 +40,13 @@ export interface IDict {
   bin: string;
   editGa: string;
   infoDelete: string;
+  created;
+  onApproval;
+  aproved;
+  notAproved;
+  onClaim;
+  claimed;
+  notClaimed;
+  deleteted;
+  chooseGa;
 }

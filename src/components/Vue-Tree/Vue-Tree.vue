@@ -58,7 +58,7 @@
                     class="d-flex flex-column align-center"
                     style="font-size: 12px"
                   >
-                    {{ node.employeeReplacement.substitutionBasisRu }}
+                    {{ node.employeeReplacement.username }}
                     <div color="#DADADA">
                       до {{ node.employeeReplacement.endDate }}
                     </div>
@@ -90,7 +90,7 @@
       </template>
     </Tree>
     <div v-else class="text-body">
-      Выберите ГО из списка ГО или же создадите его
+      {{ $t("chooseGa") }}
     </div>
   </div>
 </template>
@@ -130,10 +130,10 @@ export default {
         "text-md-center text-center",
       ];
       if (node.entityType === "position") {
-        classes.push("justify-center flex-column position-node secondary");
+        classes.push("justify-center flex-column position-node");
       } else {
         classes.push("justify-space-between");
-        if (this.unlock(node)) classes.push("unlock-node secondary");
+        if (this.unlock(node)) classes.push("unlock-node");
         else classes.push("text-white node-subdivision");
       }
       return classes;
@@ -149,6 +149,13 @@ export default {
     },
     selectPosition(node) {
       if (node.entityType === "position" && this.$route.name === "home.time") {
+        if (node.employeeReplacement) {
+          return this.$notify({
+            group: "alert",
+            text: "У данной должности уже есть временный сотрудник!",
+            type: "danger",
+          });
+        }
         this.$store.dispatch(SET_TEMP_POSITION, node);
       }
     },
@@ -234,6 +241,7 @@ export default {
     display: flex;
     justify-content: center;
     align-content: center;
+    align-items: center;
     margin: 8px 0;
     max-width: 160px;
     padding: 6px 8px;

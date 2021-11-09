@@ -1,3 +1,4 @@
+import store from "@/store";
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 
@@ -7,6 +8,17 @@ const routes: Array<RouteConfig> = [
   {
     path: "/home",
     name: "Home",
+    beforeEnter: (to, from, next) => {
+      if (
+        store.getters.GET_USER_TYPE !== "dispatcher" &&
+        to.name !== "home.select-goverment"
+      ) {
+        return next({
+          name: "home.select-goverment",
+        });
+      }
+      next();
+    },
     component: () =>
       import(/* webpackChunkName: "Home" */ "../views/Home/index.vue"),
     children: [
@@ -33,12 +45,11 @@ const routes: Array<RouteConfig> = [
           ),
       },
       {
-        path: 'time',
-        name: 'home.time',
-        component: () => import(
-          /* webpackChunkName: "HomeTime" */ "../views/Home/Time.vue"
-        ),
-      }
+        path: "time",
+        name: "home.time",
+        component: () =>
+          import(/* webpackChunkName: "HomeTime" */ "../views/Home/Time.vue"),
+      },
     ],
   },
   {

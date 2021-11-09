@@ -14,7 +14,7 @@
               v-model="valid"
             >
               <div v-for="input in subdivisionForm" :key="input.name">
-                <div class="label">{{ input.label }}</div>
+                <div class="label">{{ $t(input.label) }}</div>
                 <v-text-field
                   :rules="[(v) => !!v || $t('fillTheField')]"
                   outlined
@@ -41,7 +41,6 @@ import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { ADD_SUBDIVISION, EDIT_GOVERMENT } from "@/store/mutation-types";
 import Vue from "vue";
 export default Vue.extend({
-  name: "add-subdivision-modal",
   mixins: [modalsMixin],
   data() {
     return {
@@ -88,8 +87,7 @@ export default Vue.extend({
           nameKazShort: this.subdivision.nameKaz + " short",
           nameEngShort: this.subdivision.nameEng + " short",
           department: null,
-          governmentAgencyId:
-            this.$store.getters.GET_SELECTED_GA.governmentAgencyTableid,
+          governmentAgencyId: this.$store.getters.GET_SELECTED_GA.id,
         };
         this.$store.dispatch(ADD_SUBDIVISION, subdivisionForm).then(() => {
           this.reset();

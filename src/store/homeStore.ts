@@ -364,5 +364,14 @@ export const homeStore: Module<IStateHomeStore, any> = {
     users(state) {
       return state.users;
     },
+    isShowNavSidebar(state, getters, rootState, rootGetters): boolean {
+      return rootGetters.GET_USER_TYPE === "dispatcher";
+    },
+    isEditable(state, getters, rootState, rootGetters): boolean {
+      return (
+        [315, 318, 322].includes(getters.gaState) &&
+        rootGetters.GET_USER_TYPE === "dispatcher"
+      );
+    },
   },
 };

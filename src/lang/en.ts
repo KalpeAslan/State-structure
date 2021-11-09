@@ -43,4 +43,13 @@ export const en: IDict = {
   editGa: "Edit Goverment Agency",
   infoDelete:
     "Information about the state body, staff structure will be deleted irrevocably without the possibility of recovery",
+  created: "Created by dispatcher",
+  onApproval: "Sended To Aggry",
+  aproved: "Agreed",
+  notAproved: "Rejected To Aggry",
+  onClaim: "Sened To Apply",
+  claimed: "Applied",
+  notClaimed: "Rejected To Apply",
+  deleteted: "Deleted",
+  chooseGa: "Select GA from the list or create it",
 };
