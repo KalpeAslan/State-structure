@@ -20,6 +20,10 @@
       v-else-if="selectedModalName === 'add-position-modal'"
       @close-modal="closeModal"
     />
+    <add-subdivision-modal
+      v-else-if="selectedModalName === 'add-subdivision-modal'"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -28,6 +32,7 @@ import { SET_MODAL_NAME } from "@/store/mutation-types";
 export default {
   computed: {
     selectedModalName() {
+      console.log(this.$store.getters.SELECTED_MODAL);
       return this.$store.getters.SELECTED_MODAL;
     },
   },
@@ -37,6 +42,7 @@ export default {
     ReturnForRevesion: () => import("../HeaderModals/ReturnForRevesion.vue"),
     NcaLayerModal: () => import("../HeaderModals/NcaLayerModal.vue"),
     AddPosition: () => import("../HeaderModals/AddPosition.vue"),
+    AddSubdivision: () => import("../HeaderModals/AddSubdivision.vue"),
   },
   methods: {
     closeModal() {

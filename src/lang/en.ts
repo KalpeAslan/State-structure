@@ -33,4 +33,14 @@ export const en: IDict = {
   sendToRevesion: "Send to the revesion",
   indicateTheReason: "Indicate the reason",
   fillTheField: "Fill the field!",
+  addPosition: "Add position",
+  addSubdivision: "Add departament",
+  addGovermentAgency: "Add goverment agency",
+  nameInRus: "name in russian",
+  nameInKaz: "name in kazakh",
+  nameInEng: "name in english",
+  bin: "BIN",
+  editGa: "Edit Goverment Agency",
+  infoDelete:
+    "Information about the state body, staff structure will be deleted irrevocably without the possibility of recovery",
 };

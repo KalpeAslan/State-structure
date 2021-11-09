@@ -489,8 +489,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
           subdivision.children = [];
           subdivision.key = Math.round(Math.random() * 566565);
           subdivision.entityType = "subdivision";
-          console.log(ctx.state.plusSelectedNode);
-          console.log(ctx.state.tree);
           getNodeById(
             ctx.state.tree,
             ctx.state.plusSelectedNode.key

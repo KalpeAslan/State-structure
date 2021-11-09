@@ -1,9 +1,9 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="modalDialog" max-width="400px">
+    <v-dialog v-model="modalDialogMixin" max-width="400px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">Добавить Подразделение</span>
+          <span class="text-h5">{{ $t("addSubdivision") }} </span>
         </v-card-title>
         <v-container>
           <template>
@@ -16,7 +16,7 @@
               <div v-for="input in subdivisionForm" :key="input.name">
                 <div class="label">{{ input.label }}</div>
                 <v-text-field
-                  :rules="[(v) => !!v || 'Заполните это поле!']"
+                  :rules="[(v) => !!v || $t('fillTheField')]"
                   outlined
                   class="mb-3"
                   hide-details
@@ -26,7 +26,7 @@
                 </v-text-field>
               </div>
               <v-btn type="submit" color="primary" @click="validate">
-                Сохранить
+                {{ $t("save") }}
               </v-btn>
             </v-form>
           </template>
@@ -35,44 +35,43 @@
     </v-dialog>
   </v-row>
 </template>
-<script>
-import { ADD_SUBDIVISION } from "@/store/mutation-types";
-export default {
-  props: {
-    show: {
-      type: Boolean,
-      default: false,
-    },
-  },
+<script lang="ts">
+import { modalsMixin } from "@/mixins/modalsMixin";
+import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
+import { ADD_SUBDIVISION, EDIT_GOVERMENT } from "@/store/mutation-types";
+import Vue from "vue";
+export default Vue.extend({
+  name: "add-subdivision-modal",
+  mixins: [modalsMixin],
   data() {
     return {
       valid: true,
       subdivision: {
-        governmentAgencyId:
-          this.$store.getters.GET_SELECTED_GA.governmentAgencyTableid,
-        department: null,
         nameRus: null,
         nameKaz: null,
         nameEng: null,
-        nameRusShort: "test nameRuShort",
-        nameKazShort: "test nameKzShort",
-        nameEngShort: "test nameEngShort",
       },
       subdivisionForm: [
         {
           name: "nameRus",
-          label: "Наименование на русском",
+          label: "nameInRus",
         },
         {
           name: "nameKaz",
-          label: "Наименование на казахском",
+          label: "nameInKaz",
         },
         {
           name: "nameEng",
-          label: "Наименование на английском",
+          label: "nameInEng",
         },
       ],
     };
+  },
+  computed: {
+    goverment(): IGovermentReq {
+      const goverment = this.$store.getters.GET_SELECTED_GA;
+      return { ...goverment };
+    },
   },
   methods: {
     validate() {
@@ -83,29 +82,21 @@ export default {
     },
     submit() {
       if (this.subdivisionForm.every((f) => this.subdivision[f.name])) {
-        this.$emit("close-modal");
-        this.$store.dispatch(ADD_SUBDIVISION, { ...this.subdivision });
-        this.reset();
+        const subdivisionForm: ISubdivisonReq = {
+          ...this.subdivision,
+          nameRusShort: this.subdivision.nameRus + " short",
+          nameKazShort: this.subdivision.nameKaz + " short",
+          nameEngShort: this.subdivision.nameEng + " short",
+          department: null,
+          governmentAgencyId:
+            this.$store.getters.GET_SELECTED_GA.governmentAgencyTableid,
+        };
+        this.$store.dispatch(ADD_SUBDIVISION, subdivisionForm).then(() => {
+          this.reset();
+          this.$emit("close-modal");
+        });
       }
     },
   },
-  computed: {
-    modalDialog: {
-      set() {
-        this.$emit("close-modal");
-      },
-      get() {
-        return this.show;
-      },
-    },
-  },
-};
+});
 </script>
-
-<style scoped>
-.label {
-  font-size: 14px;
-  line-height: 16px;
-  color: #000000;
-}
-</style>

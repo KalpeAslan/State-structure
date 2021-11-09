@@ -18,7 +18,7 @@
           {{ $t("stateStructure") }}
         </div>
         <v-btn
-          @click="addGoverment()"
+          @click="addSubdivision"
           color="primary"
           class="mb-2 d-inline-block"
           outlined
@@ -131,10 +131,6 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <AddGoverment
-      :modalDialog="modalDialog"
-      @close-modal="modalDialog = false"
-    />
   </div>
 </template>
 
@@ -143,15 +139,12 @@ import treeMixin from "@/mixins/treeMixin";
 import { IPosition } from "@/store/interfaces";
 import SidebarTree from "../../components/sidebarTree/SidebarTree.vue";
 import {
-  ADD_POSITION,
   DELETE_POSITION,
   INSERT_NODE_TO_TREE,
   SET_MODAL_NAME,
   SET_POSITIONS,
 } from "../../store/mutation-types";
 import Vue from "vue";
-import { IPositionNew } from "@/store/interface";
-import { mapGetters } from "vuex";
 export default Vue.extend({
   data(): any {
     return {
@@ -162,14 +155,12 @@ export default Vue.extend({
         },
       ],
       positionsInput: "",
-      modalDialog: false,
+      showAddSubdivison: false,
     };
   },
   mixins: [treeMixin],
   components: {
     SidebarTree: SidebarTree,
-    AddGoverment: () =>
-      import("../../components/HeaderModals/AddGoverment.vue") as any,
   },
   computed: {
     tree() {
@@ -185,8 +176,10 @@ export default Vue.extend({
     },
   },
   methods: {
-    addGoverment() {
-      this.modalDialog = true;
+    addSubdivision() {
+      if (!this.isLoading) {
+        this.$store.dispatch(SET_MODAL_NAME, "add-subdivision-modal");
+      }
     },
     addChild() {
       const newNode = {
