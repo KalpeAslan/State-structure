@@ -302,7 +302,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
   getters: {
     GET_FILTERED_POSITIONS: (state) => (input: string) => {
       return state.positions.filter((position) =>
-        position.nameRu.toLowerCase().includes(input.toLowerCase())
+        Vue.filter("translate")(position)
+          .toLowerCase()
+          .includes(input.toLowerCase())
       );
     },
     GET_ATTACH_ITEMS: (state) => (input: string, type: string) => {
@@ -310,7 +312,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
       if (!input) return items;
       return items.filter((itemEntity) => {
         const item =
-          type === "roles" ? itemEntity.roleId.toString() : itemEntity.fullname;
+          type === "roles"
+            ? Vue.filter("translate")(itemEntity).toString()
+            : itemEntity.username;
         return item.toLowerCase().includes(input.toLowerCase());
       });
     },
@@ -348,7 +352,6 @@ export const homeStore: Module<IStateHomeStore, any> = {
     isShowFooter(state, getters, rootState, rootGetters): boolean {
       switch (rootGetters.GET_USER_TYPE) {
         case "dispatcher":
-          console.log([315, 318, 322].includes(state.gaState));
           return [315, 318, 322].includes(state.gaState);
         case "departmentBoss":
           return [316, 321].includes(state.gaState);
