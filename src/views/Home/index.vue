@@ -27,6 +27,7 @@ export default Vue.extend({
   },
   methods: {
     setWebSocket(): void {
+      console.log(this.GET_USER_TYPE === "departmentHead");
       if (
         this.GET_USER_TYPE === "departmentHead" &&
         [317, 319].includes(this.gaState)

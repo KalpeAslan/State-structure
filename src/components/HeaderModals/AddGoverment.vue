@@ -3,9 +3,7 @@
     <v-dialog v-model="modalDialogMixin" max-width="400px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">
-            {{ $t("addGovermentAgency") }}
-          </span>
+          <span class="text-h5">Добавить ГО</span>
         </v-card-title>
         <v-container>
           <template>
@@ -33,7 +31,7 @@
                 </v-text-field>
               </div>
               <v-btn type="submit" color="primary" @click="validate">
-                {{ $t("save") }}
+                Сохранить
               </v-btn>
             </v-form>
           </template>

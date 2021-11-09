@@ -125,7 +125,6 @@ import {
   SET_USER_TYPE,
 } from "@/store/mutation-types";
 import Vue from "vue";
-import { mapGetters } from "vuex";
 
 export default Vue.extend({
   data() {
@@ -215,11 +214,9 @@ export default Vue.extend({
     Badge: () => import("../Badge/Badge.vue"),
   },
   computed: {
-    ...mapGetters({
-      selectedGovOrg: "GET_SELECTED_GA",
-      selectedGovState: "gaState",
-      userType: "userType",
-    }),
+    selectedGovOrg() {
+      return this.$store.getters.GET_SELECTED_GA;
+    },
     currentLanguage() {
       switch (this.$store.getters.GET_CURRENT_LANGUAGE) {
         case "ru":
@@ -230,6 +227,9 @@ export default Vue.extend({
           return "Eng";
       }
     },
+    selectedGovState(): number {
+      return this.$store.getters.gaState;
+    },
     selectedRole: {
       get() {
         return this.$store.getters.GET_USER_TYPE;
@@ -237,10 +237,6 @@ export default Vue.extend({
       set(value) {
         this.$store.dispatch(SET_USER_TYPE, value);
       },
-    },
-    isShowDefaultButton(): boolean {
-      if (this.selectedGovState !== 315) return false;
-      if (this.userType !== "dispatcher") return false;
     },
   },
   methods: {
@@ -261,8 +257,9 @@ export default Vue.extend({
     },
     showButton(button): boolean {
       if (
-        !["edit-goverment", "delete-goverment"].includes(button.name) ||
-        button.name === "exportPdf"
+        !["edit-goverment", "delete-goverment", "exportPdf"].includes(
+          button.name
+        )
       )
         return true;
       return (

@@ -10,10 +10,10 @@ import store from "@/store";
 export const translate = function (translate: ITranslate) {
   switch (store.getters.GET_CURRENT_LANGUAGE) {
     case "ru":
-      return translate.nameRus || translate.nameRu;
+      return translate.nameRus ? translate.nameRus : translate.nameRu;
     case "kz":
-      return translate.nameKaz || translate.nameKz;
+      return translate.nameKaz ? translate.nameKaz : translate.nameKz;
     case "en":
-      return translate.nameEng || translate.nameRus || translate.nameRu;
+      return translate.nameEng;
   }
 };

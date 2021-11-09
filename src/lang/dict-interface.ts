@@ -31,13 +31,4 @@ export interface IDict {
   sendToRevesion: string;
   indicateTheReason: string;
   fillTheField: string;
-  addPosition: string;
-  addSubdivision: string;
-  addGovermentAgency: string;
-  nameInRus: string;
-  nameInKaz: string;
-  nameInEng: string;
-  bin: string;
-  editGa: string;
-  infoDelete: string;
 }

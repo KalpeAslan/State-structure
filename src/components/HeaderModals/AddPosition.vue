@@ -3,9 +3,7 @@
     <v-dialog v-model="modalDialogMixin" width="420px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">
-            {{ $t("addPosition") }}
-          </span>
+          <span class="text-h5">Добавить должность</span>
         </v-card-title>
         <v-card-text>
           <v-container>

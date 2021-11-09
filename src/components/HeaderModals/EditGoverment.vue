@@ -3,9 +3,7 @@
     <v-dialog v-model="modalDialogMixin" width="420px">
       <v-card>
         <v-card-title>
-          <span class="text-h5">
-            {{ $t("editGa") }}
-          </span>
+          <span class="text-h5">Редактировать ГО</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -17,9 +15,9 @@
                 v-model="valid"
               >
                 <div v-for="input in govermentForm" :key="input.name">
-                  <div class="label">{{ $t(input.label) }}</div>
+                  <div class="label">{{ input.label }}</div>
                   <v-text-field
-                    :rules="[(v) => !!v || $t('fillTheField')]"
+                    :rules="[(v) => !!v || 'Заполните это поле!']"
                     outlined
                     class="mb-3"
                     hide-details
@@ -29,7 +27,7 @@
                   </v-text-field>
                 </div>
                 <v-btn type="submit" color="primary" @click="validate">
-                  {{ $t("save") }}
+                  Сохранить
                 </v-btn>
               </v-form>
             </template>
@@ -52,19 +50,19 @@ export default Vue.extend({
       govermentForm: [
         {
           name: "iin",
-          label: "bin",
+          label: "БИН",
         },
         {
           name: "nameRus",
-          label: "nameInRus",
+          label: "Наименование на русском",
         },
         {
           name: "nameKaz",
-          label: "nameInKaz",
+          label: "Наименование на казахском",
         },
         {
           name: "nameEng",
-          label: "nameInEng",
+          label: "Наименование на английском",
         },
       ],
     };
