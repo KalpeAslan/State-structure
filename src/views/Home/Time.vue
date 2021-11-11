@@ -194,7 +194,7 @@ export default Vue.extend({
       newEmployeeForm: {
         startDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
         endDate: null, //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-        substitutionBasisRu: null, //String
+        substitutionBasisRu: "ddd", //String
       },
       selectedUserId: null,
     };
@@ -229,16 +229,14 @@ export default Vue.extend({
           startDate: moment(startDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           endDate: moment(endDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           substitutionBasisRu,
-          replacementEmployee: null,
+          replacementUserId: this.selectedUserId,
           substituteEmployee: this.selectedTempPosition.id,
           substitutionBasisKz: this.newEmployeeForm.substitutionBasisRu,
         };
         this.$store
           .dispatch(SET_EMPLOYEE_REPLACEMENT, {
             newEmployeeForm,
-            user: this.users.filter(
-              (user) => user.id === this.selectedUserId
-            )[0],
+            employee: this.selectedTempPositionEmployee,
           })
           .then(() => {
             this.$refs.form.reset();

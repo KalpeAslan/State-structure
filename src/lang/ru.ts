@@ -46,7 +46,7 @@ export const ru: IDict = {
   created: "создан диспетчером",
   onApproval: "на согласование",
   aproved: "согласован",
-  notAproved: "в согласовании",
+  notAproved: "отказано в согласовании",
   onClaim: "на утверждение",
   claimed: "утвержден",
   notClaimed: "в утверждении",

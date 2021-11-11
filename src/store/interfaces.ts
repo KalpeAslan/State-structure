@@ -69,7 +69,6 @@ export interface IPosition {
   id: number | string;
   hidden?: boolean;
   employees: IEmployee[];
-  employeeReplacement?: IEmployeeReq;
   superiorPosition: null | number;
   subdivisionId: null | number;
   roleId: null | number;
@@ -144,8 +143,17 @@ export interface IEmployee {
   supervisorId: null | number;
   statusId: null | number;
   entityType: string;
-
+  employeeState: "replacementEmployee" | "currentEmployee";
   userId: null | number;
+  employeeReplacement?: {
+    employeeReplacementTableid: number;
+    replacementEmployee: number;
+    substituteEmployee: number;
+    startDate: string;
+    endDate: string;
+    substitutionBasisRu: string;
+    substitutionBasisKz: string;
+  };
 }
 
 export interface ISubdivisonReq {
@@ -173,7 +181,7 @@ export interface IEmployeeReq {
 export interface IEmployeeChange {
   employeesTableid; //Long
   user; //Long, user id
-  positions; //Long, position id
+  position; //Long, position id
   governmentAgency; //Long, government agency id
   recruitmentDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"
   positionRemovalDate; //Date, pattern = "yyyy-MM-dd'T'HH:mm:ss"

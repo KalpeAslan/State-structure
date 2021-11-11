@@ -2,6 +2,7 @@ import { treeStore } from "./treeStore";
 import { systemStore } from "./systemStore";
 import { globalStore } from "./globalStore";
 import { homeStore } from "./homeStore";
+import { logsStore } from "./logsStore";
 import Vue from "vue";
 import Vuex from "vuex";
 
@@ -16,5 +17,6 @@ export default new Vuex.Store({
     systemStore,
     homeStore,
     globalStore,
+    logsStore,
   },
 });

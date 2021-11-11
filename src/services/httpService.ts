@@ -21,11 +21,11 @@ export class HttpService {
 
   post(url: string, data, options?: AxiosRequestConfig): Promise<any> {
     if (options && "params" in options) {
-      options.params.userId = 484894;
+      options.params.userId = 4;
     } else {
       options = {
         params: {
-          userId: 6484546,
+          userId: 4,
         },
       };
     }
@@ -40,7 +40,7 @@ export class HttpService {
   }
 
   put(url: string, data, options?: AxiosRequestConfig): Promise<any> {
-    options.params.userId = 484;
+    options.params.userId = 4;
     return this.http
       .put(url, data, options)
       .then((res) => res.data)

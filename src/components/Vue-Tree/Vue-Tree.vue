@@ -44,13 +44,13 @@
               <div
                 :class="[
                   'position-node_child',
-                  node.employeeReplacement && 'flex-column',
+                  positionChild.employeeReplacement && 'flex-column',
                 ]"
               >
                 <div class="d-flex align-center" style="font-size: 12px">
                   {{ positionChild.user.username }}
                 </div>
-                <template v-if="node.employeeReplacement">
+                <template v-if="positionChild.employeeReplacement">
                   <div>
                     <v-icon> mdi-chevron-down </v-icon>
                   </div>
@@ -58,9 +58,9 @@
                     class="d-flex flex-column align-center"
                     style="font-size: 12px"
                   >
-                    {{ node.employeeReplacement.username }}
+                    {{ positionChild.employeeReplacement.username }}
                     <div color="#DADADA">
-                      до {{ node.employeeReplacement.endDate }}
+                      до {{ positionChild.employeeReplacement.endDate }}
                     </div>
                   </div>
                 </template>
@@ -149,7 +149,7 @@ export default {
     },
     selectPosition(node) {
       if (node.entityType === "position" && this.$route.name === "home.time") {
-        if (node.employeeReplacement) {
+        if (node.employees[0].employeeReplacement) {
           return this.$notify({
             group: "alert",
             text: "У данной должности уже есть временный сотрудник!",

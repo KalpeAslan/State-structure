@@ -114,7 +114,7 @@ export interface IPositionChange extends IPositionNew {
 interface IEmployeeBase {
   user: number; //Long, user id
   recruitmentDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
-  positionRemovalDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
+  positionRemovalDate: string | null; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
 }
 
 export interface IEmployeeNew extends IEmployeeBase {
@@ -132,7 +132,7 @@ export interface IEmployeeGet extends IEmployeeBase, IStatus {
 }
 
 export interface IEmployeeReplacementNew {
-  replacementEmployee: number; //Long, employee that temporarly holds office
+  replacementUserId: number; //Long, employee that temporarly holds office
   substituteEmployee: number; //Long, employee that temporarly left this position
   startDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
   endDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
@@ -150,3 +150,29 @@ export interface IUser {
   key?: string | number;
   entityType?: "user";
 }
+
+/**
+ * Logs
+ * Begin
+ */
+
+interface ILogBase {
+  id: number;
+  admin: number;
+  dateTime: string;
+
+  adminObject: IUser;
+}
+
+export interface ILogGet extends ILogBase {
+  action: string; //JSON
+}
+export interface ILog extends ILogBase {
+  action: string;
+  comment: string;
+}
+
+/**
+ * Logs
+ * End
+ */

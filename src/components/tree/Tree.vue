@@ -457,8 +457,7 @@ export default {
     },
     formatDimension(dimension, node) {
       if (node && node.data && node.data.employees) {
-        console.log(node);
-        dimension += node.data.employeeReplacement ? 100 : 50;
+        dimension += node.data.employees ? 100 : 50;
       }
       if (typeof dimension === "number") return `${dimension}px`;
       if (dimension.indexOf("px") !== -1) {

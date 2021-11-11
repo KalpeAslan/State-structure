@@ -9,7 +9,11 @@ import {
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 import Vue from "vue";
-import { IGovermentAgencyRaw, IPositionNew } from "@/store/interface";
+import {
+  IEmployeeReplacementNew,
+  IGovermentAgencyRaw,
+  IPositionNew,
+} from "@/store/interface";
 import { jsPDF } from "jspdf";
 import { DocumentBuilder, documentBuilder } from "./DocumentBuilder";
 
@@ -77,7 +81,7 @@ export class HomeService {
   postNewEmployee(data: IEmployeeReq) {
     return this.httpService.post("/api/v1/new/employee", data);
   }
-  postNewEmployeeReplacement(data: IEmployeeReq) {
+  postNewEmployeeReplacement(data: IEmployeeReplacementNew) {
     return this.httpService
       .post("/api/v1/new/employeeReplacement", data)
       .then(() => {

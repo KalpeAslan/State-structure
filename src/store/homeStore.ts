@@ -24,6 +24,7 @@ import {
   SET_WEBSOCKET_STATE,
   SET_MODAL_NAME,
   SET_USERS,
+  DELETE_POSITION_FROM_NODE,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -61,11 +62,13 @@ export const homeStore: Module<IStateHomeStore, any> = {
   mutations: {
     [SET_USER_TYPE](context) {},
     [SET_POSITIONS](context, positions: IPosition[]) {
-      context.positions = positions.map((position) => {
-        position.key = Math.round(Math.random() * 545145544);
-        position.entityType = "position";
-        return position;
-      });
+      context.positions = positions
+        .filter((position) => position.statusId !== 322)
+        .map((position) => {
+          position.key = Math.round(Math.random() * 545145544);
+          position.entityType = "position";
+          return position;
+        });
     },
     [ADD_POSITION](context, position) {
       context.positions.push(position);
@@ -136,7 +139,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
       });
     },
     async [DELETE_POSITION](context, position: IPosition) {
-      treeService.changePosition({
+      await treeService.changePosition({
         id: +position.id,
         governmentAgencyId: context.getters.GET_GA_ID,
         ddepartmentIinId: context.getters.GET_GA_ID,
@@ -150,7 +153,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
         role: position.roleId,
         status: 322,
       });
-
+      context.dispatch(DELETE_POSITION_FROM_NODE, +position.id);
       context.commit(DELETE_POSITION, position);
     },
 
@@ -160,6 +163,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
       context.commit(SELECT_GOVERMENT, goverment);
       context.dispatch(SET_TREE, goverment.id).then(() => {
+        console.log(context.getters.tree);
         context.commit(SET_GA_STATE, context.getters.tree.status || 315);
       });
     },

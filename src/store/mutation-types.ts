@@ -50,3 +50,8 @@ export const SET_SUBDIVISION_UNDER_GA = "SET_SUBDIVISION_UNDER_GA";
 export const SEND_TO_APPLY = "SEND_TO_APPLY";
 export const SEND_TO_REJECT = "SEND_TO_REJECT";
 export const SET_GA_STATE = "SET_GA_STATE";
+
+// LogsStore
+
+export const SET_LOGS = "SET_LOGS";
+export const SET_LOGS_LOADING = "SET_LOGS_LOADING";

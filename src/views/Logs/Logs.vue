@@ -12,8 +12,9 @@
       <h2>История действий</h2>
     </div>
     <v-data-table
+      v-if="!isLoading"
       :headers="headers"
-      :items="users"
+      :items="logs"
       item-key="date"
       class="elevation-0 dark-secondary"
       :search="search"
@@ -48,71 +49,25 @@
         </tr>
       </template>
     </v-data-table>
+    <div v-else class="d-flex justify-center">
+      <v-progress-circular
+        :size="50"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
+    </div>
   </v-container>
 </template>
-<script>
-export default {
+<script lang="ts">
+import { SET_LOGS } from "@/store/mutation-types";
+import Vue from "vue";
+import { mapGetters } from "vuex";
+export default Vue.extend({
   data() {
     return {
       search: "",
-      users: [
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-        {
-          date: "18/24/2021 15:34",
-          user: "Фамилия Имя Отчество",
-          position: "Должность",
-          action: "Согласование",
-          comment: "---------------------",
-        },
-      ],
+      user: "",
+      isLoading: false,
     };
   },
   computed: {
@@ -121,23 +76,18 @@ export default {
         {
           text: "Дата",
           align: "start",
-          sortable: false,
-          value: "date",
+          value: "dateTime",
         },
         {
           text: "Пользователь",
-          value: "user",
-          filter: (value) => {
-            if (!this.user) return true;
-
-            return value < parseInt(this.user);
-          },
+          value: "username",
         },
         { text: "Должность", value: "position" },
         { text: "Действия", value: "action" },
         { text: "Комментарий", value: "comment" },
       ];
     },
+    ...mapGetters(["logs"]),
   },
   methods: {
     filterOnlyCapsText(value, search, item) {
@@ -150,7 +100,12 @@ export default {
     },
     filterToggle() {},
   },
-};
+  async created() {
+    this.isLoading = true;
+    await this.$store.dispatch(SET_LOGS);
+    this.isLoading = false;
+  },
+});
 </script>
 
 <style lang="scss" scoped>
