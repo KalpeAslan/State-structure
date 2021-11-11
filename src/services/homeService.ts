@@ -101,7 +101,7 @@ export class HomeService {
     return this.httpService.post("/api/v1/change/governmentAgency", goverment);
   }
 
-  changeEmployee(data: IEmployeeChange) {
+  changeEmployee(data) {
     return this.httpService.post("/api/v1/change/employee", data).then(() => {
       Vue.notify({
         group: "alert",
