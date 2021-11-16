@@ -9,12 +9,7 @@ import {
 import { IGovermentReq, ISubdivisonReq } from "@/store/interfaces";
 import { HttpService } from "./httpService";
 import Vue from "vue";
-import {
-  IEmployeeReplacementNew,
-  IGovermentAgencyRaw,
-  IPositionNew,
-} from "@/store/interface";
-import { jsPDF } from "jspdf";
+import { IEmployeeReplacementNew, IPositionNew } from "@/store/interface";
 import { DocumentBuilder, documentBuilder } from "./DocumentBuilder";
 
 export class HomeService {
