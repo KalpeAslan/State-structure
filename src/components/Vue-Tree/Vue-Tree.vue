@@ -44,13 +44,24 @@
               <div
                 :class="[
                   'position-node_child',
-                  positionChild.employeeReplacement && 'flex-column',
+                  positionChild.employeeReplacement &&
+                    positionChild.employeeState !== 'replacementEmployee' &&
+                    'flex-column',
                 ]"
               >
                 <div class="d-flex align-center" style="font-size: 12px">
-                  {{ positionChild.user.username }}
+                  {{
+                    positionChild.employeeState === "replacementEmployee"
+                      ? positionChild.employeeReplacement.user.username
+                      : positionChild.user.username
+                  }}
                 </div>
-                <template v-if="positionChild.employeeReplacement">
+                <template
+                  v-if="
+                    positionChild.employeeReplacement &&
+                    positionChild.employeeState !== 'replacementEmployee'
+                  "
+                >
                   <div>
                     <v-icon> mdi-chevron-down </v-icon>
                   </div>
@@ -58,9 +69,12 @@
                     class="d-flex flex-column align-center"
                     style="font-size: 12px"
                   >
-                    {{ positionChild.employeeReplacement.username }}
+                    {{ positionChild.employeeReplacement.user.username }}
                     <div color="#DADADA">
-                      до {{ positionChild.employeeReplacement.endDate }}
+                      до
+                      {{
+                        formatDate(positionChild.employeeReplacement.endDate)
+                      }}
                     </div>
                   </div>
                 </template>
@@ -95,6 +109,7 @@
   </div>
 </template>
 <script>
+import moment from "moment";
 import {
   DELETE_EMPLOYEE,
   DELETE_ROLE_FROM_TREE,
@@ -122,6 +137,9 @@ export default {
   methods: {
     unlock(node) {
       return this.$store.getters.GET_UNLOCK && node.entityType !== "position";
+    },
+    formatDate(sDate) {
+      return moment(sDate).format("DD/MM/YYYY");
     },
     computeClassByNodeType(node) {
       const classes = [

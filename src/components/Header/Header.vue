@@ -29,7 +29,6 @@
           <span
             style="
               max-width: 120px;
-
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -54,37 +53,38 @@
     </div>
     <v-spacer></v-spacer>
     <div>
-      <template v-if="isEditable">
-        <v-menu offset-y>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              elevation="0"
-              v-bind="attrs"
-              v-on="on"
-              text
-              style="font-size: 14px; line-height: 16px"
-              class="secondary--text button text-capitalize"
-            >
-              <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
-              {{ $t("history") }}
-              <v-icon size="18"> mdi-chevron-down </v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <router-link
-              v-for="(item, index) in historyItems"
-              :key="index"
-              :to="{
-                name: item.routeName,
-              }"
-              style="text-decoration: none"
-            >
-              <v-list-item>
-                <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
-              </v-list-item>
-            </router-link>
-          </v-list>
-        </v-menu>
+      <v-menu v-if="selectedGovOrg" offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            elevation="0"
+            v-bind="attrs"
+            v-on="on"
+            text
+            style="font-size: 14px; line-height: 16px"
+            class="secondary--text button text-capitalize"
+          >
+            <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
+            {{ $t("history") }}
+            <v-icon size="18"> mdi-chevron-down </v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <router-link
+            v-for="(item, index) in historyItems"
+            :key="index"
+            :to="{
+              name: item.routeName,
+            }"
+            style="text-decoration: none"
+          >
+            <v-list-item>
+              <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+            </v-list-item>
+          </router-link>
+        </v-list>
+      </v-menu>
+      <template>
+        <!-- <template v-if="isEditable"> -->
         <template v-for="button in headerButtons">
           <v-btn
             text
@@ -103,37 +103,36 @@
         </template>
       </template>
       <span class="divider"></span>
-      <template>
-        <v-menu offset-y>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              class="language-button text-capitalize"
-              text
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ currentLanguage }}
-              <v-icon size="18"> mdi-chevron-down </v-icon>
-            </v-btn>
-          </template>
-          <v-list dense>
-            <v-list-item
-              selectable
-              class="language-item"
-              @click="selectLanguage(item.name)"
-              v-for="(item, index) in languages"
-              :key="index"
-            >
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            class="language-button text-capitalize"
+            text
+            v-bind="attrs"
+            v-on="on"
+          >
+            {{ currentLanguage }}
+            <v-icon size="18"> mdi-chevron-down </v-icon>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item
+            selectable
+            class="language-item"
+            @click="selectLanguage(item.name)"
+            v-for="(item, index) in languages"
+            :key="index"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
   </v-app-bar>
 </template>
 
 <script lang="ts">
+import { documentBuilder } from "@/services/DocumentBuilder";
 import { homeService } from "@/services/homeService";
 import { language } from "@/store/interfaces";
 import {
@@ -173,25 +172,6 @@ export default Vue.extend({
         {
           title: "historyVersions",
           routeName: "versions-history",
-        },
-      ],
-      items: [],
-      editForm: [
-        {
-          title: "БИН",
-          name: "iin",
-        },
-        {
-          title: "Наименование на русском",
-          name: "name",
-        },
-        {
-          title: "Наименование на казахском",
-          name: "nameKz",
-        },
-        {
-          title: "Наименование на английском",
-          name: "nameEn",
         },
       ],
       languages: [
@@ -237,6 +217,7 @@ export default Vue.extend({
       selectedGovState: "gaState",
       userType: "userType",
       isEditable: "isEditable",
+      gaId: "GET_GA_ID",
     }),
     currentLanguage() {
       switch (this.$store.getters.GET_CURRENT_LANGUAGE) {
@@ -278,21 +259,23 @@ export default Vue.extend({
       this.form.resetValidation();
     },
     showButton(button): boolean {
-      if (
-        !["edit-goverment", "delete-goverment"].includes(button.name) ||
-        button.name === "exportPdf"
-      )
+      if (button.name === "exportPdf") {
+        return !!this.gaId;
+      }
+      if (!["edit-goverment", "delete-goverment"].includes(button.name))
         return true;
       return (
         this.$route.name !== "home.select-goverment" && this.selectedGovOrg
       );
     },
-    clickHeaderButton(button) {
+    async clickHeaderButton(button) {
       if (["edit-goverment", "delete-goverment"].includes(button.name)) {
         this.$store.dispatch(SET_MODAL_NAME, button.name);
       }
       if (button.name === "exportPdf") {
-        homeService.getDocument(this.$store.getters.GET_GA_ID);
+        await homeService.getGovermentAgencyRaw(this.gaId).then((gaRaw) => {
+          documentBuilder.makePdf(gaRaw);
+        });
       }
     },
   },

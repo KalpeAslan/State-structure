@@ -1,5 +1,8 @@
 declare module "jspdf" {
   import { jsPDF } from "jspdf";
+  interface jsPDF{
+   autoTable: (...args): void => {};
+  } 
   export { jsPDF };
 }
 

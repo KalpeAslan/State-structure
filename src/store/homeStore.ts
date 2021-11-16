@@ -234,15 +234,15 @@ export const homeStore: Module<IStateHomeStore, any> = {
           status = 316;
           break;
         case "departmentBoss":
-          goverment.status = 317;
-          status = 317;
+          goverment.status = 319;
+          status = 319;
           break;
         case "departmentHead":
           if (ctx.getters.isWebSocketOpen) {
             ncaLayerService.sign();
           }
-          goverment.status = 319;
-          status = 319;
+          goverment.status = 320;
+          status = 320;
           break;
       }
       const govermentChange = { ...goverment };

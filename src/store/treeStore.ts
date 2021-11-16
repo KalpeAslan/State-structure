@@ -99,20 +99,43 @@ function traverse(tree: ITree | any) {
 
   tree.key = Math.round(Math.random() * 4451454121454);
   if (tree.entityType === "position") {
-    // tree.employees = tree.employees.map((child) => {
-    //   child.employeeState = "currentEmployee";
-    //   if (new Date(child.positionRemovalDate) < new Date()) {
-    //     child.employeeState = "currentEmployee";
-    //   } else if (
-    //     "replacementEmployee" in child &&
-    //     new Date(child.replacementEmployee.endDate) &&
-    //     new Date()
-    //   ) {
-    //     child.employeeState = "currentEmployee";
-    //     delete child.replacementEmployee;
-    //   }
-    //   return child;
-    // });
+    tree.employees = tree.employees
+      ? tree.employees.map((child) => {
+          //Заглушка
+          child.employeeReplacement = {
+            employeeReplacementTableid: 1,
+            replacementEmployee: 12,
+            substituteEmployee: 2,
+            startDate: "2021-10-22T15:56:09.639+00:00",
+            endDate: "2020-10-22T15:56:09.639+00:00",
+            substitutionBasisRu: "string",
+            substitutionBasisKz: "string",
+            user: {
+              id: 12,
+              firstname: "Maksim",
+              lastname: "Alibekov",
+              username: "Maksim Alibekov",
+            },
+            userId: 12,
+          };
+          //
+          child.employeeState = "currentEmployee";
+          if (
+            !child.positionRemovalDate &&
+            new Date(child.positionRemovalDate) > new Date()
+          ) {
+            child.employeeState = "currentEmployee";
+          } else if (
+            "employeeReplacement" in child &&
+            new Date(child.employeeReplacement.endDate) > new Date()
+          ) {
+            child.employeeState = "replacementEmployee";
+          } else {
+            delete child.employeeReplacement;
+          }
+          return child;
+        })
+      : tree.employees;
     return;
   }
 
@@ -347,26 +370,28 @@ export const treeStore: Module<IStateTreeStore, any> = {
             text: "У должности может быть только 1 сотрудник",
             type: "danger",
           });
-        context
-          .dispatch(ADD_EMPLOYEE, {
-            userId: dragTargetNode.id,
-            positionId: dragEnteredNode.id,
-          })
-          .then(() => {
-            context.dispatch(RELOAD_TREE).then(() => {
-              if (
-                dragEnteredNode.employees &&
-                dragEnteredNode.employees.length === 1
-              ) {
-                const top: number = +document
-                  .querySelector(`.node-slot__${dragEnteredNode.key}`)
-                  ["style"].top.replace("px", "");
-                document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
-                  "style"
-                ].top = top + +50 + "px";
-              }
-            });
-          });
+        const employeeNewForm: IEmployeeNew = {
+          user: dragTargetNode.id,
+          position: dragEnteredNode.id,
+          ddepartmentIinId: context.getters.GET_GA_ID,
+          recruitmentDate: moment().format("YYYY-MM-DD[T]HH:mm:ss"),
+          positionRemovalDate: null,
+        };
+        treeService.newEmployee(employeeNewForm).then((employee) => {
+          // Vue.set(dragEnteredNode, "employees", [employee]);
+          context.dispatch(RELOAD_TREE);
+          if (
+            dragEnteredNode.employees &&
+            dragEnteredNode.employees.length === 1
+          ) {
+            const top: number = +document
+              .querySelector(`.node-slot__${dragEnteredNode.key}`)
+              ["style"].top.replace("px", "");
+            document.querySelector(`.node-slot__${dragEnteredNode.key}`)[
+              "style"
+            ].top = top + +50 + "px";
+          }
+        });
 
         // return context.dispatch(
         //   DELETE_EMPLOYEE,
@@ -409,21 +434,21 @@ export const treeStore: Module<IStateTreeStore, any> = {
             type: "danger",
           });
 
-        // dragEnteredNode.roleId = dragTargetNode.id;
-        // dragEnteredNode. = dragTargetNode;
-        const role = JSON.parse(JSON.stringify(dragTargetNode));
-        role.key = Math.round(Math.random() * 45477754878);
-        Vue.set(dragEnteredNode, "roleObject", role);
-        Vue.set(dragEnteredNode, "roleId", role.id);
-        context
-          .dispatch(CHANGE_POSITION, {
-            position: dragEnteredNode,
-            isDelete: false,
-            parent: getParentId(context.getters.tree, dragEnteredNode.key),
-          })
-          .then(() => {
-            context.dispatch(RELOAD_TREE);
-          });
+        const position = {
+          ...dragEnteredNode,
+          roleObject: dragTargetNode,
+          roleId: dragTargetNode.id,
+        };
+        Vue.set(
+          getParentId(context.getters.tree, dragEnteredNode.key),
+          "children",
+          [position]
+        );
+        context.dispatch(CHANGE_POSITION, {
+          position: position,
+          isDelete: false,
+          parent: getParentId(context.getters.tree, dragEnteredNode.key),
+        });
       }
       // Привязка должности к отделу
       if (
@@ -649,7 +674,6 @@ export const treeStore: Module<IStateTreeStore, any> = {
         positionRemovalDate,
         statusId,
       } = employee;
-      console.log(employee);
       const changeEmployee = {
         id,
         user: userId,
@@ -664,8 +688,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         ),
         status: statusId,
       };
-      await treeService.homeService.changeEmployee(changeEmployee);
-      await treeService.homeService.postNewEmployeeReplacement(newEmployeeForm);
+      await treeService.newEmployee(newEmployeeForm);
       const employeeReplacement: any = { ...newEmployeeForm };
       employeeReplacement.user = ctx.getters.users.filter(
         (user) => user.id === newEmployeeForm.replacementUser

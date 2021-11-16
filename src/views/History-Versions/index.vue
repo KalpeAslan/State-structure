@@ -14,26 +14,26 @@
         <v-list>
           <v-list-item
             selectable
-            v-for="historyVersions in historyVersions"
-            :key="historyVersions.date"
-            @click="selectHistoryVersion(historyVersions.id)"
+            v-for="version in versions"
+            :key="version.date"
+            @click="selectHistoryVersion(version.id)"
             class="pl-0"
             :class="[
               'pl-0',
               'pl-5',
-              selectedHistoryVersionId === historyVersions.id && 'selected',
+              selectedHistoryVersionId === version.id && 'selected',
             ]"
           >
             <v-list-item-content class="d-flex justify-space-between">
               <div class="d-inline-block" style="flex: none">
                 <v-list-item-title style="font-size: 12px">{{
-                  historyVersions.name
+                  version.userObject.username
                 }}</v-list-item-title>
                 <v-list-item-subtitle>{{
-                  historyVersions.date
+                  formatDate(version.date)
                 }}</v-list-item-subtitle>
               </div>
-              <Badge :state="historyVersions.state" />
+              <Badge :state="version.state" />
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -44,53 +44,44 @@
 </template>
 
 <script lang="ts">
+import moment from "moment";
 import Vue from "vue";
+import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
-import { SET_TREE } from "../../store/mutation-types";
-
-interface IHistoryVersion {
-  name: string;
-  state: string;
-  date: string;
-  id: number;
-}
-
+import {
+  SET_TREE,
+  SET_VERSION,
+  SET_VERSIONS,
+} from "../../store/mutation-types";
 export default Vue.extend({
   name: "Home",
   data() {
     return {
-      historyVersions: [
-        {
-          name: "Фамилия Имя Отчество",
-          state: "claimed",
-          date: "21/03/2021 12:56",
-          id: 0,
-        },
-        {
-          name: "Фамилия Имя Отчество",
-          state: "aproved",
-          date: "21/03/2021 12:56",
-          id: 1,
-        },
-        {
-          name: "Фамилия Имя Отчество",
-          state: "created",
-          date: "21/03/2021 12:56",
-          id: 2,
-        },
-      ] as Array<IHistoryVersion>,
       selectedHistoryVersionId: null as null | number,
+      isLoading: false as boolean,
     };
   },
   components: {
     ContentSidebar,
     Badge: () => import("../../components/Badge/Badge.vue"),
   },
+  computed: {
+    ...mapGetters(["versions"]),
+  },
   methods: {
     selectHistoryVersion(id: number) {
       this.selectedHistoryVersionId = id;
-      this.$store.dispatch(SET_TREE, id);
+      // this.$store.dispatch(SET_TREE, id);
+      this.$store.dispatch(SET_VERSION, id);
     },
+    formatDate(date: string): string {
+      return moment(date).format("DD/MM/YYY hh:mm");
+    },
+  },
+  async created() {
+    this.isLoading = true;
+    await this.$store.dispatch(SET_VERSIONS);
+    this.isLoading = false;
   },
 });
 </script>

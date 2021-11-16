@@ -84,13 +84,38 @@ type TpositionsDto = TBaseEntity & {
   departmentId: number;
   role: number;
 };
-export interface IGovermentAgencyRaw {
+
+type TEmployeeDto = {
+  id: number;
+  user: number;
+  position: number;
+  ddepartmentIinId: number;
+  departmentId: number;
+  recruitmentDate: string;
+  positionRemovalDate: string | null;
+  createDate: string;
+  status: number;
+  statusObject: null;
+  fl: any;
+  ul: any;
+  managers: any;
+};
+
+export type TGovermentAgencyRaw = {
   ddepartmentIinDto: TddepartmentIinDto;
   departmentDto: TdepartmentDto[];
   positionsDto: TpositionsDto[];
-  employeeDto: [];
+  employeeDto: TEmployeeDto[];
   employeeReplacementDto: [];
-}
+};
+
+type TPositionDtoObject = TpositionsDto & {
+  employees: TEmployeeDto[];
+};
+export type TDepartamentDtoObject = IBaseNames & {
+  positions: TPositionDtoObject;
+};
+export type TGovermentAgencyObject = TDepartamentDtoObject[];
 
 /**
  * END
@@ -160,7 +185,6 @@ interface ILogBase {
   id: number;
   admin: number;
   dateTime: string;
-
   adminObject: IUser;
 }
 
@@ -170,6 +194,16 @@ export interface ILogGet extends ILogBase {
 export interface ILog extends ILogBase {
   action: string;
   comment: string;
+}
+
+export interface IVersion {
+  id: number;
+  user: number;
+  status: number;
+  date: string;
+  ddepartmentIin: number;
+  ddepartmentIinTree: null | string;
+  userObject: IUser;
 }
 
 /**

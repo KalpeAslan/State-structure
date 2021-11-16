@@ -1,20 +1,33 @@
-import { ILog, ILogGet } from "./interface";
+import { ILog, ILogGet, IVersion } from "./interface";
 import { logsService } from "./../services/logsService";
-import { SET_LOGS } from "./mutation-types";
+import { SET_LOGS, SET_VERSION, SET_VERSIONS } from "./mutation-types";
 import { Module } from "vuex";
 import Vue from "vue";
 
-interface ILogsStore {
+interface ILogsAndVersionsStore {
   logs: ILog[] | null;
+  versions: IVersion[] | null;
 }
 
-export const logsStore: Module<ILogsStore, any> = {
+export const logsStore: Module<ILogsAndVersionsStore, any> = {
   state: {
     logs: null,
+    versions: null,
   },
   mutations: {
     [SET_LOGS](state, logs: ILog[]) {
       state.logs = logs;
+    },
+    [SET_VERSIONS](state, versions: IVersion[]) {
+      state.versions = versions.map((version) => {
+        version.userObject = {
+          id: 243,
+          firstname: "TestName",
+          lastname: "TestSurname",
+          username: "TestSurname TestName",
+        };
+        return version;
+      });
     },
   },
   actions: {
@@ -39,10 +52,23 @@ export const logsStore: Module<ILogsStore, any> = {
         ctx.commit(SET_LOGS, logs);
       });
     },
+    async [SET_VERSIONS](ctx) {
+      await logsService
+        .getVersionsByGAId(ctx.rootGetters.GET_GA_ID)
+        .then((versions) => {
+          ctx.commit(SET_VERSIONS, versions);
+        });
+    },
+    async [SET_VERSION](ctx, versionId: number) {
+      logsService.getVersionObjectByVersionId(versionId);
+    },
   },
   getters: {
     logs(state): ILog[] {
       return state.logs;
+    },
+    versions(state): IVersion[] {
+      return state.versions;
     },
   },
 };

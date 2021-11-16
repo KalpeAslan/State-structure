@@ -55,3 +55,5 @@ export const SET_GA_STATE = "SET_GA_STATE";
 
 export const SET_LOGS = "SET_LOGS";
 export const SET_LOGS_LOADING = "SET_LOGS_LOADING";
+export const SET_VERSIONS = "SET_VERSIONS";
+export const SET_VERSION = "SET_VERSION";

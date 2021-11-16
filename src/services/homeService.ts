@@ -120,6 +120,12 @@ export class HomeService {
         this.documentBuilder.buildDocument(data);
       });
   }
+
+  getGovermentAgencyRaw(gaID: number) {
+    return this.httpService.get(
+      "/api/v1/get/governmentAgency?governmentAgencyId=" + gaID
+    );
+  }
 }
 
 export const homeService = new HomeService(new HttpService(), documentBuilder);
