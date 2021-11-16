@@ -112,13 +112,9 @@ export class HomeService {
   }
 
   getDocument(govermentAgencyId: number) {
-    return this.httpService
-      .get(
-        "/api/v1/get/governmentAgency?governmentAgencyId=" + govermentAgencyId
-      )
-      .then((data) => {
-        this.documentBuilder.buildDocument(data);
-      });
+    return this.httpService.get(
+      "/api/v1/get/governmentAgency?governmentAgencyId=" + govermentAgencyId
+    );
   }
 
   getGovermentAgencyRaw(gaID: number) {

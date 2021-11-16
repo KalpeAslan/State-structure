@@ -78,7 +78,7 @@ export class DocumentBuilder {
             {},
             {},
           ]);
-          departament.positions.forEach(({ nameRu, employees }) => {
+          departament.positions["forEach"](({ nameRu, employees }) => {
             const employee: string = employees ? employees[0].user : "";
             return acc.push([
               "",
