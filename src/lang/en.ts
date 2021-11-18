@@ -1,6 +1,7 @@
 import { IDict } from "./dict-interface";
 
 export const en: IDict = {
+  selectGA: "Select GA",
   history: "History",
   historyActions: "History of actions",
   historyVersions: "History of versions",
@@ -20,7 +21,7 @@ export const en: IDict = {
   endDateOfEmployee: "Employee's end date",
   tempEmployee: "Employee's end date",
   endDateOfTempEmployee: "The end date of the temporary employee's work",
-  groundsForAppoindEmployee: "Тағайындау үшін негіздер",
+  groundsForAppoindEmployee: "Grounds for appoind employee",
   comments: "Comments",
   save: "Save",
   tempAppoint: "Temporarily appoint",
@@ -53,4 +54,8 @@ export const en: IDict = {
   deleteted: "Deleted",
   chooseGa: "Select GA from the list or create it",
   versionIsEmpty: "Versions history is empty",
+  ncaLayerClosed:
+    "Unable to connect to NcaLayer. The program is not running or not installed",
+  close: "Close",
+  nameEngMustBeUnique: "name in English must be unique",
 };

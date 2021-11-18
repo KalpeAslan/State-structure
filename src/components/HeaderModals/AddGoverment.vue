@@ -25,14 +25,14 @@
                       : computeNamesError(inputName)
                   "
                   outlined
-                  :hide-details="!$v.form.iin.$error"
+                  :hide-details="!$v.form[inputName].$error"
                   class="mb-3"
                   required
                   v-model="form[inputName]"
                 >
                 </v-text-field>
               </div>
-              <v-btn type="submit" color="primary" @click="validate">
+              <v-btn type="submit" color="primary">
                 {{ $t("save") }}
               </v-btn>
             </v-form>
@@ -49,6 +49,14 @@ import { required, maxLength, minLength } from "vuelidate/lib/validators";
 import Component from "vue-class-component";
 import Vue from "vue";
 import { IGovermentReq } from "@/store/interfaces";
+
+const mustBeUniqueEng = function (v) {
+  return !Object.entries(this.form).some(([formKey, formValue]) => {
+    if (formKey === "nameEng") return false;
+    return formValue === v;
+  });
+};
+
 const validations = {
   form: {
     iin: {
@@ -64,6 +72,7 @@ const validations = {
     },
     nameEng: {
       required,
+      mustBeUniqueEng,
     },
   },
 };
@@ -110,20 +119,14 @@ export default class AddGoverment extends Vue {
   }
 
   //methods
-  validate(): void {
-    this.$refs.form.validate();
-  }
-  reset(): void {
-    this.$refs.form.reset();
-  }
   submit(): void {
     this.$v.form.$touch();
     if (!this.$v.$error) {
       this.$emit("close-modal");
       const goverment: IGovermentReq = {
-        nameEngShort: this.form.nameEng + 7784,
-        nameRusShort: this.form.nameRus + 545,
-        nameKazShort: this.form.nameKaz + 547,
+        nameEngShort: this.form.nameEng + " short",
+        nameRusShort: this.form.nameRus + " short",
+        nameKazShort: this.form.nameKaz + " short",
         ...this.form,
       };
       this.$store.dispatch(ADD_GOVERMENT, goverment);
@@ -133,7 +136,10 @@ export default class AddGoverment extends Vue {
     const errors = [];
     const field = this.$v.form[nameLang];
     if (!field.$dirty) return errors;
-    !field.required && errors.push("Заполните это поле!");
+    !field.required && errors.push(this.$t("fillTheField"));
+    nameLang === "nameEng" &&
+      !field["mustBeUniqueEng"] &&
+      errors.push(this.$t("nameEngMustBeUnique"));
     return errors;
   }
 

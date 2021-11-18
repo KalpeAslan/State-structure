@@ -17,9 +17,11 @@
                 v-model="valid"
               >
                 <div v-for="inputName in positionFormAsArray" :key="inputName">
-                  <div class="label">{{ positionForm[inputName].label }}</div>
+                  <div class="label">
+                    {{ $t(positionForm[inputName].label) }}
+                  </div>
                   <v-text-field
-                    :rules="[(v) => !!v || 'Заполните это поле!']"
+                    :rules="[(v) => !!v || $t('fillTheField')]"
                     outlined
                     class="mb-3"
                     hide-details
@@ -29,7 +31,7 @@
                   </v-text-field>
                 </div>
                 <v-btn type="submit" color="primary" @click="validate">
-                  Сохранить
+                  {{ $t("save") }}
                 </v-btn>
               </v-form>
             </template>
@@ -54,17 +56,17 @@ export default Vue.extend({
       positionForm: {
         nameRu: {
           name: "nameRu",
-          label: "Наименование на русском",
+          label: "nameInRus",
           value: null,
         },
         nameKz: {
           name: "nameKz",
-          label: "Наименование на казахском",
+          label: "nameInKaz",
           value: null,
         },
         nameEng: {
           name: "nameEng",
-          label: "Наименование на английском",
+          label: "nameInEng",
           value: null,
         },
       },

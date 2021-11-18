@@ -230,6 +230,7 @@ function setEmployeeToPosition(
   if (tree.key === selectedPositionKey) {
     if (type === "temp") {
       tree.employees[0].employeeReplacement = { ...employee };
+      console.log(tree);
     } else {
       tree.employees = [employee];
     }
@@ -666,8 +667,8 @@ export const treeStore: Module<IStateTreeStore, any> = {
     async [SET_EMPLOYEE_REPLACEMENT](ctx, newEmployeeForm) {
       await treeService.homeService.postNewEmployeeReplacement(newEmployeeForm);
       const employeeReplacement: any = { ...newEmployeeForm };
-      employeeReplacement.user = ctx.getters.users.filter(
-        (user) => user.id === newEmployeeForm.replacementUserId
+      employeeReplacement.substituteUserObject = ctx.getters.users.filter(
+        (user) => user.id === newEmployeeForm.substituteUser
       )[0];
       setEmployeeToPosition(
         ctx.state.tree,
@@ -675,6 +676,7 @@ export const treeStore: Module<IStateTreeStore, any> = {
         employeeReplacement,
         "temp"
       );
+      console.log(ctx.state.tree);
     },
     [SET_TEMP_POSITION](context, position: IPosition | null) {
       context.commit(SET_TEMP_POSITION, position);

@@ -1,4 +1,5 @@
 export interface IDict {
+  selectGA;
   history: string;
   historyActions: string;
   historyVersions: string;
@@ -50,4 +51,7 @@ export interface IDict {
   deleteted;
   chooseGa;
   versionIsEmpty;
+  ncaLayerClosed;
+  close;
+  nameEngMustBeUnique;
 }

@@ -11,9 +11,9 @@
               line-height: 24px;
               word-break: normal;
             "
-            >Невозможно подключиться к NCALayer. Программа не запущена
-            или не установлена</span
           >
+            {{ $t("ncaLayerClosed") }}
+          </span>
         </v-card-title>
         <v-btn class="close-button" icon text @click="modalDialogMixin = false">
           <v-icon> mdi-close </v-icon>
@@ -21,11 +21,11 @@
         <v-card-text>
           <template>
             <div class="text-subtitle1">
-              Запустите NCALayer на компьютере или
-              <a href="https://pki.gov.kz/ncalayer/"
-                >перейдите по ссылке на установки программы</a
-              >
-              и попробуйте повторить операцию
+              {{ ncaLayerText.installOrTurnOnNcaLayer | translate }}
+              <a href="https://pki.gov.kz/ncalayer/">
+                {{ ncaLayerText.followLink | translate }}
+              </a>
+              {{ ncaLayerText.tryAgain | translate }}
             </div>
           </template>
         </v-card-text>
@@ -36,7 +36,7 @@
             style="font-size: 14px !important; line-height: 16px"
             @click="modalDialogMixin = false"
           >
-            Закрыть
+            {{ $t("close") }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -47,6 +47,7 @@
 import { modalsMixin } from "@/mixins/modalsMixin";
 import { IGovermentReq } from "@/store/interfaces";
 import { SEND_TO_REJECT } from "@/store/mutation-types";
+import { generateTranslateForms } from "@/utils/generateTranslateForms";
 import Vue from "vue";
 export default Vue.extend({
   name: "nca-layer-modal",
@@ -56,6 +57,23 @@ export default Vue.extend({
       valid: true,
       isError: false,
       comment: null,
+      ncaLayerText: {
+        installOrTurnOnNcaLayer: {
+          nameRu: "Запустите NCALayer на компьютере или",
+          nameKz: "Компьютерде NCALayer іске қосыңыз немесе",
+          nameEng: "Run NCALayer on your computer or",
+        },
+        followLink: generateTranslateForms(
+          "перейдите по ссылке на установки программы",
+          "бағдарламаны орнату сілтемесіне өтіңіз",
+          "follow the link to install the program"
+        ),
+        tryAgain: generateTranslateForms(
+          "и попробуйте повторить операцию",
+          "операцияны қайталауға тырысыңыз",
+          "and try to repeat the operation"
+        ),
+      },
     };
   },
   computed: {

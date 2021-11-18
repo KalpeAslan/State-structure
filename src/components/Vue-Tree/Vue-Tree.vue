@@ -52,7 +52,8 @@
                 <div class="d-flex align-center" style="font-size: 12px">
                   {{
                     positionChild.employeeState === "replacementEmployee"
-                      ? positionChild.employeeReplacement.user.username
+                      ? positionChild.employeeReplacement.substituteUserObject
+                          .username
                       : positionChild.user.username
                   }}
                 </div>
@@ -69,7 +70,10 @@
                     class="d-flex flex-column align-center"
                     style="font-size: 12px"
                   >
-                    {{ positionChild.employeeReplacement.user.username }}
+                    {{
+                      positionChild.employeeReplacement.substituteUserObject
+                        .username
+                    }}
                     <div color="#DADADA">
                       до
                       {{

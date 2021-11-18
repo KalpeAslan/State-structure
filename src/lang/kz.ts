@@ -1,6 +1,7 @@
 import { IDict } from "./dict-interface";
 
 export const kz: IDict = {
+  selectGA: "МО таңдаңыз",
   history: "Тарих",
   historyActions: "Әрекеттер тарихы",
   historyVersions: "Нұсқалар тарихы",
@@ -53,4 +54,8 @@ export const kz: IDict = {
   deleteted: "Өшірілген",
   chooseGa: "МО тізімінен таңдаңыз немесе оны жасаңыз",
   versionIsEmpty: "Нұсқалар тарихы бос",
+  ncaLayerClosed:
+    "NCALayer-ге қосылу мүмкін емес. Бағдарлама іске қосылмаған немесе орнатылмаған",
+  close: "Жабу",
+  nameEngMustBeUnique: "Ағылшын тіліндегі ат ерекше болу керек",
 };

@@ -12,7 +12,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
 import VueTree from "../../components/Vue-Tree/Vue-Tree.vue";
-import { SET_USERS, SET_WEBSOCKET_STATE } from "@/store/mutation-types";
+import { SET_WEBSOCKET_STATE } from "@/store/mutation-types";
 
 export default Vue.extend({
   name: "Home",

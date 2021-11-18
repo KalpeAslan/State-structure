@@ -157,8 +157,8 @@ export interface IEmployeeGet extends IEmployeeBase, IStatus {
 }
 
 export interface IEmployeeReplacementNew {
-  replacementUserId: number; //Long, employee that temporarly holds office
-  substituteEmployee: number; //Long, employee that temporarly left this position
+  substituteUser: number; //Long, employee that temporarly holds office
+  replacementEmployee: number; //Long, employee that temporarly left this position
   startDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
   endDate: string; //Date pattern = "yyyy-MM-dd'T'HH:mm:ss"
   substitutionBasisRu: string; //String

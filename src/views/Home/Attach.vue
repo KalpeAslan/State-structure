@@ -26,7 +26,7 @@
         prepend-inner-icon="mdi-magnify"
       ></v-text-field>
       <v-list-item
-        draggable
+        :draggable="isEditable"
         v-for="user in users"
         :key="user.key"
         @dragstart="dragStart($event, user)"
@@ -66,7 +66,7 @@
       <v-list-item
         v-for="role in roles"
         :key="role.value"
-        draggable
+        :draggable="isEditable"
         @dragstart="dragStart($event, role)"
         @dragend="dragEnd"
       >
@@ -104,6 +104,9 @@ export default Vue.extend({
     },
     users(): IUser[] {
       return this.$store.getters.GET_ATTACH_ITEMS(this.inputEmployies, "users");
+    },
+    isEditable(): boolean {
+      return this.$store.getters.isEditable;
     },
   },
   mixins: [treeMixin],

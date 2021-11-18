@@ -93,7 +93,7 @@
         <v-list-item
           v-for="position in positions"
           :key="position.id"
-          draggable
+          :draggable="isEditable"
           @dragstart="dragStart($event, position)"
           @dragend="dragEnd"
           class="justify-space-between"

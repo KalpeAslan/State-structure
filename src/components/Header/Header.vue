@@ -36,13 +36,12 @@
           >
             {{ selectedGovOrg | translate }}
           </span>
-          <div class="text-caption" style="display: block">123456789</div>
         </div>
         <div
           v-else
           style="display: flex; flex-direction: column; align-items: self-start"
         >
-          Выберите ГО
+          {{ $t("selectGA") }}
         </div>
         <v-icon size="18"> mdi-chevron-down </v-icon>
       </v-btn>

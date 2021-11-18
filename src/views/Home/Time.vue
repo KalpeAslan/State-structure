@@ -60,6 +60,7 @@
               </template>
               <v-date-picker
                 locale="ru"
+                :min="currentDate"
                 v-model="newEmployeeForm.startDate"
                 no-title
                 scrollable
@@ -119,6 +120,7 @@
                 locale="ru"
                 v-model="newEmployeeForm.endDate"
                 no-title
+                :min="startDate"
                 scrollable
               >
                 <v-spacer></v-spacer>
@@ -161,9 +163,7 @@
 </template>
 
 <script lang="ts">
-import { homeService } from "@/services/homeService";
 import { IEmployeeReplacementNew } from "@/store/interface";
-import { IEmployeeReq } from "@/store/interfaces";
 import {
   SET_EMPLOYEE_REPLACEMENT,
   SET_EMPLOYIES,
@@ -215,6 +215,14 @@ export default Vue.extend({
         value: user.id,
       }));
     },
+    currentDate() {
+      return new Date().toISOString().slice(0, 10);
+    },
+    startDate() {
+      return this.newEmployeeForm.startDate
+        ? new Date(this.newEmployeeForm.startDate).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
+    },
   },
   components: {
     Badge: () => import("../../components/Badge/Badge.vue"),
@@ -229,8 +237,8 @@ export default Vue.extend({
           startDate: moment(startDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           endDate: moment(endDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           substitutionBasisRu,
-          replacementUserId: this.selectedUserId,
-          substituteEmployee: this.selectedTempPosition.employees[0].id,
+          substituteUser: this.selectedUserId,
+          replacementEmployee: this.selectedTempPosition.employees[0].id,
           substitutionBasisKz: this.newEmployeeForm.substitutionBasisRu,
         };
         this.$store

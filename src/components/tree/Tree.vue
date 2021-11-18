@@ -40,7 +40,8 @@
               v-if="
                 unlock &&
                 isShowNodeButtons(node.data.entityType) &&
-                node.data.entityType !== 'governmentAgency'
+                node.data.entityType !== 'governmentAgency' &&
+                isEditable
               "
               icon
               absolute
@@ -62,7 +63,8 @@
               v-if="
                 node.data.entityType !== 'position' &&
                 unlock &&
-                isShowNodeButtons(node.data.entityType)
+                isShowNodeButtons(node.data.entityType) &&
+                isEditable
               "
               absolute
               class="node-button plus"
@@ -159,6 +161,7 @@ export default {
       tree: "tree",
       userType: "GET_USER_TYPE",
       isLoading: "isLoading",
+      isEditable: "isEditable",
     }),
     isDraggable() {
       return this.unlock && this.isCanDispatcherEdit && !this.isLoading;

@@ -1,6 +1,7 @@
 import { IDict } from "./dict-interface";
 
 export const ru: IDict = {
+  selectGA: "Выберите ГО",
   history: "История",
   historyActions: "История действий",
   historyVersions: "История версий",
@@ -53,4 +54,8 @@ export const ru: IDict = {
   deleteted: "удален",
   chooseGa: "Выберите ГО из списка ГО или же создадите его",
   versionIsEmpty: "История версий пуста",
+  ncaLayerClosed:
+    "Невозможно подключиться к NCALayer. Программа не запущена или не установлена",
+  close: "Закрыть",
+  nameEngMustBeUnique: "Имя на английском должно быть уникальным",
 };
