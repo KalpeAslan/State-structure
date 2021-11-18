@@ -89,7 +89,14 @@ export class HomeService {
   }
 
   getAllGovermentAgencies(options?: AxiosRequestConfig): Promise<any> {
-    return this.httpService.get("/api/v1/get/all/GovernmentAgencies", options);
+    return this.httpService.get("/api/v1/get/all/governmentAgencies", options);
+  }
+
+  getGovermentAgencyById(govermentAgencyId: number): Promise<any> {
+    return this.httpService.get(
+      "/api/v1/get/governmentAgencyObject?governmentAgencyId=" +
+        govermentAgencyId
+    );
   }
 
   changeGovermentAgency(goverment: IGovermentReq): Promise<any> {
@@ -100,7 +107,7 @@ export class HomeService {
     return this.httpService.post("/api/v1/change/employee", data).then(() => {
       Vue.notify({
         group: "alert",
-        text: "Временный сотрудник назначен",
+        text: "Сотрудник изменен",
         type: "success",
       });
     });

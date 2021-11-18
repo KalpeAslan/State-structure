@@ -32,7 +32,6 @@ import { SET_MODAL_NAME } from "@/store/mutation-types";
 export default {
   computed: {
     selectedModalName() {
-      console.log(this.$store.getters.SELECTED_MODAL);
       return this.$store.getters.SELECTED_MODAL;
     },
   },

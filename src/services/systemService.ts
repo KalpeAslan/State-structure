@@ -29,7 +29,6 @@ export class SystemService {
           FIO: "Петр Симонов Афанасьевич",
           jti: "40d4c867-6598-42d0-8ddf-aaed52c78490",
         };
-        console.log(dump.access_token.split("."));
         // const [header, payload, key] = dump.access_token.split(".");
       });
   }

@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <NavSidebar v-if="isShowNavSidebar" />
-    <VueTree />
+    <VueTree :tree="tree" />
     <ContentSidebar> <router-view /> </ContentSidebar>
     <Footer v-if="isShowFooter" />
   </div>
@@ -22,6 +22,7 @@ export default Vue.extend({
       "gaState",
       "isShowFooter",
       "isShowNavSidebar",
+      "tree",
     ]),
   },
   created() {

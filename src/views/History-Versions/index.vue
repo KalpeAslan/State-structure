@@ -9,15 +9,16 @@
       >
         <div class="d-flex align-items-center pl-5">
           <v-icon size="20"> mdi-close </v-icon>
-          <div class="text-h6 d-inline-block ml-4">История версий</div>
+          <div class="text-h6 d-inline-block ml-4">
+            {{ $t("historyVersions") }}
+          </div>
         </div>
-        <v-list>
+        <v-list v-if="versions && versions.length">
           <v-list-item
             selectable
             v-for="version in versions"
             :key="version.date"
             @click="selectHistoryVersion(version.id)"
-            class="pl-0"
             :class="[
               'pl-0',
               'pl-5',
@@ -37,6 +38,18 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
+        <div
+          v-else-if="!!versions && versions.length === 0"
+          class="text-subtitle-1 text-center mt-4"
+        >
+          {{ $t("versionIsEmpty") }}
+        </div>
+        <div v-else class="d-flex justify-center">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+          ></v-progress-circular>
+        </div>
       </v-navigation-drawer>
     </ContentSidebar>
     <router-view> </router-view>
@@ -48,11 +61,7 @@ import moment from "moment";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
-import {
-  SET_TREE,
-  SET_VERSION,
-  SET_VERSIONS,
-} from "../../store/mutation-types";
+import { SET_VERSION, SET_VERSIONS } from "../../store/mutation-types";
 export default Vue.extend({
   name: "Home",
   data() {
@@ -67,11 +76,13 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters(["versions"]),
+    currentId(): number {
+      return this.$route.params.id;
+    },
   },
   methods: {
     selectHistoryVersion(id: number) {
       this.selectedHistoryVersionId = id;
-      // this.$store.dispatch(SET_TREE, id);
       this.$store.dispatch(SET_VERSION, id);
     },
     formatDate(date: string): string {
@@ -80,7 +91,7 @@ export default Vue.extend({
   },
   async created() {
     this.isLoading = true;
-    await this.$store.dispatch(SET_VERSIONS);
+    await this.$store.dispatch(SET_VERSIONS, this.currentId);
     this.isLoading = false;
   },
 });

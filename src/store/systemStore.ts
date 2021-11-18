@@ -38,6 +38,7 @@ export const systemStore: Module<IStateSystemStore, any> = {
   actions: {
     [SET_LANGUAGE](ctx, language: language) {
       i18n.locale = language;
+      localStorage.setItem("lang", language);
       ctx.commit(SET_LANGUAGE, language);
     },
     [SET_USER_TYPE](ctx, userType: userTypes) {

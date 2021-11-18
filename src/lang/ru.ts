@@ -46,10 +46,11 @@ export const ru: IDict = {
   created: "создан диспетчером",
   onApproval: "на согласование",
   aproved: "согласован",
-  notAproved: "отказано в согласовании",
+  notAproved: "не в согласовании",
   onClaim: "на утверждение",
   claimed: "утвержден",
-  notClaimed: "в утверждении",
+  notClaimed: "не утвержден",
   deleteted: "удален",
   chooseGa: "Выберите ГО из списка ГО или же создадите его",
+  versionIsEmpty: "История версий пуста",
 };

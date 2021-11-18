@@ -74,6 +74,9 @@
             :key="index"
             :to="{
               name: item.routeName,
+              params: {
+                id: 61,
+              },
             }"
             style="text-decoration: none"
           >
@@ -171,7 +174,7 @@ export default Vue.extend({
         },
         {
           title: "historyVersions",
-          routeName: "versions-history",
+          routeName: "versions-history.id",
         },
       ],
       languages: [
@@ -262,8 +265,8 @@ export default Vue.extend({
       if (button.name === "exportPdf") {
         return !!this.gaId;
       }
-      if (!["edit-goverment", "delete-goverment"].includes(button.name))
-        return true;
+      // if (!["edit-goverment", "delete-goverment"].includes(button.name))
+      //   return true;
       return (
         this.$route.name !== "home.select-goverment" && this.selectedGovOrg
       );

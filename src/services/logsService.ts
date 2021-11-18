@@ -8,12 +8,14 @@ export class LogsService {
 
   getVersionsByGAId(governmentAgencyId: number): Promise<any> {
     return this.httpService.get(
-      "/api/v1/get/versions?governmentAgencyId=" + 32
+      "/api/v1/get/versions?governmentAgencyId=" + governmentAgencyId
     );
   }
 
   getVersionObjectByVersionId(versionId: number): Promise<any> {
-    return this.httpService.get("/api/v1/get/version?versionControlId=" + 32);
+    return this.httpService.get(
+      "/api/v1/get/version?versionControlId=" + versionId
+    );
   }
 }
 

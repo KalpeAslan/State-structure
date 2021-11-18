@@ -1,5 +1,5 @@
 <template>
-  <div class="tree-container" ref="container" :style="{}">
+  <div class="tree-container" ref="container">
     <svg class="svg vue-tree" ref="svg" :style="initialTransformStyle"></svg>
 
     <div
@@ -18,8 +18,7 @@
               direction === DIRECTION.VERTICAL ? node.x : node.y
             ),
             top: formatDimension(
-              direction === DIRECTION.VERTICAL ? node.y : node.x,
-              node
+              direction === DIRECTION.VERTICAL ? node.y : node.x
             ),
             width: formatDimension(config.nodeWidth),
             height: formatDimension(config.nodeHeight),
@@ -168,7 +167,7 @@ export default {
       return !this.GET_UNLOCK;
     },
     isCanDispatcherEdit() {
-      if (this.userType !== "dispatcher") return false;
+      if (this.userType !== "dispatcher" || !this.tree) return false;
       const status = this.tree.status;
       return [null, 315, 318].includes(status);
     },
@@ -427,7 +426,7 @@ export default {
         this.$refs.domContainer.style.transform = transformStr;
       };
 
-      path.onmouseup = (event) => {
+      path.onmouseup = () => {
         startX = 0;
         startY = 0;
         isDrag = false;
@@ -455,10 +454,7 @@ export default {
         container.removeEventListener("mousemove", mouseMove);
       });
     },
-    formatDimension(dimension, node) {
-      if (node && node.data && node.data.employees) {
-        dimension += node.data.employees ? 100 : 50;
-      }
+    formatDimension(dimension) {
       if (typeof dimension === "number") return `${dimension}px`;
       if (dimension.indexOf("px") !== -1) {
         return dimension;

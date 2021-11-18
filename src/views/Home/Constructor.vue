@@ -21,6 +21,7 @@
           @click="addSubdivision"
           color="primary"
           class="mb-2 d-inline-block"
+          v-if="isEditable"
           outlined
           width="97"
           max-width="97"
@@ -65,6 +66,7 @@
           color="primary"
           class="mb-2 d-inline-block"
           outlined
+          v-if="isEditable"
           width="97"
           @click="addPosition()"
           max-width="97"
@@ -137,7 +139,6 @@
 <script lang="ts">
 import treeMixin from "@/mixins/treeMixin";
 import { IPosition } from "@/store/interfaces";
-import SidebarTree from "../../components/sidebarTree/SidebarTree.vue";
 import {
   DELETE_POSITION,
   INSERT_NODE_TO_TREE,
@@ -160,7 +161,7 @@ export default Vue.extend({
   },
   mixins: [treeMixin],
   components: {
-    SidebarTree: SidebarTree,
+    SidebarTree: () => import("../../components/sidebarTree/SidebarTree.vue"),
   },
   computed: {
     tree() {
@@ -173,6 +174,9 @@ export default Vue.extend({
         return this.$store.getters.GET_FILTERED_POSITIONS(this.positionsInput);
       }
       return this.$store.state.homeStore.positions;
+    },
+    isEditable(): boolean {
+      return this.$store.getters.isEditable;
     },
   },
   methods: {
@@ -200,7 +204,7 @@ export default Vue.extend({
     },
   },
   async beforeCreate() {
-    await this.$store.dispatch(SET_POSITIONS);
+    await this.$store.dispatch(SET_POSITIONS, this.$route.params.id);
   },
 });
 </script>

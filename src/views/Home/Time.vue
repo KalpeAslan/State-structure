@@ -230,14 +230,11 @@ export default Vue.extend({
           endDate: moment(endDate).format("YYYY-MM-DD[T]HH:mm:ss"),
           substitutionBasisRu,
           replacementUserId: this.selectedUserId,
-          substituteEmployee: this.selectedTempPosition.id,
+          substituteEmployee: this.selectedTempPosition.employees[0].id,
           substitutionBasisKz: this.newEmployeeForm.substitutionBasisRu,
         };
         this.$store
-          .dispatch(SET_EMPLOYEE_REPLACEMENT, {
-            newEmployeeForm,
-            employee: this.selectedTempPositionEmployee,
-          })
+          .dispatch(SET_EMPLOYEE_REPLACEMENT, newEmployeeForm)
           .then(() => {
             this.$refs.form.reset();
             this.$store.dispatch(SET_TEMP_POSITION, null);

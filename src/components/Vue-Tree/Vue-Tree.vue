@@ -20,9 +20,9 @@
           <span
             style="
               padding: 12px 16px;
-              white-space: nowrap;
               font-size: 14px;
               border-radius: 2px;
+              max-width: 200px;
             "
             :style="{
               fontWeight:
@@ -78,7 +78,11 @@
                     </div>
                   </div>
                 </template>
-                <v-btn icon @click="deleteEmployee(node, positionChild)">
+                <v-btn
+                  v-if="isShowButtons"
+                  icon
+                  @click="deleteEmployee(node, positionChild)"
+                >
                   <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                 </v-btn>
               </div>
@@ -93,7 +97,7 @@
                   <span class="d-flex align-center" style="font-size: 12px">
                     {{ node.roleObject | translate }}
                   </span>
-                  <v-btn icon @click="deleteRole(node)">
+                  <v-btn v-if="isShowButtons" icon @click="deleteRole(node)">
                     <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
                   </v-btn>
                 </div>
@@ -118,14 +122,23 @@ import {
 
 export default {
   name: "treemap",
+  props: {
+    tree: {
+      required: true,
+    },
+    isEditable: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
-      treeConfig: { nodeWidth: 250, nodeHeight: 80, levelHeight: 100 },
+      treeConfig: { nodeWidth: 250, nodeHeight: 80, levelHeight: 200 },
     };
   },
   computed: {
-    tree() {
-      return this.$store.state.treeStore.tree;
+    isShowButtons() {
+      return this.$store.getters.isEditableTree && this.isEditable;
     },
   },
   watch: {
@@ -167,6 +180,13 @@ export default {
     },
     selectPosition(node) {
       if (node.entityType === "position" && this.$route.name === "home.time") {
+        if (node.employees.length === 0) {
+          return this.$notify({
+            group: "alert",
+            text: "У данной должности нет сотрудников для замещения!",
+            type: "danger",
+          });
+        }
         if (node.employees[0].employeeReplacement) {
           return this.$notify({
             group: "alert",
@@ -175,6 +195,7 @@ export default {
           });
         }
         this.$store.dispatch(SET_TEMP_POSITION, node);
+        return;
       }
     },
   },

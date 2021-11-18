@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <div class="empty" v-if="!isShowTree">
-      <p class="text-subtitle1">Выберите версию из списка, чтобы просмотреть</p>
+      <p class="text-subtitle1">{{ selectGovFromHistory | translate }}</p>
     </div>
     <VueTree v-else />
   </div>
@@ -15,6 +15,13 @@ export default Vue.extend({
   components: {
     VueTree,
   },
+  data: () => ({
+    selectGovFromHistory: {
+      nameRu: "Выберите версию из списка, чтобы просмотреть",
+      nameKz: "Көру үшін тізімнен нұсқаны таңдаңыз",
+      nameEng: "Select a version from the list to view",
+    },
+  }),
   computed: {
     isShowTree() {
       return this.$store.state.treeStore.tree != null;

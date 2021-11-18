@@ -25,6 +25,7 @@ import {
   SET_MODAL_NAME,
   SET_USERS,
   DELETE_POSITION_FROM_NODE,
+  SELECT_GOVERMENT_BY_ID,
 } from "./mutation-types";
 import { homeService } from "../services/homeService";
 import { Module } from "vuex";
@@ -122,20 +123,17 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
   },
   actions: {
-    async [SET_POSITIONS](context) {
-      if (context.getters.GET_GA_ID) {
-        return await homeService
-          .getPositions(context.getters.GET_GA_ID)
-          .then((positions) => {
-            context.commit(SET_POSITIONS, positions);
-          });
-      } else {
-        context.commit(SET_POSITIONS, []);
-      }
+    async [SET_POSITIONS](context, id: number) {
+      await homeService
+        .getPositions(id)
+        .then((positions) => {
+          context.commit(SET_POSITIONS, positions);
+        })
+        .catch(() => context.commit(SET_POSITIONS, []));
     },
     async [ADD_POSITION](context, position: IPositionNew) {
       await homeService.postNewPosition(position).then(() => {
-        context.dispatch(SET_POSITIONS);
+        context.dispatch(SET_POSITIONS, context.getters.GET_GA_ID);
       });
     },
     async [DELETE_POSITION](context, position: IPosition) {
@@ -163,8 +161,12 @@ export const homeStore: Module<IStateHomeStore, any> = {
     async [SELECT_GOVERMENT](context, goverment: IGoverment) {
       context.commit(SELECT_GOVERMENT, goverment);
       context.dispatch(SET_TREE, goverment.id).then(() => {
-        console.log(context.getters.tree);
         context.commit(SET_GA_STATE, context.getters.tree.status || 315);
+      });
+    },
+    async [SELECT_GOVERMENT_BY_ID](ctx, id: number) {
+      await homeService.getGovermentAgencyById(id).then((data) => {
+        ctx.commit(SELECT_GOVERMENT, data);
       });
     },
     [ADD_GOVERMENT](context, goverment: IGovermentReq) {
@@ -225,7 +227,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
         })
       );
     },
-    [SEND_TO_APPLY](ctx) {
+    async [SEND_TO_APPLY](ctx) {
       const goverment: any = { ...ctx.state.selectedGoverment };
       let status: number;
       switch (ctx.getters.GET_USER_TYPE) {
@@ -239,11 +241,15 @@ export const homeStore: Module<IStateHomeStore, any> = {
           break;
         case "departmentHead":
           if (ctx.getters.isWebSocketOpen) {
-            ncaLayerService.sign();
+            await homeService
+              .getGovermentAgencyRaw(ctx.getters.GET_GA_ID)
+              .then((data) => {
+                ncaLayerService.sign(data);
+              });
           }
           goverment.status = 320;
-          status = 320;
-          break;
+          //Жду ответа от веб сокета ncaleyer в диспатчере SET_WEBSOCKET_STATE
+          return;
       }
       const govermentChange = { ...goverment };
       delete govermentChange.statusObject;
@@ -298,7 +304,19 @@ export const homeStore: Module<IStateHomeStore, any> = {
             text: "Документ подписан",
             type: "success",
           });
+          const goverment: any = { ...ctx.state.selectedGoverment };
+          goverment.status = 320;
+          delete goverment.statusObject;
+          homeService
+            .changeGovermentAgency(goverment)
+            .then(() => {
+              ctx.dispatch(SET_GA_STATE, 320);
+            })
+            .catch(() => {
+              ctx.dispatch(SET_GA_STATE, 320);
+            });
           ctx.commit(SET_WEBSOCKET_STATE, "opened");
+
           break;
       }
     },
@@ -373,7 +391,7 @@ export const homeStore: Module<IStateHomeStore, any> = {
     },
     isEditable(state, getters, rootState, rootGetters): boolean {
       return (
-        [315, 318, 322].includes(getters.gaState) &&
+        [315, 318].includes(getters.gaState) &&
         rootGetters.GET_USER_TYPE === "dispatcher"
       );
     },

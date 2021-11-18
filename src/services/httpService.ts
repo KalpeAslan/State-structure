@@ -8,7 +8,7 @@ export class HttpService {
   httpServer: AxiosInstance;
   constructor() {
     this.http = axios.create({
-      baseURL: "http://95.179.167.161:8081",
+      baseURL: "http://87.255.215.178:8081",
     });
     this.httpServer = axios.create({
       baseURL: "http://87.255.215.174",

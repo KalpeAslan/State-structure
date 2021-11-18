@@ -10,7 +10,11 @@
         @dragenter.prevent
         @drop="onDrop($event, node)"
       >
-        <div draggable @dragstart="dragStart($event, node)" @dragend="dragEnd">
+        <div
+          :draggable="isEditable"
+          @dragstart="dragStart($event, node)"
+          @dragend="dragEnd"
+        >
           <v-btn
             v-if="node.children && node.children.length"
             icon
@@ -20,18 +24,27 @@
               {{ isExpanded(node) ? "mdi-chevron-down" : "mdi-chevron-right" }}
             </v-icon>
           </v-btn>
-          <div class="node">
+          <div class="node" style="font-size: 14px">
             <span
               :style="{
                 marginLeft: node.children && 36,
               }"
               >{{ node | translate }}</span
             >
-            <div class="node-buttons">
-              <v-btn icon @click="addSubdivison(node)">
+            <div class="node-buttons" v-if="isEditable">
+              <v-btn
+                v-if="node.entityType !== 'position'"
+                icon
+                @click="addSubdivison(node)"
+              >
                 <v-icon color="primary"> mdi-plus-circle-outline </v-icon>
               </v-btn>
-              <v-btn icon class="remove-button" @click="deleteNode(node)">
+              <v-btn
+                v-if="node.entityType !== 'governmentAgency'"
+                icon
+                class="remove-button"
+                @click="deleteNode(node)"
+              >
                 <v-icon color="danger"> mdi-minus-circle-outline </v-icon>
               </v-btn>
             </div>
@@ -88,6 +101,9 @@ export default Vue.extend({
     },
     getRandomId() {
       return Math.round(Math.round(505) * 123456789);
+    },
+    isEditable(): boolean {
+      return this.$store.getters.isEditable;
     },
   },
 });

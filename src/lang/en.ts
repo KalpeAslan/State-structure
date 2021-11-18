@@ -52,4 +52,5 @@ export const en: IDict = {
   notClaimed: "Rejected To Apply",
   deleteted: "Deleted",
   chooseGa: "Select GA from the list or create it",
+  versionIsEmpty: "Versions history is empty",
 };

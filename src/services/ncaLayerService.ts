@@ -40,13 +40,11 @@ class NcaLayerService {
 
   private onMessage(event) {
     const result = JSON.parse(event.data);
-    console.log(event.data);
     if (result.responseObject) {
       const blob = new Blob([result.responseObject], { type: "text/xml" });
       const xmlFile = new File([blob], "test.xml", { type: "text/xml" });
       const formData = new FormData();
       formData.append("xmlFile", xmlFile);
-      this.verifyXmlDocument(result.responseObject);
       store.dispatch(SET_WEBSOCKET_STATE, "signed");
     }
   }
@@ -61,9 +59,11 @@ class NcaLayerService {
     store.dispatch(SET_WEBSOCKET_STATE, "error");
   }
 
-  sign() {
+  sign(treeStructure) {
     const storageName = "PKCS12";
-    const xmlToSign = `<?xml version="1.0" encoding="UTF-8" ?><root><Test>testValue</Test><Test1>23</Test1></root>`;
+    const xmlToSign = `<?xml version="1.0" encoding="UTF-8" ?><root>
+    ${json2xml(treeStructure)}
+    </root>`;
     const keyType = "SIGNATURE";
     const signXml: ISignXml = {
       module: "kz.gov.pki.knca.commonUtils",
@@ -84,8 +84,6 @@ class NcaLayerService {
       constructor: "Конструктор",
     };
     const xmlDocument = json2xml(tempJson);
-    console.log(xmlDocument);
-    console.log(xml2json(xmlDocument));
     return xmlDocument;
   }
 

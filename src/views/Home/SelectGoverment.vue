@@ -122,6 +122,12 @@ export default Vue.extend({
   methods: {
     selectGov(govOrg: IGoverment) {
       this.$store.dispatch(SELECT_GOVERMENT, govOrg);
+      this.$router.push({
+        name: "home.select-goverment",
+        params: {
+          id: govOrg.id,
+        },
+      });
     },
     computeStatus(govOrg: IGoverment) {
       if (govOrg.status === null) return 315;
@@ -149,7 +155,6 @@ export default Vue.extend({
       // return this.$store.getters.GET_ALL_GOVERMENT_AGENCIES;
     },
     userType() {
-      console.log(this.$store.getters.GET_USER_TYPE);
       return this.$store.getters.GET_USER_TYPE;
     },
     isShowTabs(): boolean {
@@ -161,6 +166,9 @@ export default Vue.extend({
         (govAgency) =>
           govAgency.status === codeForApply || govAgency.status === 319
       );
+    },
+    isEditable(): boolean {
+      return this.$store.getters.isEditable;
     },
   },
   created() {

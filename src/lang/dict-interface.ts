@@ -49,4 +49,5 @@ export interface IDict {
   notClaimed;
   deleteted;
   chooseGa;
+  versionIsEmpty;
 }

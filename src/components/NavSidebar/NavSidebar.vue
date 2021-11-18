@@ -72,7 +72,12 @@ export default Vue.extend({
       if (routeName === "Logs") {
         return this.$store.dispatch(SET_MODE);
       }
-      return this.$router.push({ name: routeName });
+      return this.$router.push({
+        name: routeName,
+        params: {
+          id: this.$route.params.id,
+        },
+      });
     },
     computeIconColor(routeName) {
       return routeName === this.$route.name ? "white" : "#828282";

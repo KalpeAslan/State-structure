@@ -38,7 +38,7 @@ import {
 } from "@/store/mutation-types";
 import Vue from "vue";
 import { mapGetters } from "vuex";
-const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
+// "dispatcher", "departmentBoss", "departmentHead", "admin"
 export default Vue.extend({
   data() {
     return {};

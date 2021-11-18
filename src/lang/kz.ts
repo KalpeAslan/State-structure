@@ -52,4 +52,5 @@ export const kz: IDict = {
   notClaimed: "бекітігуге бастартылды",
   deleteted: "Өшірілген",
   chooseGa: "МО тізімінен таңдаңыз немесе оны жасаңыз",
+  versionIsEmpty: "Нұсқалар тарихы бос",
 };
