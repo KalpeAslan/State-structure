@@ -8,7 +8,6 @@
         class="pt-5 pr-5 nav-constructor_item"
       >
         <div class="d-flex align-items-center pl-5">
-          <v-icon size="20"> mdi-close </v-icon>
           <div class="text-h6 d-inline-block ml-4">
             {{ $t("historyVersions") }}
           </div>
@@ -28,7 +27,7 @@
             <v-list-item-content class="d-flex justify-space-between">
               <div class="d-inline-block" style="flex: none">
                 <v-list-item-title style="font-size: 12px">{{
-                  version.userObject.username
+                  version.admin.username
                 }}</v-list-item-title>
                 <v-list-item-subtitle>{{
                   formatDate(version.date)
@@ -61,7 +60,11 @@ import moment from "moment";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import ContentSidebar from "../../components/ContentSidebar/ContentSidebar.vue";
-import { SET_VERSION, SET_VERSIONS } from "../../store/mutation-types";
+import {
+  SELECT_GOVERMENT_BY_ID,
+  SET_VERSION,
+  SET_VERSIONS,
+} from "../../store/mutation-types";
 export default Vue.extend({
   name: "Home",
   data() {
@@ -86,11 +89,12 @@ export default Vue.extend({
       this.$store.dispatch(SET_VERSION, id);
     },
     formatDate(date: string): string {
-      return moment(date).format("DD/MM/YYY hh:mm");
+      return moment(date).format("DD/MM/YYYY HH:mm");
     },
   },
   async created() {
     this.isLoading = true;
+    this.$store.dispatch(SELECT_GOVERMENT_BY_ID, this.$route.params.id);
     await this.$store.dispatch(SET_VERSIONS, this.currentId);
     this.isLoading = false;
   },

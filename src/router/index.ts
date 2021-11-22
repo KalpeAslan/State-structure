@@ -65,7 +65,6 @@ const routes: Array<RouteConfig> = [
         component: () =>
           import(/* webpackChunkName: "HomeTime" */ "../views/Home/Time.vue"),
         beforeEnter: (to, from, next) => {
-          console.log(store.getters.gaState);
           if (store.getters.gaState === 320) return next();
           if (to.name === from.name) {
             next({

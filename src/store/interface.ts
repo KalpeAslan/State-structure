@@ -203,7 +203,7 @@ export interface IVersion {
   date: string;
   ddepartmentIin: number;
   ddepartmentIinTree: null | string;
-  userObject: IUser;
+  admin: IUser;
 }
 
 /**

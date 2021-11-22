@@ -142,7 +142,7 @@ export class DocumentBuilder {
         header: {
           bold: true,
           lineHeight: 0.5,
-          margin: [0, 0, 20, 0],
+          margin: [0, 0, 20, 20],
         },
         headerDoc: {
           lineHeight: 0.5,
