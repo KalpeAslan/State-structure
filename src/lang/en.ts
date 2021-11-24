@@ -58,4 +58,5 @@ export const en: IDict = {
     "Unable to connect to NcaLayer. The program is not running or not installed",
   close: "Close",
   nameEngMustBeUnique: "name in English must be unique",
+  cancel: "Cancel",
 };

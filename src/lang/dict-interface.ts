@@ -54,4 +54,5 @@ export interface IDict {
   ncaLayerClosed;
   close;
   nameEngMustBeUnique;
+  cancel;
 }

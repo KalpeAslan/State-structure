@@ -45,6 +45,7 @@ import {
   IUser,
   TWebSocketState,
 } from "./interface";
+import router from "@/router";
 
 export const homeStore: Module<IStateHomeStore, any> = {
   state: {
@@ -158,8 +159,9 @@ export const homeStore: Module<IStateHomeStore, any> = {
     [SET_MODE](context, mode: string) {
       context.commit(SET_MODE, mode);
     },
-    async [SELECT_GOVERMENT](context, goverment: IGoverment) {
+    async [SELECT_GOVERMENT](context, goverment: IGoverment | null) {
       context.commit(SELECT_GOVERMENT, goverment);
+      if (goverment === null) return context.commit(SET_GA_STATE, null);
       context.dispatch(SET_TREE, goverment.id).then(() => {
         context.commit(SET_GA_STATE, context.getters.tree.status || 315);
       });
@@ -181,6 +183,10 @@ export const homeStore: Module<IStateHomeStore, any> = {
       delete goverment.statusObject;
       await homeService.changeGovermentAgency(goverment).then(() => {
         context.dispatch(SET_TREE, null);
+        context.dispatch(SELECT_GOVERMENT, null);
+        router.push({
+          name: "home.select-goverment",
+        });
       });
     },
     async [SET_ROLES](context) {
