@@ -12,7 +12,11 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { CHECK_IS_LOGGINED, SET_UNLOCK } from "./store/mutation-types";
+import {
+  CHECK_IS_LOGGINED,
+  SET_MODAL_NAME,
+  SET_UNLOCK,
+} from "./store/mutation-types";
 
 export default Vue.extend({
   name: "App",
@@ -32,6 +36,9 @@ export default Vue.extend({
   },
   async beforeCreate() {
     await this.$store.dispatch(CHECK_IS_LOGGINED);
+    if (!this.$store.getters.isLoggined) {
+      this.$store.dispatch(SET_MODAL_NAME, "login-modal");
+    }
   },
 });
 </script>

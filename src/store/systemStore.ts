@@ -44,7 +44,8 @@ export const systemStore: Module<IStateSystemStore, any> = {
     [SET_USER_TYPE](ctx, userType: userTypes) {
       ctx.commit(SET_USER_TYPE, userType);
     },
-    async [CHECK_IS_LOGGINED]() {
+    async [CHECK_IS_LOGGINED](ctx) {
+      return ctx.commit(SET_LOGGINED, false);
       if (
         !localStorage.getItem("refresh-token") &&
         !localStorage.getItem("access-token")

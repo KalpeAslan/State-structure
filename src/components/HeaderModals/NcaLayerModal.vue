@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="modalDialogMixin" width="420px">
+    <v-dialog v-model="modalDialogMixin" width="420px" persistent>
       <v-card>
         <v-card-title>
           <span

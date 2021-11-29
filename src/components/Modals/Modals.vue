@@ -24,6 +24,10 @@
       v-else-if="selectedModalName === 'add-subdivision-modal'"
       @close-modal="closeModal"
     />
+    <login-modal
+      v-else-if="selectedModalName === 'login-modal'"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -42,6 +46,7 @@ export default {
     NcaLayerModal: () => import("../HeaderModals/NcaLayerModal.vue"),
     AddPosition: () => import("../HeaderModals/AddPosition.vue"),
     AddSubdivision: () => import("../HeaderModals/AddSubdivision.vue"),
+    LoginModal: () => import("../HeaderModals/LoginModal"),
   },
   methods: {
     closeModal() {

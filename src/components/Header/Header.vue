@@ -48,7 +48,6 @@
       <Badge v-if="selectedGovOrg" :state="selectedGovState"
         >Создан диспетчером</Badge
       >
-      <v-select :items="roles" v-model="selectedRole" />
     </div>
     <v-spacer></v-spacer>
     <div>
