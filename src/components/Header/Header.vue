@@ -8,45 +8,34 @@
     max-height="56px"
   >
     <div class="header-content_left">
-      <v-btn
-        @click="
-          $router.push({
-            name: 'home.select-goverment',
-          })
-        "
-        text
-        elevation="0"
-      >
-        <div
-          v-if="selectedGovOrg"
-          style="
-            display: flex;
-            flex-direction: column;
-            align-items: self-start;
-            max-width: 120px;
-          "
-        >
-          <span
-            style="
-              max-width: 120px;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            "
+      <v-menu  v-if="isShowMenuButton" offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+              text
+              elevation="0"
+              v-bind="attrs"
+              v-on="on"
           >
-            {{ selectedGovOrg | translate }}
-          </span>
-        </div>
-        <div
-          v-else
-          style="display: flex; flex-direction: column; align-items: self-start"
-        >
-          {{ $t("selectGA") }}
-        </div>
-        <v-icon size="18"> mdi-chevron-down </v-icon>
-      </v-btn>
+            <span v-if="selectedGovOrg">
+              {{selectedGovOrg | translate}}
+            </span>
+            <span v-else>
+              $t("selectGA")
+            </span>
+            <v-icon size="18"> mdi-chevron-down </v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+              v-for="(item, index) in menuButtons"
+              :key="index"
+          >
+            <v-list-item-title @click="selectMenuButton(index)">{{ item.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <Badge v-if="selectedGovOrg" :state="selectedGovState"
-        >Создан диспетчером</Badge
+      >Создан диспетчером</Badge
       >
     </div>
     <v-spacer></v-spacer>
@@ -54,12 +43,12 @@
       <v-menu v-if="selectedGovOrg" offset-y>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
-            elevation="0"
-            v-bind="attrs"
-            v-on="on"
-            text
-            style="font-size: 14px; line-height: 16px"
-            class="secondary--text button text-capitalize"
+              elevation="0"
+              v-bind="attrs"
+              v-on="on"
+              text
+              style="font-size: 14px; line-height: 16px"
+              class="secondary--text button text-capitalize"
           >
             <v-icon size="16" style="margin-right: 5px"> mdi-history </v-icon>
             {{ $t("history") }}
@@ -68,15 +57,15 @@
         </template>
         <v-list>
           <router-link
-            v-for="(item, index) in historyItems"
-            :key="index"
-            :to="{
+              v-for="(item, index) in historyItems"
+              :key="index"
+              :to="{
               name: item.routeName,
               params: {
                 id: 61,
               },
             }"
-            style="text-decoration: none"
+              style="text-decoration: none"
           >
             <v-list-item>
               <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
@@ -84,6 +73,7 @@
           </router-link>
         </v-list>
       </v-menu>
+
       <template>
         <!-- <template v-if="isEditable"> -->
         <template v-for="button in headerButtons">
@@ -220,6 +210,16 @@ export default Vue.extend({
       isEditable: "isEditable",
       gaId: "GET_GA_ID",
     }),
+    menuButtons(){
+      return [
+        {
+          name: this.selectedGovOrg ? Vue.filter('translate')(this.selectedGovOrg) : this.$t("selectGA") ,
+        },
+        {
+          name: this.$t('exit')
+        }
+      ]
+    },
     currentLanguage() {
       switch (this.$store.getters.GET_CURRENT_LANGUAGE) {
         case "ru":
@@ -242,6 +242,9 @@ export default Vue.extend({
       if (this.selectedGovState !== 315) return false;
       if (this.userType !== "dispatcher") return false;
     },
+    isShowMenuButton():boolean {
+      return this.$route.name !== 'auth'
+    }
   },
   methods: {
     selectLanguage(languageName: language) {
@@ -279,6 +282,18 @@ export default Vue.extend({
         });
       }
     },
+    selectMenuButton(index){
+      if(index === 0){
+        this.$router.push({
+          name: 'home.select-goverment'
+        })
+      } else {
+        this.$store.dispatch('exit')
+        this.$router.push({
+          name: 'auth'
+        })
+      }
+    }
   },
 });
 </script>

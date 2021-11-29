@@ -59,4 +59,9 @@ export const en: IDict = {
   close: "Close",
   nameEngMustBeUnique: "name in English must be unique",
   cancel: "Cancel",
+  login: 'Login',
+  password: 'Password',
+  errorAuth: 'Incorrect Login or Password',
+  enter: 'Enter',
+  exit: 'Exit'
 };

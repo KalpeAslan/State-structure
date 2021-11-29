@@ -5,21 +5,33 @@ import {
 } from "./../store/mutation-types";
 import store from "@/store";
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
+import VueRouter, {NavigationGuard, RouteConfig} from "vue-router";
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
     path: "",
-    redirect: {
-      name: "home.select-goverment",
+    component: () => import( /* webpackChunkName: "Auth" */ '../views/Auth/Auth.vue'),
+    beforeEnter(to, from, next) {
+      if(!!localStorage.getItem('login')){
+        return next({
+          name: 'home.select-goverment'
+        })
+      }
+      next()
     },
+    name:'auth'
   },
   {
     path: "/home",
     name: "Home",
     beforeEnter: (to, from, next) => {
+      if(!localStorage.getItem('login')){
+        return next({
+          name: 'auth'
+        })
+      }
       if (!store.getters.tree && to.params.id) {
         store.dispatch(SET_TREE, to.params.id);
         store.dispatch(SELECT_GOVERMENT_BY_ID, to.params.id);
@@ -87,10 +99,20 @@ const routes: Array<RouteConfig> = [
     name: "Logs",
     component: () =>
       import(/* webpackChunkName: "Logs" */ "../views/Logs/Logs.vue"),
+    beforeEnter(to, from , next){
+      if(!localStorage.getItem('login')){
+        return next('/')
+      }
+    }
   },
   {
     path: "/versions-history",
     name: "versions-history",
+    beforeEnter(to, from , next){
+      if(!localStorage.getItem('login')){
+        return next('/')
+      }
+    },
     component: () =>
       import(
         /* webpackChunkName: "Versions-History-Index" */ "../views/History-Versions/index.vue"

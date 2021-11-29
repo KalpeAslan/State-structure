@@ -59,4 +59,9 @@ export const kz: IDict = {
   close: "Жабу",
   nameEngMustBeUnique: "Ағылшын тіліндегі ат ерекше болу керек",
   cancel: "Бас тарту",
+  login: 'Логин',
+  password: 'Қате құпия сөз',
+  errorAuth: 'Қате құпия сөз немесе логин',
+  enter: 'Кіру',
+  exit: 'Шыгу'
 };

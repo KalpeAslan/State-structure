@@ -59,4 +59,9 @@ export const ru: IDict = {
   close: "Закрыть",
   nameEngMustBeUnique: "Имя на английском должно быть уникальным",
   cancel: "Отменить",
+  login: 'Логин',
+  password: 'Пароль',
+  errorAuth: 'Неправильный Логин или пароль',
+  enter: 'Войти',
+  exit: 'Выйти'
 };

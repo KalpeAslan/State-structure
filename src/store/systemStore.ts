@@ -45,7 +45,7 @@ export const systemStore: Module<IStateSystemStore, any> = {
       ctx.commit(SET_USER_TYPE, userType);
     },
     async [CHECK_IS_LOGGINED](ctx) {
-      return ctx.commit(SET_LOGGINED, false);
+      // return ctx.commit(SET_LOGGINED, false);
       if (
         !localStorage.getItem("refresh-token") &&
         !localStorage.getItem("access-token")
@@ -67,11 +67,19 @@ export const systemStore: Module<IStateSystemStore, any> = {
         systemService.redirectToMain();
       }
     },
-    async [SET_LOGGINED](ctx) {
-      const urlSearchParams = new URLSearchParams(window.location.search);
-      const params = Object.fromEntries(urlSearchParams.entries());
-      await systemService.validateCode(params.code);
+    [SET_LOGGINED](ctx, login: string) {
+      // const urlSearchParams = new URLSearchParams(window.location.search);
+      // const params = Object.fromEntries(urlSearchParams.entries());
+      // await systemService.validateCode(params.code);
+      ctx.commit(SET_LOGGINED, true)
+      if(login){
+        localStorage.setItem('login',login)
+      }
     },
+    exit(ctx){
+      ctx.commit(SET_LOGGINED, false)
+      localStorage.removeItem('login')
+    }
   },
   getters: {
     GET_USER_TYPE(state): string {

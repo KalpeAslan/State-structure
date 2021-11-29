@@ -55,4 +55,9 @@ export interface IDict {
   close;
   nameEngMustBeUnique;
   cancel;
+  login;
+  password;
+  errorAuth;
+  enter;
+  exit;
 }
