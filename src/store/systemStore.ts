@@ -7,7 +7,7 @@ import {
   webSocketState,
 } from "./interfaces";
 import {
-  CHECK_IS_LOGGINED,
+  CHECK_IS_LOGGINED, SELECT_GOVERMENT, SET_GA_STATE,
   SET_LANGUAGE,
   SET_LOGGINED,
   SET_USER_TYPE,
@@ -78,6 +78,9 @@ export const systemStore: Module<IStateSystemStore, any> = {
     },
     exit(ctx){
       ctx.commit(SET_LOGGINED, false)
+      ctx.commit(SET_USER_TYPE, null)
+      ctx.commit(SET_GA_STATE, null)
+      ctx.commit(SELECT_GOVERMENT, null)
       localStorage.removeItem('login')
     }
   },

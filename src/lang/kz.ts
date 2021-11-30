@@ -63,5 +63,6 @@ export const kz: IDict = {
   password: 'Қате құпия сөз',
   errorAuth: 'Қате құпия сөз немесе логин',
   enter: 'Кіру',
-  exit: 'Шыгу'
+  exit: 'Шыгу',
+  enterToSystem: 'Жүйеге кіру'
 };

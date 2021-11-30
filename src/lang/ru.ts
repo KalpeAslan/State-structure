@@ -63,5 +63,6 @@ export const ru: IDict = {
   password: 'Пароль',
   errorAuth: 'Неправильный Логин или пароль',
   enter: 'Войти',
-  exit: 'Выйти'
+  exit: 'Выйти',
+  enterToSystem: 'Войти в систему'
 };

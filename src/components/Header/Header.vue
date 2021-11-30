@@ -20,17 +20,18 @@
               {{selectedGovOrg | translate}}
             </span>
             <span v-else>
-              $t("selectGA")
+              {{ $t("selectGA") }}
             </span>
             <v-icon size="18"> mdi-chevron-down </v-icon>
           </v-btn>
         </template>
-        <v-list>
+        <v-list flat>
           <v-list-item
+
               v-for="(item, index) in menuButtons"
               :key="index"
           >
-            <v-list-item-title @click="selectMenuButton(index)">{{ item.name }}</v-list-item-title>
+            <v-list-item-title class="hover" @click="selectMenuButton(index)">{{ item.name }}</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -309,6 +310,12 @@ export default Vue.extend({
   line-height: 16px;
   padding: 0 6px;
   font-weight: 400;
+}
+
+.hover {
+  &:hover{
+    cursor: pointer;
+  }
 }
 
 .divider {

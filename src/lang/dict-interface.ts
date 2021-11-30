@@ -60,4 +60,5 @@ export interface IDict {
   errorAuth;
   enter;
   exit;
+  enterToSystem;
 }

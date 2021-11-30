@@ -1,10 +1,14 @@
 <template>
-  <v-container>
+  <v-container class="px-16">
     <v-form
         ref="form"
         v-model="valid"
         lazy-validation
+        @submit.prevent="validate"
     >
+      <div class="text-h4 mg-2">
+        {{$t('enterToSystem')}}
+      </div>
       <v-text-field
           v-model="login"
           :rules="[v => !!v || $t('fillTheField')]"
@@ -21,11 +25,11 @@
 
       <v-btn
           :disabled="!valid"
-          color="success"
+          color="primary"
           class="mr-4"
           @click="validate"
       >
-        Validate
+        {{$t('enter')}}
       </v-btn>
     </v-form>
   </v-container>
