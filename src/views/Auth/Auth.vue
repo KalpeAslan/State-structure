@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-16">
+  <v-container class="auth-container">
     <v-form
         ref="form"
         v-model="valid"
@@ -87,3 +87,12 @@ export default {
   },
 }
 </script>
+
+<style scoped lang="scss">
+.auth-container {
+  width: 50%;
+  @media only screen and (max-width: 600px) {
+    width: 80%;
+  }
+}
+</style>
