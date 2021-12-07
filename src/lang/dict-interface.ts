@@ -61,4 +61,5 @@ export interface IDict {
   enter;
   exit;
   enterToSystem;
+  employee;
 }

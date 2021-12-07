@@ -122,7 +122,6 @@ export class DocumentBuilder {
         {
           text: `Структура 
           \n ${gaStructureRaw.ddepartmentIinDto.nameRus} 
-          \n Министерство экологии, геологии и природных ресурсов
           \n Республики Казахстан 37/123`,
           style: "header",
           alignment: "center",

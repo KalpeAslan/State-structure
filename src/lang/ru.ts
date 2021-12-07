@@ -64,5 +64,6 @@ export const ru: IDict = {
   errorAuth: 'Неправильный Логин или пароль',
   enter: 'Войти',
   exit: 'Выйти',
-  enterToSystem: 'Войти в систему'
+  enterToSystem: 'Войти в систему',
+  employee: 'Сотрудник'
 };

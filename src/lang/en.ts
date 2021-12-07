@@ -64,5 +64,6 @@ export const en: IDict = {
   errorAuth: 'Incorrect Login or Password',
   enter: 'Enter',
   exit: 'Exit',
-  enterToSystem: 'Enter to system'
+  enterToSystem: 'Enter to system',
+  employee: 'Employee'
 };
