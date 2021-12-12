@@ -224,9 +224,6 @@ export default Vue.extend({
         : new Date().toISOString().slice(0, 10);
     },
   },
-  components: {
-    Badge: () => import("../../components/Badge/Badge.vue"),
-  },
   methods: {
     validate() {
       this.$refs.form.validate();

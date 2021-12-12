@@ -47,7 +47,7 @@
 import { modalsMixin } from "@/mixins/modalsMixin";
 import { IGovermentReq } from "@/store/interfaces";
 import { SEND_TO_REJECT } from "@/store/mutation-types";
-import { generateTranslateForms } from "@/utils/generateTranslateForms";
+import { utils } from "@/utils/utils.ts";
 import Vue from "vue";
 export default Vue.extend({
   name: "nca-layer-modal",
@@ -63,12 +63,12 @@ export default Vue.extend({
           nameKz: "Компьютерде NCALayer іске қосыңыз немесе",
           nameEng: "Run NCALayer on your computer or",
         },
-        followLink: generateTranslateForms(
+        followLink: utils.generateTranslateForms(
           "перейдите по ссылке на установки программы",
           "бағдарламаны орнату сілтемесіне өтіңіз",
           "follow the link to install the program"
         ),
-        tryAgain: generateTranslateForms(
+        tryAgain: utils.generateTranslateForms(
           "и попробуйте повторить операцию",
           "операцияны қайталауға тырысыңыз",
           "and try to repeat the operation"

@@ -1,6 +1,7 @@
 import { pdfmake } from "pdfmake";
 import { TGovermentAgencyObject } from "./../store/interface";
 import { TGovermentAgencyRaw } from "@/store/interface";
+import {utils} from "@/utils/utils";
 
 type TTableColumns = {
   title: string;
@@ -67,7 +68,7 @@ export class DocumentBuilder {
         if (departament.positions) {
           acc.push([
             {
-              text: departament.nameRus,
+              text: utils.fixPdfName(departament.nameRus),
               colSpan: 4,
               style: {
                 bold: true,
@@ -85,7 +86,7 @@ export class DocumentBuilder {
             return acc.push([
               "",
               {
-                text: nameRu,
+                text: utils.fixPdfName(nameRu),
                 style: "position",
               },
               employee,
@@ -131,7 +132,7 @@ export class DocumentBuilder {
             widths: [20, 300, 90, 70],
             style: "tableHeader",
             body: [
-              ["", "Должность", "ФИО", "Количество \n единиц"],
+              ["", "Должность", "ФИО", "Роль"],
               ...tableBody(),
             ],
           },

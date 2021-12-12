@@ -76,21 +76,6 @@ const routes: Array<RouteConfig> = [
         name: "home.time",
         component: () =>
           import(/* webpackChunkName: "HomeTime" */ "../views/Home/Time.vue"),
-        beforeEnter: (to, from, next) => {
-          if (store.getters.gaState === 320) return next();
-          if (to.name === from.name) {
-            next({
-              name: "home.select-goverment",
-            });
-          } else {
-            Vue.notify({
-              group: "alert",
-              text: "Утвердите ГО что бы сделать замещение",
-              type: "danger",
-            });
-            next(false);
-          }
-        },
       },
     ],
   },

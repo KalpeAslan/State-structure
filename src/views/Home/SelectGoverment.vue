@@ -164,7 +164,7 @@ export default Vue.extend({
       const codeForApply = this.userType === "departmentBoss" ? 316 : 317;
       return this.governmentAgencies.filter(
         (govAgency) =>
-          govAgency.status === codeForApply || govAgency.status === 319
+          govAgency.status === codeForApply || codeForApply === 317 && govAgency.status === 319
       );
     },
     isEditable(): boolean {
