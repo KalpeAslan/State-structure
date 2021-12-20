@@ -80,6 +80,7 @@ export class DocumentBuilder {
             {},
           ]);
           departament.positions["forEach"](({ nameRu, employees }) => {
+          console.log(employees)
             const employee: string = employees
               ? employees[0].userObject.username
               : "";
@@ -90,7 +91,7 @@ export class DocumentBuilder {
                 style: "position",
               },
               employee,
-              employees ? employees.length : 0,
+                employees[0].userObject.rolesList[0].nameRus
             ]);
           });
         }
