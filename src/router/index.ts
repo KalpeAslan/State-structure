@@ -15,9 +15,9 @@ const routes: Array<RouteConfig> = [
     component: () => import( /* webpackChunkName: "Auth" */ '../views/Auth/Auth.vue'),
     beforeEnter(to, from, next) {
       if(!!localStorage.getItem('login')){
-        return next({
-          name: 'home.select-goverment'
-        })
+        // return next({
+        //   name: 'home.select-goverment'
+        // })
       }
       next()
     },
@@ -80,13 +80,15 @@ const routes: Array<RouteConfig> = [
     ],
   },
   {
-    path: "/logs",
+    path: "/logs/:id",
     name: "Logs",
     component: () =>
       import(/* webpackChunkName: "Logs" */ "../views/Logs/Logs.vue"),
     beforeEnter(to, from , next){
       if(!localStorage.getItem('login')){
         return next('/')
+      } else {
+        return next()
       }
     }
   },
@@ -96,6 +98,8 @@ const routes: Array<RouteConfig> = [
     beforeEnter(to, from , next){
       if(!localStorage.getItem('login')){
         return next('/')
+      } else {
+        return next()
       }
     },
     component: () =>

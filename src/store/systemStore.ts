@@ -9,7 +9,7 @@ import {
 import {
   CHECK_IS_LOGGINED, SELECT_GOVERMENT, SET_GA_STATE,
   SET_LANGUAGE,
-  SET_LOGGINED,
+  SET_LOGGINED, SET_TREE,
   SET_USER_TYPE,
 } from "./mutation-types";
 import { Module } from "vuex";
@@ -81,6 +81,7 @@ export const systemStore: Module<IStateSystemStore, any> = {
       ctx.commit(SET_USER_TYPE, null)
       ctx.commit(SET_GA_STATE, null)
       ctx.commit(SELECT_GOVERMENT, null)
+      ctx.commit(SET_TREE, null)
       localStorage.removeItem('login')
     }
   },

@@ -11,14 +11,14 @@
       </div>
       <v-text-field
           v-model="login"
-          :rules="[v => !!v || $t('fillTheField')]"
+          :rules="computeRule"
           :label="$t('login')"
           required
       ></v-text-field>
 
       <v-text-field
           v-model="password"
-          :rules="[v => !!v || $t('fillTheField')]"
+          :rules="computeRule"
           :label="$t('password')"
           required
       ></v-text-field>
@@ -85,6 +85,11 @@ export default {
       );
     },
   },
+  computed: {
+    computeRule(){
+      return [v => !!v || this.$t('fillTheField')]
+    }
+  }
 }
 </script>
 

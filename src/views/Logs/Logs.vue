@@ -379,7 +379,7 @@ export default Vue.extend({
     },
   },
   async created() {
-    // this.isLoading = true;
+    this.isLoading = true;
     await this.$store.dispatch(SET_LOGS);
     this.isLoading = false;
     this.logs = this.$store.getters.logs;
@@ -389,6 +389,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .logs {
+  height: 100%;
   padding: 60px 135px 0 135px;
   background: #f7f7f8;
   table {

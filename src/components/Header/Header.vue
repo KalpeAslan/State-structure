@@ -61,15 +61,12 @@
               v-for="(item, index) in historyItems"
               :key="index"
               :to="{
-              name: item.routeName,
-              params: {
-                id: 61,
-              },
+              name: item.routeName
             }"
               style="text-decoration: none"
           >
             <v-list-item>
-              <v-list-item-title>{{ $t(item.title) }}</v-list-item-title>
+              <v-list-item-title @click="handleHistoryClick(item.routeName)">{{ $t(item.title) }}</v-list-item-title>
             </v-list-item>
           </router-link>
         </v-list>
@@ -250,6 +247,12 @@ export default Vue.extend({
   methods: {
     selectLanguage(languageName: language) {
       this.$store.dispatch(SET_LANGUAGE, languageName);
+    },
+    handleHistoryClick(routeName: string) {
+      // alert('hellow')
+      this.$router.push({
+        name: routeName,
+      })
     },
     editGovOrg() {
       this.editDialogvalid = true;
