@@ -88,6 +88,14 @@ export default {
   computed: {
     computeRule(){
       return [v => !!v || this.$t('fillTheField')]
+    },
+    currentLanguage() {
+      return this.$store.getters.GET_CURRENT_LANGUAGE
+    }
+  },
+  watch:{
+    currentLanguage(){
+      this.$refs.form.resetValidation()
     }
   }
 }
