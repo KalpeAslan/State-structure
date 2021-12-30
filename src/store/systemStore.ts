@@ -20,7 +20,7 @@ const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
     userType: "dispatcher",
-    currentLanguage: "ru",
+    currentLanguage: localStorage.getItem('lang') as language|| 'ru',
     webSocketState: null,
     isLoggined: false,
   },
