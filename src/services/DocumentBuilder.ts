@@ -65,36 +65,37 @@ export class DocumentBuilder {
     const tableBody = () => {
       const departaments = this.buildDocumentAsObject(gaStructureRaw);
       const res = departaments.reduce((acc, departament) => {
-        if (departament.positions) {
           acc.push([
-            {
-              text: utils.fixPdfName(departament.nameRus),
-              colSpan: 4,
-              style: {
-                bold: true,
-              },
-              alignment: "center",
-            },
-            {},
-            {},
-            {},
-          ]);
-          departament.positions["forEach"](({ nameRu, employees }) => {
-          console.log(employees)
-            const employee: string = employees
-              ? employees[0].userObject.username
-              : "";
-            return acc.push([
-              "",
               {
-                text: utils.fixPdfName(nameRu),
-                style: "position",
+                  text: utils.fixPdfName(departament.nameRus),
+                  colSpan: 4,
+                  style: {
+                      bold: true,
+                  },
+                  alignment: "center",
               },
-              employee,
-                employees[0].userObject.rolesList[0].nameRus
-            ]);
+              {},
+              {},
+              {},
+          ]);
+          departament.positions && departament.positions["forEach"](({ nameRu, employees }) => {
+              console.log(employees)
+              const employeeUsername: string = employees
+                  ? employees[0].userObject.username
+                  : "";
+              const employeeRole: string = employees
+                  ? employees[0].userObject.rolesList[0].nameRus
+                  : "";
+              return acc.push([
+                  "",
+                  {
+                      text: utils.fixPdfName(nameRu),
+                      style: "position",
+                  },
+                  employeeUsername,
+                  employeeRole
+              ]);
           });
-        }
 
         return acc;
       }, []);
@@ -142,7 +143,7 @@ export class DocumentBuilder {
       styles: {
         header: {
           bold: true,
-          lineHeight: 0.5,
+          lineHeight: 0.8,
           margin: [0, 0, 20, 20],
         },
         headerDoc: {
