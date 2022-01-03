@@ -51,7 +51,7 @@
               >
                 <div class="d-flex align-center" style="font-size: 12px">
                   {{
-                    positionChild.employeeState === "replacementEmployee"
+                    computeIsShowEmployeeReplacement(positionChild)
                       ? positionChild.employeeReplacement.substituteUserObject
                           .username
                       : positionChild.user.username
@@ -202,6 +202,13 @@ export default {
         return;
       }
     },
+    computeIsShowEmployeeReplacement(positionChild) {
+      if(positionChild.employeeState !== 'replacementEmployee') return false
+      const dateNow = new Date()
+      const dateEndEmployeeReplacement = new Date(positionChild.employeeReplacement.endDate)
+      // Показывать временного сотрудника, если его дата еще не истекла
+      return dateNow < dateEndEmployeeReplacement
+    }
   },
   mounted() {
     const treeContainer = document.querySelector(
