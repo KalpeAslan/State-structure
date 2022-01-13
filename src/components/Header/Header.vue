@@ -16,7 +16,7 @@
               v-bind="attrs"
               v-on="on"
           >
-            <span v-if="selectedGovOrg">
+            <span v-if="selectedGovOrg" class="header-content_left__selected-government">
               {{selectedGovOrg | translate}}
             </span>
             <span v-else>
@@ -207,6 +207,7 @@ export default Vue.extend({
       userType: "userType",
       isEditable: "isEditable",
       gaId: "GET_GA_ID",
+      lang: 'GET_CURRENT_LANGUAGE'
     }),
     menuButtons(){
       return [
@@ -282,7 +283,7 @@ export default Vue.extend({
       }
       if (button.name === "exportPdf") {
         await homeService.getGovermentAgencyRaw(this.gaId).then((gaRaw) => {
-          documentBuilder.makePdf(gaRaw);
+          documentBuilder.makePdf(gaRaw, this.lang);
         });
       }
     },
@@ -307,6 +308,11 @@ export default Vue.extend({
   display: flex;
   align-items: center;
   justify-content: space-between;
+  .header-content_left__selected-government {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 .button {
   font-size: 14px;
