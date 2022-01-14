@@ -23,6 +23,8 @@
               font-size: 14px;
               border-radius: 2px;
               max-width: 200px;
+              overflow: hidden;
+              text-overflow: ellipsis;
             "
             :style="{
               fontWeight:

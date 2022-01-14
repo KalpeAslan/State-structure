@@ -17,6 +17,7 @@ import { i18n } from "@/plugins/i18n";
 const systemService: SystemService = new SystemService(new HttpService());
 
 const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
+const appVersion = 'V1.4'
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
     userType: "dispatcher",
@@ -98,5 +99,8 @@ export const systemStore: Module<IStateSystemStore, any> = {
     isDispatcher(state): boolean {
       return state.userType === "dispatcher";
     },
+    appVersion(): string {
+      return appVersion
+    }
   },
 };

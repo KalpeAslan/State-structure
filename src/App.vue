@@ -18,6 +18,18 @@ import {
   SET_MODAL_NAME,
   SET_UNLOCK, SET_USER_TYPE,
 } from "./store/mutation-types";
+import {language} from "@/store/interfaces";
+
+const computeDocumentTitle = (lang: language): string => {
+  switch (lang){
+    case "en":
+      return 'GA'
+    case "kz":
+      return 'МЕМЛЕКЕТТІК ОРГАН'
+    case "ru":
+      return 'ГО'
+  }
+}
 
 export default Vue.extend({
   name: "App",
@@ -25,6 +37,11 @@ export default Vue.extend({
   components: {
     Header: () => import("../src/components/Header/Header.vue"),
     Modals: () => import("../src/components/Modals/Modals.vue"),
+  },
+  computed: {
+    lang(): language {
+      return this.$store.getters.GET_CURRENT_LANGUAGE
+    }
   },
   watch: {
     $route(to, from) {
@@ -34,6 +51,9 @@ export default Vue.extend({
         this.$store.dispatch(SET_UNLOCK, false);
       }
     },
+    lang(value){
+      document.title = computeDocumentTitle(value)
+    }
   },
   beforeCreate() {
     this.$store.dispatch(SET_LOGGINED, localStorage.getItem('login'))

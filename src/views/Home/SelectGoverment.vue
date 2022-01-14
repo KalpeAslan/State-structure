@@ -64,7 +64,7 @@
       </template>
       <v-text-field
         outlined
-        label="Поиск"
+        :label="$t('search')"
         v-model="inputSearch"
         hide-details
         prepend-inner-icon="mdi-magnify"

@@ -1,36 +1,41 @@
 <template>
-  <nav class="sidebar">
-    <div
-      v-for="(item, i) in sidebarItems"
-      :key="item.title + i"
-      style="margin-bottom: 12px"
-    >
-      <v-btn
-        width="96"
-        height="68"
-        class="px-1 text-capitalize"
-        depressed
-        @click="navClick(item.routeName)"
-        :color="sidebarItemColor(item.routeName)"
+  <nav class="sidebar d-flex flex-column justify-space-between">
+    <div class="sidebar_content">
+      <div
+          v-for="(item, i) in sidebarItems"
+          :key="item.title + i"
+          style="margin-bottom: 12px"
       >
-        <div class="text-caption sidebar-item">
-          <v-icon :color="computeIconColor(item.routeName)">
-            {{ item.iconName }}
-          </v-icon>
-          <span
-            :style="{ color: computeIconColor(item.routeName) }"
-            style="
+        <v-btn
+            width="96"
+            height="68"
+            class="px-1 text-capitalize"
+            depressed
+            @click="navClick(item.routeName)"
+            :color="sidebarItemColor(item.routeName)"
+        >
+          <div class="text-caption sidebar-item">
+            <v-icon :color="computeIconColor(item.routeName)">
+              {{ item.iconName }}
+            </v-icon>
+            <span
+                :style="{ color: computeIconColor(item.routeName) }"
+                style="
               font-style: normal;
               font-weight: normal;
               font-size: 12px;
               line-height: 16px;
               margin-top: 7px;
             "
-          >
+            >
             {{ $t(item.title) }}
           </span>
-        </div>
-      </v-btn>
+          </div>
+        </v-btn>
+      </div>
+    </div>
+    <div class="app-version text-subtitle-2 text-center">
+      {{version}}
     </div>
   </nav>
 </template>
@@ -63,6 +68,11 @@ export default Vue.extend({
         },
       ],
     };
+  },
+  computed: {
+    version(): string {
+      return this.$store.getters.appVersion
+    }
   },
   methods: {
     sidebarItemColor(routeName: string): string {
