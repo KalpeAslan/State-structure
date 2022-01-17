@@ -1,11 +1,11 @@
 <template>
   <v-app>
-    <Header />
-    <Modals />
-    <notifications group="alert" class="alert" position="bottom right" />
+    <Header/>
+    <Modals/>
+    <notifications group="alert" class="alert" position="bottom right"/>
 
     <v-main>
-      <router-view />
+      <router-view/>
     </v-main>
   </v-app>
 </template>
@@ -13,23 +13,10 @@
 <script lang="ts">
 import Vue from "vue";
 import {
-  CHECK_IS_LOGGINED,
   SET_LOGGINED,
-  SET_MODAL_NAME,
   SET_UNLOCK, SET_USER_TYPE,
 } from "./store/mutation-types";
 import {language} from "@/store/interfaces";
-
-const computeDocumentTitle = (lang: language): string => {
-  switch (lang){
-    case "en":
-      return 'GA'
-    case "kz":
-      return 'МЕМЛЕКЕТТІК ОРГАН'
-    case "ru":
-      return 'ГО'
-  }
-}
 
 export default Vue.extend({
   name: "App",
@@ -41,6 +28,9 @@ export default Vue.extend({
   computed: {
     lang(): language {
       return this.$store.getters.GET_CURRENT_LANGUAGE
+    },
+    ga(): string {
+      return this.$store.getters.GET_SELECTED_GA
     }
   },
   watch: {
@@ -51,14 +41,20 @@ export default Vue.extend({
         this.$store.dispatch(SET_UNLOCK, false);
       }
     },
-    lang(value){
-      document.title = computeDocumentTitle(value)
+    lang() {
+      document.title = this.ga ? Vue.filter('translate')(this.ga) : this.$t('stateStructure')
+    },
+    ga(value) {
+      document.title = value ? Vue.filter('translate')(this.ga) : this.$t('stateStructure')
     }
   },
   beforeCreate() {
     this.$store.dispatch(SET_LOGGINED, localStorage.getItem('login'))
     this.$store.dispatch(SET_USER_TYPE, localStorage.getItem('login'))
   },
+  created(){
+    document.title = this.ga ? Vue.filter('translate')(this.ga) : this.$t('stateStructure')
+  }
 });
 </script>
 
@@ -70,6 +66,7 @@ $color: white;
   border-radius: 4px !important;
   bottom: 16px !important;
   right: 16px !important;
+
   .vue-notification-wrapper {
     .vue-notification {
       border-left: 5px solid $bg;
@@ -90,6 +87,7 @@ $color: white;
         border-color: $bg !important;
         display: flex;
         align-items: center;
+
         &::before {
           display: inline-block;
           margin-right: 15px;

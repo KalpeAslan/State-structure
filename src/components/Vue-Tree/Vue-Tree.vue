@@ -18,14 +18,7 @@
         >
           <v-icon color="#828282" v-if="unlock(node)"> mdi-lock </v-icon>
           <span
-            style="
-              padding: 12px 16px;
-              font-size: 14px;
-              border-radius: 2px;
-              max-width: 200px;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            "
+            class="container_node-name"
             :style="{
               fontWeight:
                 node.entityType === 'governmentAgency' && '500 !important',
@@ -243,6 +236,20 @@ export default {
   background: #f7f7f8 !important;
   width: 100%;
   height: 100%;
+
+
+  .container_node-name {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 2px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
+      transition: max-height 0.5s ease-in-out;
+      word-break: break-word;
+    }
+  }
 
   ::-webkit-scrollbar {
     width: 0;

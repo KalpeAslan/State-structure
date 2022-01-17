@@ -21,6 +21,7 @@
           :rules="computeRule"
           :label="$t('password')"
           required
+          type="password"
       ></v-text-field>
 
       <v-btn
