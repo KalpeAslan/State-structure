@@ -65,5 +65,7 @@ export const en: IDict = {
   enter: 'Enter',
   exit: 'Exit',
   enterToSystem: 'Enter to system',
-  employee: 'Employee'
+  employee: 'Employee',
+  implement: 'Apply',
+  reset: 'Reset'
 };

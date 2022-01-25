@@ -65,5 +65,7 @@ export const ru: IDict = {
   enter: 'Войти',
   exit: 'Выйти',
   enterToSystem: 'Войти в систему',
-  employee: 'Сотрудник'
+  employee: 'Сотрудник',
+  implement: 'Применить',
+  reset: 'Сбросить'
 };

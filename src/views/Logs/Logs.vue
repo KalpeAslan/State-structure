@@ -89,7 +89,7 @@
                     color="primary"
                     @click="formInput.showMenu = false"
                   >
-                    Отменить
+                    {{$t('cancel')}}
                   </v-btn>
                   <v-btn
                     text
@@ -131,7 +131,7 @@
               margin-top: 16px;
             "
           >
-            Применить
+            {{$t('implement')}}
           </v-btn>
           <v-btn
             color="primary"
@@ -146,7 +146,7 @@
             @click="resetFilter"
             outlined
           >
-            Сбросить
+            {{$t('reset')}}
           </v-btn>
         </form>
       </template>
@@ -166,6 +166,7 @@ import { ILog } from "@/store/interface";
 import { SET_LOGS } from "@/store/mutation-types";
 import Vue from "vue";
 import { required } from "vuelidate/lib/validators";
+import moment from "moment";
 
 const $t = (wordObj) => Vue.filter("translate")(wordObj);
 
@@ -335,13 +336,20 @@ export default Vue.extend({
 
     submitFilter(): void {
       this.$v.$touch();
+
       if (!this.$v.$error) {
+        const { dateStart, dateEnd, action } = this.filterForm;
+        console.log(new Date(dateStart))
+        console.log(new Date(dateEnd))
         this.logs = this.logs.filter((log: ILog) => {
-          const { dateStart, dateEnd, action } = this.filterForm;
           if (log.action === action.value || action.value === "all") {
+            const dateTime = moment(log.dateTime.split(' ')[0], 'DD/MM/YYYY')
+            console.log(new Date(dateTime))
+            console.log(new Date(dateStart) >= new Date(dateTime) &&
+                new Date(dateEnd) <= new Date(dateTime))
             return (
-              new Date(dateStart) <= new Date(log.dateTime) &&
-              new Date(dateEnd) <= new Date(log.dateTime)
+              new Date(dateStart).setHours(0,0,0,0) <= new Date(dateTime).setHours(0,0,0,0) &&
+              new Date(dateEnd).setHours(0,0,0,0) >= new Date(dateTime).setHours(0,0,0,0)
             );
           }
           return false;

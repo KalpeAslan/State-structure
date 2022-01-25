@@ -5,7 +5,7 @@ export const kz: IDict = {
   history: "Тарих",
   historyActions: "Әрекеттер тарихы",
   historyVersions: "Нұсқалар тарихы",
-  exportPdf: "Экспорт PDF",
+  exportPdf: "PDF ретінде экспорт",
   edit: "Өзгерту",
   delete: "Өшіру",
   constructor: "Конструктор",
@@ -65,5 +65,7 @@ export const kz: IDict = {
   enter: 'Кіру',
   exit: 'Шыгу',
   enterToSystem: 'Жүйеге кіру',
-  employee: 'Қызметкер'
+  employee: 'Қызметкер',
+  implement: 'Қолдану',
+  reset: 'Өшіру'
 };
