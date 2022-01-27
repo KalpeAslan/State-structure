@@ -33,7 +33,7 @@
                   formatDate(version.date)
                 }}</v-list-item-subtitle>
               </div>
-              <Badge :state="version.state" />
+              <Badge :state="version.status" />
             </v-list-item-content>
           </v-list-item>
         </v-list>
