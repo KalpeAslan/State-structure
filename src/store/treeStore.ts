@@ -92,7 +92,7 @@ function getNodeById(node: ITree, key): ITree {
   return runner(null, node);
 }
 
-function traverse(tree: ITree | any) {
+export function traverse(tree: ITree | any) {
   if (!("subdivisions" in tree || "positions" in tree || "employees" in tree)) {
     return;
   }

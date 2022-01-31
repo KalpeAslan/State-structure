@@ -16,6 +16,7 @@ export default Vue.extend({
       return this.$route.params.id;
     },
     versionTree(): ITree | null {
+      console.log(this.$store.getters.versionTree)
       return this.$store.getters.versionTree;
     },
   },
