@@ -17,7 +17,7 @@ import { i18n } from "@/plugins/i18n";
 const systemService: SystemService = new SystemService(new HttpService());
 
 const userTypes = ["dispatcher", "departmentBoss", "departmentHead", "admin"];
-const appVersion = 'V1.4'
+const appVersion = 'V1.5'
 export const systemStore: Module<IStateSystemStore, any> = {
   state: {
     userType: "dispatcher",
