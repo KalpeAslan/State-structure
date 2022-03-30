@@ -146,7 +146,7 @@ export class DocumentBuilder {
             const res = departaments.reduce((acc, departament) => {
                 acc.push([
                     {
-                        text: utils.fixPdfName(departament.nameRus),
+                        text: utils.fixPdfName(utils.translate(departament as unknown as generetedTranslatedForm, currentLanguage)),
                         colSpan: 4,
                         style: {
                             bold: true,
@@ -158,7 +158,6 @@ export class DocumentBuilder {
                     {},
                 ]);
                 departament.positions && departament.positions["forEach"](({nameRu, employees}) => {
-                    console.log(employees)
                     const employeeUsername: string = employees
                         ? employees[0].userObject.username
                         : "";
@@ -168,7 +167,7 @@ export class DocumentBuilder {
                     return acc.push([
                         "",
                         {
-                            text: utils.fixPdfName(nameRu),
+                            text: utils.fixPdfName(utils.translate(departament as unknown as generetedTranslatedForm, currentLanguage)),
                             style: "position",
                         },
                         employeeUsername,

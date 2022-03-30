@@ -21,7 +21,6 @@ export const utils = {
         return name.includes('::') ? name.split('::')[0] : name
     },
     translate(stringObject: generetedTranslatedForm, currentLanguage: language):string {
-        console.log(stringObject)
         switch (currentLanguage){
             case 'en':
                 return stringObject.nameRu
